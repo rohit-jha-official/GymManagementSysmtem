@@ -1,0 +1,95 @@
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;    
+  background: #0b0f14;
+  overflow-x: hidden;
+}
+
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dashboard-content {
+  padding: 30px;
+  color: #fff;
+}
+
+/* HEADER */
+.dashboard-header h1 {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+
+.dashboard-header p {
+  color: #9ca3af;
+  margin-bottom: 30px;
+}
+
+/* GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: linear-gradient(145deg, #11151c, #0c1016);
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.stat-card.wide {
+  grid-column: span 2;
+}
+
+.stat-card p {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.stat-card h2 {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+
+.stat-card span {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.positive {
+  color: #22c55e;
+}
+
+.danger {
+  color: #ef4444;
+}
+
+/* ICONS */
+.icon {
+  font-size: 28px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #1b2028;
+}
+
+.icon.orange {
+  color: #f59e0b;
+}
+
+.icon.green {
+  color: #22c55e;
+}
+
+.icon.yellow {
+  color: #facc15;
+}

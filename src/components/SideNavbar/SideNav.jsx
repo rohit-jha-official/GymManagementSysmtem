@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./SideNavBar.css";
+import "./SideNav.css";
 import {
   FaHome,
   FaUsers,

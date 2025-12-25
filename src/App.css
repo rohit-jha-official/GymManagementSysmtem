@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #121212;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  color: #fff;
+}

@@ -33,12 +33,6 @@ const activities = [
     type: "warning",
   },
   {
-    icon: <FaClock />,
-    title: "Failed scan attempt - Unknown card",
-    time: "2 hours ago",
-    type: "warning",
-  },
-  {
     icon: <FaUserCheck />,
     title: "Fatima Zahra checked in via RFID",
     time: "3 hours ago",

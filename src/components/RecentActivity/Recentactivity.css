@@ -4,6 +4,10 @@
   padding: 20px;
   color: #fff;
   width: 100%;
+
+  height: auto;   
+  max-height: 420px;  
+  overflow-y: auto; 
 }
 
 .ra-header {

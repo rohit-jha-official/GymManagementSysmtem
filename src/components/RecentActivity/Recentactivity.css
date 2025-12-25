@@ -1,0 +1,79 @@
+.recent-activity {
+  background: linear-gradient(180deg, #111827, #0b1220);
+  border-radius: 14px;
+  padding: 20px;
+  color: #fff;
+  width: 100%;
+}
+
+.ra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ra-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.view-all {
+  font-size: 14px;
+  color: #f59e0b;
+  cursor: pointer;
+}
+
+.ra-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ra-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ra-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Icon color variants */
+.ra-icon.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.ra-icon.info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.ra-icon.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.ra-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.ra-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ra-time {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
+}

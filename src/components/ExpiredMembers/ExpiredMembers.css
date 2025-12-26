@@ -1,0 +1,73 @@
+.expired-page {
+  padding: 25px;
+  color: #fff;
+}
+
+.expired-header h2 {
+  margin-bottom: 4px;
+}
+
+.expired-header p {
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+.expired-table {
+  background: #151922;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr 1fr 1fr 1fr 1.5fr;
+  padding: 14px 18px;
+  align-items: center;
+}
+
+.table-head {
+  background: #1c2230;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.table-row {
+  border-top: 1px solid #222;
+}
+
+.table-row:hover {
+  background: #1b2030;
+}
+
+.member-name {
+  font-weight: 600;
+}
+
+.days-expired {
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.call-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.renew-btn {
+  background: #ff8c00;
+  color: #000;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}

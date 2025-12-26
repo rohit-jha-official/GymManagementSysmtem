@@ -1,0 +1,91 @@
+.attendance-card {
+  background: linear-gradient(145deg, #11151c, #0c1016);
+  border-radius: 18px;
+  padding: 22px;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* HEADER */
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.attendance-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.attendance-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.attendance-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #22c55e;
+  font-size: 14px;
+}
+
+/* LIST */
+.attendance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ROW */
+.attendance-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 32px;
+  align-items: center;
+  gap: 12px;
+}
+
+.time {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.count {
+  font-size: 14px;
+  text-align: right;
+}
+
+/* BAR */
+.bar-wrapper {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fb923c);
+  border-radius: 999px;
+}

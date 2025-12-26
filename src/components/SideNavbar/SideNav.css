@@ -1,0 +1,113 @@
+.sidebar {
+  position: fixed;         
+  top: 0;
+  left: 0;
+
+  width: 260px;
+  height: 100vh;
+
+  background: #0f1115;
+  color: #d1d5db;
+
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;         
+  z-index: 1000;
+}
+
+
+.logo {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.logo-icon {
+  background: #ff8a00;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.logo h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.logo span {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* NAV ITEM */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.nav-item:hover {
+  background: #1c1f26;
+}
+
+.nav-item.active {
+  background: linear-gradient(90deg, #ff8a00, #ffb347);
+  color: #000;
+}
+
+.chevron {
+  margin-left: auto;
+  transition: transform 0.3s;
+}
+
+.chevron.rotate {
+  transform: rotate(180deg);
+}
+
+/* SUBMENU */
+.submenu {
+  margin-left: 35px;
+  margin-top: 6px;
+}
+
+.submenu-item {
+  padding: 10px;
+  font-size: 14px;
+  color: #b5b5b5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submenu-item:hover {
+  background: #1c1f26;
+  color: #fff;
+}
+
+/* BADGE */
+.badge {
+  position: relative;
+}
+
+.count {
+  background: #ff8a00;
+  color: #000;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: auto;
+}
+
+.nav-item.active,
+.submenu-item.active {
+  background: linear-gradient(90deg, #ff8a00, #ffb347);
+  color: #000;
+}

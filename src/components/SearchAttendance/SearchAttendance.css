@@ -1,0 +1,71 @@
+/* SEARCH GRID */
+.search-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr auto;
+  gap: 20px;
+  align-items: end;
+}
+
+/* FORM GROUP */
+.form-group label {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* INPUTS */
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #0f141a;
+  border: 1px solid #1f2933;
+  border-radius: 10px;
+  color: #fff;
+}
+
+/* INPUT WITH ICON */
+.input-icon {
+  position: relative;
+}
+
+.input-icon svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.input-icon input {
+  padding-left: 38px;
+}
+
+/* BUTTON */
+.btn-wrapper {
+  align-self: flex-end;
+}
+
+.full-btn {
+  height: 44px;
+  padding: 0 28px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-btn {
+    width: 100%;
+  }
+}
+
+
+/* Calendar icon color – make it white */
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 1;
+  cursor: pointer;
+}

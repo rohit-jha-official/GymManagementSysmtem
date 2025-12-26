@@ -8,6 +8,9 @@ import AddMember from "./components/AddMember/AddMember";
 import SearchAttendance from "./components/SearchAttendance/SearchAttendance";
 import DownloadReports from "./components/DownloadReports/DownloadReports";
 
+import MembershipPlans from "./components/MembershipPlans/MembershipPlans";
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -17,9 +20,13 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/members" element={<AllMembers />} />
+
           <Route path="/members/add" element={<AddMember />} />
           <Route path="/attendance/search" element={<SearchAttendance />} />
           <Route path="/attendance/reports" element={<DownloadReports />} />
+
+          <Route path="/membership-plans" element={<MembershipPlans />} />
+  
         </Route>
       </Routes>
     </BrowserRouter>

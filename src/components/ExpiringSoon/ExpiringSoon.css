@@ -1,0 +1,114 @@
+.expiring-page {
+  padding: 25px;
+  color: #fff;
+}
+
+/* Header */
+.expiring-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.expiring-header h2 {
+  margin-bottom: 4px;
+}
+
+.expiring-header p {
+  color: #aaa;
+}
+
+.reminder-btn {
+  background: #ff8c00;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Table */
+.expiring-table {
+  background: #151922;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.2fr 1fr 1.2fr 1fr 1.5fr;
+  padding: 14px 18px;
+  align-items: center;
+}
+
+.table-head {
+  background: #1c2230;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.table-row {
+  border-top: 1px solid #222;
+}
+
+.table-row:hover {
+  background: #1b2030;
+}
+
+.member-name {
+  font-weight: 600;
+}
+
+/* Days Left Badges */
+.days-left {
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.d-1,
+.d-2 {
+  background: #5a1b1b;
+  color: #ff4d4f;
+}
+
+.d-3,
+.d-4 {
+  background: #5c4a1b;
+  color: #ffcc00;
+}
+
+.d-5,
+.d-6,
+.d-7 {
+  background: #2e4b2e;
+  color: #7dff7d;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.call-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.renew-btn {
+  background: #ff8c00;
+  color: #000;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}

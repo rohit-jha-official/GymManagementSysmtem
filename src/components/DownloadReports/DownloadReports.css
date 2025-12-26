@@ -1,0 +1,254 @@
+/* FORM GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* REPORT CARDS */
+.report-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.report-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.report-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.report-left h4 {
+  margin-bottom: 4px;
+}
+
+.report-left p {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* ICONS */
+.report-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.report-icon.excel {
+  background: #0f3d2e;
+  color: #22c55e;
+}
+
+.report-icon.pdf {
+  background: #3a1616;
+  color: #ef4444;
+}
+
+/* BUTTONS */
+.btn-success {
+  background: #22c55e;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* QUICK REPORTS */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.quick-card {
+    background: #030405;
+    border-radius: 16px;
+    border: .1px solid;
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.quick-card:hover {
+  background: #ff880082;
+}
+
+.quick-card h4 {
+  margin-bottom: 6px;
+}
+
+.quick-card span {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .form-grid,
+  .report-cards,
+  .quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.date input[type="date"] {
+  width: 100%;
+  padding: 14px 16px;
+  background: #0f141a;
+  color: #ffffff;
+  border: 1px solid #1f2933;
+  border-radius: 12px;
+  font-size: 14px;
+
+  appearance: none;
+  -webkit-appearance: none;
+  
+}
+
+.date input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  background: #0f141a;
+  color: #ffffff;
+  border: 1px solid #1f2933;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 20 20'%3E%3Cpath d='M5 7l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 14px;
+}
+
+.form-group select:focus,
+.form-group select:focus-visible {
+  border-color: #f5f5f5;
+  outline: none;
+}
+
+
+.form-group select option {
+  background: #0f141a;
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 14px;
+}
+/* Yellow hover */
+.form-group select option:hover {
+  background: #ff8a00 !important;
+  color: #000 !important;
+}
+select.selector option:checked {
+  background: #ff8a00 linear-gradient(0deg, #ff8a00 0%, #ff8a00 100%); /* Works in some browsers */
+  color: #000;
+}
+
+/* General styling for the options */
+.selector option {
+  padding: 5px; /* Add some padding if needed */
+}
+.form-group select option:disabled {
+  color: #9ca3af;
+}
+
+
+/* REMOVE DEFAULT BROWSER STYLE */
+.custom-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px; /* smooth curve */
+  outline: none;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+
+/* DROPDOWN OPTIONS */
+.custom-select option {
+  padding: 10px;
+}
+
+.dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-header {
+  padding: 10px 12px;
+  border: 1.2px solid #ccc;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-header.active {
+  border-color: #fefefe;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: rgb(0, 0, 0);
+  border-radius: 6px;
+  margin-top: 4px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  overflow: hidden;
+  z-index: 100;
+}
+
+.dropdown-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background: #f59700;
+  color: #000;
+}

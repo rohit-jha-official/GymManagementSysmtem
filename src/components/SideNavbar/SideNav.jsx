@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import "./SideNav.css";
 import {
   FaHome,
@@ -16,6 +17,8 @@ import {
 } from "react-icons/fa";
 
 const SideNavBar = () => {
+  const location = useLocation();
+
   const [openMenu, setOpenMenu] = useState({
     members: true,
     attendance: false,
@@ -29,6 +32,19 @@ const SideNavBar = () => {
     }));
   };
 
+  /* ✅ Auto-open submenu based on current route */
+  useEffect(() => {
+    if (location.pathname.startsWith("/members")) {
+      setOpenMenu((prev) => ({ ...prev, members: true }));
+    }
+    if (location.pathname.startsWith("/attendance")) {
+      setOpenMenu((prev) => ({ ...prev, attendance: true }));
+    }
+    if (location.pathname.startsWith("/rfid")) {
+      setOpenMenu((prev) => ({ ...prev, rfid: true }));
+    }
+  }, [location.pathname]);
+
   return (
     <aside className="sidebar">
       {/* LOGO */}
@@ -41,10 +57,15 @@ const SideNavBar = () => {
       </div>
 
       {/* DASHBOARD */}
-      <div className="nav-item active">
+      <NavLink
+        to="/dashboard"
+        className={({ isActive }) =>
+          `nav-item ${isActive ? "active" : ""}`
+        }
+      >
         <FaHome />
         <span>Dashboard</span>
-      </div>
+      </NavLink>
 
       {/* MEMBERS */}
       <div className="nav-item" onClick={() => toggleMenu("members")}>
@@ -57,19 +78,42 @@ const SideNavBar = () => {
 
       {openMenu.members && (
         <div className="submenu">
-          <div className="submenu-item">
+          <NavLink
+            to="/members"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
             <FaUsers /> All Members
-          </div>
-          <div className="submenu-item">
+          </NavLink>
+
+          <NavLink
+            to="/members/add"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
             <FaUserPlus /> Add New Member
-          </div>
-          <div className="submenu-item">
+          </NavLink>
+
+          <NavLink
+            to="/members/expired"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
             <FaUserTimes /> Expired Members
-          </div>
-          <div className="submenu-item badge">
+          </NavLink>
+
+          <NavLink
+            to="/members/expiring"
+            className={({ isActive }) =>
+              `submenu-item badge ${isActive ? "active" : ""}`
+            }
+          >
             <FaClock /> Expiring Soon
             <span className="count">12</span>
-          </div>
+          </NavLink>
         </div>
       )}
 
@@ -84,23 +128,45 @@ const SideNavBar = () => {
 
       {openMenu.attendance && (
         <div className="submenu">
-          <div className="submenu-item">
+          <NavLink
+            to="/attendance/today"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
             <FaCalendarCheck /> Today’s Attendance
-          </div>
-          <div className="submenu-item">
+          </NavLink>
+
+          <NavLink
+            to="/attendance/search"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
             <FaSearch /> Search Records
-          </div>
-          <div className="submenu-item">
+          </NavLink>
+
+          <NavLink
+            to="/attendance/reports"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
             <FaDownload /> Download Reports
-          </div>
+          </NavLink>
         </div>
       )}
 
       {/* MEMBERSHIP */}
-      <div className="nav-item">
+      <NavLink
+        to="/plans"
+        className={({ isActive }) =>
+          `nav-item ${isActive ? "active" : ""}`
+        }
+      >
         <FaIdCard />
         <span>Membership Plans</span>
-      </div>
+      </NavLink>
 
       {/* RFID */}
       <div className="nav-item" onClick={() => toggleMenu("rfid")}>
@@ -113,23 +179,48 @@ const SideNavBar = () => {
 
       {openMenu.rfid && (
         <div className="submenu">
-          <div className="submenu-item">Card List</div>
-          <div className="submenu-item">Replace Lost Card</div>
+          <NavLink
+            to="/rfid"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
+            Card List
+          </NavLink>
+
+          <NavLink
+            to="/rfid/replace"
+            className={({ isActive }) =>
+              `submenu-item ${isActive ? "active" : ""}`
+            }
+          >
+            Replace Lost Card
+          </NavLink>
         </div>
       )}
 
       {/* FOOTER */}
       <div className="nav-footer">
-        <div className="nav-item badge">
+        <NavLink
+          to="/notifications"
+          className={({ isActive }) =>
+            `nav-item badge ${isActive ? "active" : ""}`
+          }
+        >
           <FaBell />
           <span>Notifications</span>
           <span className="count">5</span>
-        </div>
+        </NavLink>
 
-        <div className="nav-item">
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `nav-item ${isActive ? "active" : ""}`
+          }
+        >
           <FaCog />
           <span>Settings</span>
-        </div>
+        </NavLink>
       </div>
     </aside>
   );

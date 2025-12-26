@@ -1,0 +1,145 @@
+.rfid-page {
+  padding: 24px;
+  color: #fff;
+}
+
+/* Header */
+.rfid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rfid-header h2 {
+  margin: 0;
+}
+
+.rfid-header p {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.issue-btn {
+  background: #f97316;
+  border: none;
+  padding: 10px 16px;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Stats */
+.rfid-stats {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.stat-card {
+  flex: 1;
+  background: #0f172a;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-icon {
+  padding: 10px;
+  border-radius: 50%;
+  font-size: 18px;
+}
+
+.green { background: #052e1b; color: #22c55e; }
+.red { background: #3f0f12; color: #ef4444; }
+.gray { background: #1f2937; color: #9ca3af; }
+
+.stat-card h3 {
+  margin: 0;
+}
+
+.stat-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Card list box */
+.cardlist-box {
+  background: #0b1220;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.subtext {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-bottom: 12px;
+}
+
+.search-input {
+  width: 100%;
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+tbody tr {
+  border-top: 1px solid #1f2937;
+}
+
+td, th {
+  padding: 14px 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+/* Status badges */
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: lowercase;
+}
+
+.badge.active {
+  background: #f97316;
+  color: #fff;
+}
+
+.badge.lost {
+  background: #dc2626;
+}
+
+.badge.inactive {
+  background: #374151;
+  color: #d1d5db;
+}
+
+/* Actions */
+.action {
+  color: #f97316;
+  cursor: pointer;
+}
+
+.action.replace {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

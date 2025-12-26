@@ -1,4 +1,4 @@
-import "./ExpiringSoon.css";
+import "./ExpiringSoon_1.css";
 
 const expiringSoonMembers = [
   {

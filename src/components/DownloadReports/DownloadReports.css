@@ -235,7 +235,7 @@ select.selector option:checked {
   top: 100%;
   left: 0;
   width: 100%;
-  background: rgb(0, 0, 0);
+  background: rgba(4, 4, 6, 0.758);
   border-radius: 6px;
   margin-top: 4px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.15);

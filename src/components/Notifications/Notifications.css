@@ -1,0 +1,127 @@
+.notifications-page {
+  color: #fff;
+}
+
+/* HEADER */
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.notifications-header p {
+  color: #9ca3af;
+}
+
+.mark-read-btn {
+  background: #1b2028;
+  border: none;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* STATS */
+.notification-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.notif-card {
+  background: #11151c;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* SEGMENTED TABS */
+.notif-tabs {
+  display: inline-flex;
+  background: #0f131a;
+  padding: 6px;
+  border-radius: 14px;
+  gap: 6px;
+  margin-bottom: 20px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.notif-tab {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notif-tab.active {
+  background: #1b2028;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.notif-tab .count {
+  background: #0b0f14;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+/* CONTENT */
+.notif-content {
+  background: #0f131a;
+  padding: 20px;
+  border-radius: 14px;
+}
+
+.notif-content h3 {
+  margin-bottom: 16px;
+}
+
+.notif-item {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: #11151c;
+}
+
+.notif-item span {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* STATES */
+.warning svg { color: #facc15; }
+.danger svg { color: #ef4444; }
+.success svg { color: #22c55e; }
+.info svg { color: #3b82f6; }
+
+.orange { color: #f59e0b; }
+.yellow { color: #facc15; }
+.blue { color: #3b82f6; }
+
+/* ICON SIZE */
+.notif-item svg,
+.notif-card svg {
+  width: 22px;
+  height: 22px;
+}
+/* Make sub-headings normal weight */
+.notifications-page h3 {
+  font-weight: 400;   /* normal */
+  color: #9ca3af;
+  margin-top: 4px;
+}

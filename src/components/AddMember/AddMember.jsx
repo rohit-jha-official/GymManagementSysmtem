@@ -1,9 +1,21 @@
+import React, { useState } from "react";
 import "./AddMember.css";
 import { FaCamera, FaUserPlus, FaIdCard } from "react-icons/fa";
 
 const AddMember = () => {
+  /* 🔹 Membership dropdown state */
+  const [planOpen, setPlanOpen] = useState(false);
+  const [membershipPlan, setMembershipPlan] = useState("Select a plan");
+
+  const membershipOptions = ["Monthly", "3 Months", "6 Months", "Yearly"];
+
+  /* 🔹 Gender dropdown state */
+  const [genderOpen, setGenderOpen] = useState(false);
+  const [gender, setGender] = useState("Select gender");
+
+  const genderOptions = ["Male", "Female", "Other"];
+
   return (
-    <>
     <div className="add-member-page">
       {/* PAGE HEADER */}
       <div className="page-header">
@@ -49,13 +61,33 @@ const AddMember = () => {
             <input type="email" placeholder="email@example.com" />
           </div>
 
-          <div>
+          {/* 🔹 GENDER DROPDOWN */}
+          <div className="dropdown">
             <label>Gender</label>
-            <select>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
+
+            <div
+              className={`dropdown-header ${genderOpen ? "active" : ""}`}
+              onClick={() => setGenderOpen(!genderOpen)}
+            >
+              {gender}
+              <span className="arrow">▾</span>
+            </div>
+
+            {genderOpen && (
+              <ul className="dropdown-list">
+                {genderOptions.map((g) => (
+                  <li
+                    key={g}
+                    onClick={() => {
+                      setGender(g);
+                      setGenderOpen(false);
+                    }}
+                  >
+                    {g}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div>
@@ -77,15 +109,33 @@ const AddMember = () => {
         </div>
 
         <div className="form-grid">
-          <div>
+          {/* 🔹 MEMBERSHIP PLAN DROPDOWN */}
+          <div className="dropdown">
             <label>Membership Plan *</label>
-            <select>
-              <option>Select a plan</option>
-              <option>Monthly</option>
-              <option>3 Months</option>
-              <option>6 Months</option>
-              <option>Yearly</option>
-            </select>
+
+            <div
+              className={`dropdown-header ${planOpen ? "active" : ""}`}
+              onClick={() => setPlanOpen(!planOpen)}
+            >
+              {membershipPlan}
+              <span className="arrow">▾</span>
+            </div>
+
+            {planOpen && (
+              <ul className="dropdown-list">
+                {membershipOptions.map((plan) => (
+                  <li
+                    key={plan}
+                    onClick={() => {
+                      setMembershipPlan(plan);
+                      setPlanOpen(false);
+                    }}
+                  >
+                    {plan}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>
@@ -97,8 +147,7 @@ const AddMember = () => {
           <FaUserPlus /> Add Member
         </button>
       </div>
-    </div> 
-    </>
+    </div>
   );
 };
 

@@ -119,3 +119,9 @@
   border-radius: 10px;
   cursor: pointer;
 }
+/* Make date picker icon white */
+.form-grid input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 1;
+  cursor: pointer;
+}

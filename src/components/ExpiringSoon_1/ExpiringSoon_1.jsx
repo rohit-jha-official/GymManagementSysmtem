@@ -1,4 +1,6 @@
 import "./ExpiringSoon_1.css";
+import { FaPhoneAlt } from "react-icons/fa";
+
 
 const expiringSoonMembers = [
   {
@@ -88,7 +90,10 @@ export default function ExpiringSoon() {
             </div>
 
             <div className="actions">
-              <button className="call-btn">Call</button>
+              <button className="call-btn">
+                <FaPhoneAlt size={13} />
+                Call
+                </button>
               <button className="renew-btn">Renew</button>
             </div>
           </div>

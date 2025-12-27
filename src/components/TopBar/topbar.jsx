@@ -1,36 +1,91 @@
 import "./Topbar.css";
 import { FaBell, FaSearch, FaUserCircle } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Topbar = () => {
+  const [now, setNow] = useState(new Date());
+  const [openProfile, setOpenProfile] = useState(false);
+  const profileRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setOpenProfile(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const time = now.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  const date = now.toLocaleDateString("en-IN", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="topbar">
-      {/* LEFT: Search */}
+      {/* LEFT */}
       <div className="topbar-search">
         <FaSearch className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search members, cards, transactions..."
-        />
+        <input placeholder="Search members, cards, transactions..." />
       </div>
 
-      {/* RIGHT: Time, Notification, User */}
+      {/* RIGHT */}
       <div className="topbar-right">
         <div className="topbar-time">
-          <span className="time">06:38:54 PM</span>
-          <span className="date">Thursday, December 25, 2025</span>
+          <span className="time">{time}</span>
+          <span className="date">{date}</span>
         </div>
 
-        <div className="notification">
+        {/* NOTIFICATION */}
+        <div
+          className="notification"
+          onClick={() => navigate("/notifications")}
+        >
           <FaBell />
           <span className="badge">5</span>
         </div>
 
-        <div className="user-info">
-          <FaUserCircle className="user-icon" />
-          <div>
-            <div className="user-name">Admin</div>
-            <div className="user-role">Super Admin</div>
+        {/* USER DROPDOWN */}
+        <div className="user-wrapper" ref={profileRef}>
+          <div
+            className="user-info clickable"
+            onClick={() => setOpenProfile(!openProfile)}
+          >
+            <FaUserCircle className="user-icon" />
+            <div>
+              <div className="user-name">Admin</div>
+              <div className="user-role">Super Admin</div>
+            </div>
           </div>
+
+          {openProfile && (
+            <div className="user-dropdown">
+              <div
+                className="dropdown-item"
+                onClick={() => navigate("/settings")}
+              >
+                Profile Settings
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -14,6 +14,10 @@ import Replace from "./components/RFIDcards/Replace";
 import ExpiredMembers from "./components/ExpiredMembers/ExpiredMembers";
 import ExpiringSoon from "./components/ExpiringSoon_1/ExpiringSoon_1";
 import Attendance from "./components/Attendance_1/Attendance_1";
+import MembershipPlans from "./components/MembershipPlans/MembershipPlans";
+import CurrentlyActive from "./components/Attendance_1/CurrentlyActive";
+import TotalCheck_ins from "./components/Attendance_1/TotalCheck_ins"
+import CheckedOutMembers from "./components/Attendance_1/Checked_out";
 
 
 function App() {
@@ -35,7 +39,10 @@ function App() {
           <Route path="/members/expired" element={<ExpiredMembers />} />
           <Route path="/members/expiring" element={<ExpiringSoon />} />
           <Route path="/attendance/today" element={<Attendance />} />
-
+          <Route path="/plan" element={<MembershipPlans />} />
+          <Route path="/attendance/total-checkins" element={<TotalCheck_ins />} />
+          <Route path="/attendance/active" element={<CurrentlyActive />} />
+          <Route path="/attendance/checked-out" element={<CheckedOutMembers />} />
         </Route>
       </Routes>
     </BrowserRouter>

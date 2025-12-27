@@ -80,12 +80,14 @@ const SideNavBar = () => {
         <div className="submenu">
           <NavLink
             to="/members"
+            end
             className={({ isActive }) =>
               `submenu-item ${isActive ? "active" : ""}`
             }
           >
             <FaUsers /> All Members
           </NavLink>
+
 
           <NavLink
             to="/members/add"
@@ -159,7 +161,7 @@ const SideNavBar = () => {
 
       {/* MEMBERSHIP */}
       <NavLink
-        to="/plans"
+        to="/plan"
         className={({ isActive }) =>
           `nav-item ${isActive ? "active" : ""}`
         }
@@ -180,13 +182,14 @@ const SideNavBar = () => {
       {openMenu.rfid && (
         <div className="submenu">
           <NavLink
-            to="/rfid"
-            className={({ isActive }) =>
-              `submenu-item ${isActive ? "active" : ""}`
-            }
-          >
-            Card List
-          </NavLink>
+                to="/rfid"
+                end
+                className={({ isActive }) =>
+                  `submenu-item ${isActive ? "active" : ""}`
+                }
+              >
+                Card List
+              </NavLink>
 
           <NavLink
             to="/rfid/replace"

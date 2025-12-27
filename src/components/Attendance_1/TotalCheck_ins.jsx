@@ -1,4 +1,4 @@
-import "./AttendanceDetails.css";
+import "./TotalCheck_ins.css";
 
 const TotalCheckins = () => {
   return (

@@ -1,14 +1,42 @@
 import { useState } from "react";
 import "./Settings.css";
-import {
-  FaUser,
-  FaKey,
-  FaWifi,
-  FaEye,
-} from "react-icons/fa";
+import { FaUser, FaKey, FaWifi, FaEye } from "react-icons/fa";
+import { MdWifiOff } from "react-icons/md";
+import {  FaEyeSlash } from "react-icons/fa";
+
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState("admin");
+  const [activeTab, setActiveTab] = useState("device");
+  const [showGateKey, setShowGateKey] = useState(false);
+
+  const [devices, setDevices] = useState([
+    {
+      name: "Entry Gate",
+      desc: "Main entrance RFID scanner",
+      online: true,
+    },
+    {
+      name: "Exit Gate",
+      desc: "Exit door RFID scanner",
+      online: true,
+    },
+    {
+      name: "Backup Scanner",
+      desc: "Secondary RFID device",
+      online: false,
+    },
+    {
+      name: "Attendance Terminal",
+      desc: "Reception check-in device",
+      online: true,
+    },
+  ]);
+
+  const toggleDevice = (index) => {
+    const updated = [...devices];
+    updated[index].online = !updated[index].online;
+    setDevices(updated);
+  };
 
   return (
     <div className="settings-page">
@@ -42,7 +70,6 @@ const Settings = () => {
 
       {/* CONTENT CARD */}
       <div className="settings-card">
-
         {/* ================= ADMIN ACCOUNT ================= */}
         {activeTab === "admin" && (
           <>
@@ -90,28 +117,48 @@ const Settings = () => {
             <h2><FaKey /> API Keys</h2>
             <p className="sub-text">Manage API keys for external integrations</p>
 
+            {/* Gate Controller */}
             <div className="api-row">
               <label>Gate Controller API Key</label>
-              <div className="api-input">
-                <input value="••••••••••••••••••••••••" />
-                <FaEye />
-                <button>Regenerate</button>
+
+              <div className="api-inline">
+                                <div className="api-input-wrapper">
+                  <input
+                    type={showGateKey ? "text" : "password"}
+                    value="sk_live_xxxxxxxxxxxxxxxxxxxxx"
+                    readOnly
+                    className={showGateKey ? "active-input" : ""}
+                  />
+                <button
+                  type="button"
+                  className={`eye-btn ${showGateKey ? "active" : ""}`}
+                  onClick={() => setShowGateKey(!showGateKey)}
+                >
+                  {showGateKey ? <FaEyeSlash /> : <FaEye />}
+                </button>
+
+                </div>
+
+
+                <button className="regen-btn">Regenerate</button>
               </div>
             </div>
 
+            {/* SMS Gateway */}
             <div className="api-row">
               <label>SMS Gateway API Key</label>
-              <div className="api-input">
-                <input value="••••••••••••••" />
-                <button>Regenerate</button>
+              <div className="api-inline">
+                <input type="password" value="••••••••••••••" readOnly />
+                <button className="regen-btn">Regenerate</button>
               </div>
             </div>
 
+            {/* Payment Gateway */}
             <div className="api-row">
               <label>Payment Gateway API Key</label>
-              <div className="api-input">
-                <input value="••••••••••••••" />
-                <button>Regenerate</button>
+              <div className="api-inline">
+                <input type="password" value="••••••••••••••" readOnly />
+                <button className="regen-btn">Regenerate</button>
               </div>
             </div>
 
@@ -123,35 +170,48 @@ const Settings = () => {
           </>
         )}
 
-        {/* ================= DEVICE STATUS ================= */}
+        
         {activeTab === "device" && (
           <>
-            <h2><FaWifi /> Device Status</h2>
-            <p className="sub-text">Monitor connected devices and their status</p>
+            <h2> Device Status</h2>
+            <p className="sub-text">
+              Monitor connected devices and their status
+            </p>
 
-            <div className="device-row online">
-              <span>Entry Gate</span>
-              <span className="status">Online</span>
-              <div className="toggle active" />
-            </div>
+            {devices.map((device, index) => (
+              <div className="device-row" key={index}>
+                {/* ICON */}
+                <div
+                  className={`device-icon ${
+                    device.online ? "online" : "offline"
+                  }`}
+                >
+                  {device.online ? <FaWifi /> : <MdWifiOff />}
+                </div>
 
-            <div className="device-row online">
-              <span>Exit Gate</span>
-              <span className="status">Online</span>
-              <div className="toggle active" />
-            </div>
+                {/* INFO */}
+                <div className="device-info">
+                  <strong>{device.name}</strong>
+                  <span>{device.desc}</span>
+                </div>
 
-            <div className="device-row offline">
-              <span>Backup Scanner</span>
-              <span className="status">Offline</span>
-              <div className="toggle" />
-            </div>
+                {/* RIGHT */}
+                <div className="device-right">
+                  <span
+                    className={`status-pill ${
+                      device.online ? "online" : "offline"
+                    }`}
+                  >
+                    {device.online ? "Online" : "Offline"}
+                  </span>
 
-            <div className="device-row online">
-              <span>Attendance Terminal</span>
-              <span className="status">Online</span>
-              <div className="toggle active" />
-            </div>
+                  <div
+                    className={`toggle ${device.online ? "active" : ""}`}
+                    onClick={() => toggleDevice(index)}
+                  />
+                </div>
+              </div>
+            ))}
           </>
         )}
       </div>

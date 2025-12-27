@@ -34,11 +34,12 @@
   display: flex;
   gap: 16px;
   margin: 20px 0;
+  background-color: rgba(255, 255, 255, 0.02);;
 }
 
 .stat-card {
   flex: 1;
-  background: #0f172a;
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -68,7 +69,7 @@
 
 /* Card list box */
 .cardlist-box {
-  background: #0b1220;
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 14px;
   padding: 20px;
 }
@@ -81,7 +82,7 @@
 
 .search-input {
   width: 100%;
-  background: #020617;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid #1f2937;
   border-radius: 8px;
   padding: 10px 12px;
@@ -118,10 +119,10 @@ td, th {
   text-transform: lowercase;
 }
 
-/* .badge.active {
+ .badge.active {
   background: #f97316;
   color: #fff;
-} */
+} 
 
 .badge.lost {
   background: #dc2626;
@@ -142,4 +143,44 @@ td, th {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+.stat-card {
+  flex: 1;
+  background:rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;   /* icon + text vertically center */
+  gap: 14px;             /* icon aur text ka gap */
+}
+.stat-card > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.stat-card h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.stat-card p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #9ca3af;
+}
+.rfid-stats .stat-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+.rfid-stats .stat-card .stat-icon {
+  flex-shrink: 0;
+}
+
+.rfid-stats .stat-card div {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
 }

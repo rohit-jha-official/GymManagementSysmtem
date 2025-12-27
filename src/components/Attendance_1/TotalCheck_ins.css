@@ -1,89 +1,178 @@
-/* PAGE  */
-.attendance-page {
-  padding: 24px;
-  background-color: #0e1621;
-  color: #ffffff;
+/* =========================
+   PAGE WRAPPER
+========================= */
+.total-checkins-page {
   min-height: 100vh;
+  padding: 28px 32px;
+  background: radial-gradient(
+    circle at top,
+    #020617 0%,
+    #000000 65%
+  );
+  color: #e5e7eb;
+  font-family: "Inter", sans-serif;
 }
 
-/* HEADER  */
-.attendance-header h1 {
-  font-size: 22px;
-  margin-bottom: 4px;
+/* =========================
+   HEADER
+========================= */
+.total-checkins-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
 
-.attendance-header p {
+.total-checkins-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+}
+
+.total-checkins-header p {
+  margin-top: 6px;
   font-size: 14px;
-  color: #9ca3af;
+  color: #94a3b8;
 }
-/*  TABLE */
-.attendance-table-wrapper {
-  background-color: #121c2b;
-  border-radius: 14px;
+
+/* Date badge (right side) */
+.page-date {
+  font-size: 14px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #1f2937;
+  white-space: nowrap;
+}
+
+/* =========================
+   CARD CONTAINER
+========================= */
+.checkins-card {
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  padding: 20px;
   overflow: hidden;
 }
 
-.attendance-table {
+/* =========================
+   TABLE
+========================= */
+.checkins-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.attendance-table thead {
-  background-color: #0b1320;
+/* Table Header */
+.checkins-table thead {
+  position: sticky;
+  top: 0;
+  background: #020617;
+  z-index: 10;
 }
 
-.attendance-table th {
-  padding: 16px;
-  font-size: 13px;
-  color: #9ca3af;
+.checkins-table th {
   text-align: left;
-}
-
-.attendance-table td {
-  padding: 16px;
-  font-size: 14px;
-  color: #e5e7eb;
-}
-
-.attendance-table tbody tr {
+  padding: 14px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #9ca3af;
   border-bottom: 1px solid #1f2937;
 }
 
-/* MEMBER  */
-.member-cell {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #b45309, #92400e);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
+/* Table Body */
+.checkins-table td {
+  padding: 16px 12px;
   font-size: 14px;
+  color: #e5e7eb;
+  border-bottom: 1px solid #1f2937;
 }
 
-/*  STATUS  */
+/* Zebra striping */
+.checkins-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* Hover effect */
+.checkins-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.035);
+  transition: background 0.2s ease;
+}
+
+/* =========================
+   COLUMN STYLES
+========================= */
+.member-name {
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.rfid {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  color: #cbd5f5;
+}
+
+.checkin-time {
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+/* =========================
+   STATUS BADGES
+========================= */
 .status {
-  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
+/* Completed */
+.status.completed {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5f5;
+}
+
+/* Active */
 .status.active {
-  background-color: #064e3b;
+  background: rgba(34, 197, 94, 0.18);
   color: #22c55e;
 }
 
-.status.completed {
-  background-color: #1f2937;
-  color: #9ca3af;
+/* =========================
+   EMPTY STATE
+========================= */
+.no-records {
+  text-align: center;
+  padding: 48px 0;
+  font-size: 14px;
+  color: #94a3b8;
 }
 
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .total-checkins-page {
+    padding: 20px;
+  }
+
+  .total-checkins-header h1 {
+    font-size: 26px;
+  }
+
+  .checkins-table th,
+  .checkins-table td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+}
 

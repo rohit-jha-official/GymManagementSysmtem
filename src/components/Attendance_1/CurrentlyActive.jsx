@@ -1,15 +1,28 @@
 import "./CurrentlyActive.css";
 
-const ActiveMembers = () => {
+const CurrentlyActive = () => {
+  const today = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
   return (
-    <div className="attendance-details-page">
-      <div className="attendance-details-header">
-        <h1>Currently Active</h1>
-        <p>Members currently inside the gym</p>
+    <div className="currently-active-page">
+      {/* HEADER */}
+      <div className="currently-active-header">
+        <div>
+          <h1>Currently Active</h1>
+          <p>Members currently inside the gym</p>
+        </div>
+
+        {/* DATE (RIGHT TOP) */}
+        <div className="page-date">{today}</div>
       </div>
 
-      <div className="attendance-details-table-wrapper">
-        <table className="attendance-details-table">
+      {/* TABLE CARD */}
+      <div className="active-card">
+        <table className="active-table">
           <thead>
             <tr>
               <th>Member Name</th>
@@ -21,18 +34,18 @@ const ActiveMembers = () => {
 
           <tbody>
             <tr>
-              <td>Usman Malik</td>
-              <td>RF-005</td>
-              <td>07:30 AM</td>
+              <td className="member-name">Usman Malik</td>
+              <td className="rfid">RF-005</td>
+              <td className="checkin-time">07:30 AM</td>
               <td>
                 <span className="status active">Active</span>
               </td>
             </tr>
 
             <tr>
-              <td>Hassan Ahmed</td>
-              <td>RF-007</td>
-              <td>08:30 AM</td>
+              <td className="member-name">Hassan Ahmed</td>
+              <td className="rfid">RF-007</td>
+              <td className="checkin-time">08:30 AM</td>
               <td>
                 <span className="status active">Active</span>
               </td>
@@ -44,4 +57,4 @@ const ActiveMembers = () => {
   );
 };
 
-export default ActiveMembers;
+export default CurrentlyActive;

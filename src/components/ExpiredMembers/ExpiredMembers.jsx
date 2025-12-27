@@ -1,4 +1,7 @@
+import { FaPhoneAlt } from "react-icons/fa";
 import "./ExpiredMembers.css";
+
+
 
 const expiredMembers = [
   {
@@ -76,7 +79,9 @@ export default function ExpiredMembers() {
             <div className="days-expired">{m.days} days</div>
 
             <div className="actions">
-              <button className="call-btn">Call</button>
+              <button className="call-btn"><FaPhoneAlt size={13} />
+                Call
+                </button>
               <button className="renew-btn">Renew</button>
             </div>
           </div>

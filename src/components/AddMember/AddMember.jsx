@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./AddMember.css";
 import { FaCamera, FaUserPlus, FaIdCard } from "react-icons/fa";
 
@@ -6,14 +6,60 @@ const AddMember = () => {
   /* 🔹 Membership dropdown state */
   const [planOpen, setPlanOpen] = useState(false);
   const [membershipPlan, setMembershipPlan] = useState("Select a plan");
-
   const membershipOptions = ["Monthly", "3 Months", "6 Months", "Yearly"];
 
   /* 🔹 Gender dropdown state */
   const [genderOpen, setGenderOpen] = useState(false);
   const [gender, setGender] = useState("Select gender");
-
   const genderOptions = ["Male", "Female", "Other"];
+
+  /* 🔹 Profile photo state */
+  const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const [photo, setPhoto] = useState(null);
+  const [cameraOn, setCameraOn] = useState(false);
+
+  /* Upload from file explorer */
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPhoto(URL.createObjectURL(file));
+    }
+  };
+
+  /* Open webcam */
+  const handleCameraClick = async () => {
+    try {
+      setCameraOn(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
+    } catch {
+      alert("Camera access denied");
+    }
+  };
+
+  /* Capture from webcam */
+  const capturePhoto = () => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    setPhoto(canvas.toDataURL("image/png"));
+
+    video.srcObject.getTracks().forEach(track => track.stop());
+    setCameraOn(false);
+  };
 
   return (
     <div className="add-member-page">
@@ -28,14 +74,44 @@ const AddMember = () => {
         <div className="card-title">Profile Photo</div>
 
         <div className="photo-section">
-          <div className="photo-circle">
-            <FaCamera />
+          <div className="photo-circle" onClick={handleCameraClick}>
+            {photo ? <img src={photo} alt="Profile" /> : <FaCamera />}
           </div>
 
           <div>
-            <button className="btn-secondary">Upload Photo</button>
-            <p className="hint-text">Coming soon</p>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={handleUploadClick}
+            >
+              Upload Photo
+            </button>
+            <p className="hint-text">Click camera or upload</p>
           </div>
+
+          {/* Hidden file input */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+
+          {/* Camera preview */}
+          {cameraOn && (
+            <div className="camera-box">
+              <video ref={videoRef} autoPlay />
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={capturePhoto}
+              >
+                Capture
+              </button>
+              <canvas ref={canvasRef} style={{ display: "none" }} />
+            </div>
+          )}
         </div>
       </div>
 
@@ -61,7 +137,7 @@ const AddMember = () => {
             <input type="email" placeholder="email@example.com" />
           </div>
 
-          {/* 🔹 GENDER DROPDOWN */}
+          {/* Gender dropdown */}
           <div className="dropdown">
             <label>Gender</label>
 
@@ -109,7 +185,6 @@ const AddMember = () => {
         </div>
 
         <div className="form-grid">
-          {/* 🔹 MEMBERSHIP PLAN DROPDOWN */}
           <div className="dropdown">
             <label>Membership Plan *</label>
 

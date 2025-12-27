@@ -1,10 +1,10 @@
 import "./Attendance_1.css";
 import "./TotalCheck_ins.css";
 import "./CurrentlyActive.css";
-import "./Checked_out";
-
+import "./Checked_out.css";
 import { useNavigate } from "react-router-dom";
 
+/* ================= DATA ================= */
 const attendanceData = [
   {
     name: "Ahmed Hassan",
@@ -72,13 +72,21 @@ const attendanceData = [
   },
 ];
 
+/*  DATE */
+const getFormattedDate = () =>
+  new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+/* COMPONENT */
 const Attendance = () => {
   const navigate = useNavigate();
 
   const totalCheckins = attendanceData.length;
-  const activeCount = attendanceData.filter(
-    (item) => item.status === "Active"
-  ).length;
+  const activeCount = attendanceData.filter(i => i.status === "Active").length;
   const checkedOutCount = totalCheckins - activeCount;
 
   return (
@@ -86,18 +94,12 @@ const Attendance = () => {
       {/* HEADER */}
       <div className="attendance-header">
         <h1>Today's Attendance</h1>
-        <p>Friday, December 26, 2025</p>
+        <p>{getFormattedDate()}</p>
       </div>
 
       {/* STATS */}
       <div className="attendance-stats">
-
-        {/* TOTAL CHECK-INS */}
-        <div
-          className="stat-card"
-          onClick={() => navigate("/attendance/total-checkins")}
-          style={{ cursor: "pointer" }}
-        >
+        <div className="stat-card" onClick={() => navigate("/attendance/total-checkins")}>
           <div>
             <span>Total Check-ins</span>
             <h2>{totalCheckins}</h2>
@@ -105,12 +107,7 @@ const Attendance = () => {
           <div className="stat-icon green">👥</div>
         </div>
 
-        {/* CURRENTLY ACTIVE */}
-        <div
-          className="stat-card"
-          onClick={() => navigate("/attendance/active")}
-          style={{ cursor: "pointer" }}
-        >
+        <div className="stat-card" onClick={() => navigate("/attendance/active")}>
           <div>
             <span>Currently Active</span>
             <h2>{activeCount}</h2>
@@ -118,19 +115,13 @@ const Attendance = () => {
           <div className="stat-icon orange">⏱</div>
         </div>
 
-        {/* CHECKED OUT */}
-        <div
-          className="stat-card"
-          onClick={() => navigate("/attendance/checked-out")}
-          style={{ cursor: "pointer" }}
-        >
+        <div className="stat-card" onClick={() => navigate("/attendance/checked-out")}>
           <div>
             <span>Checked Out</span>
             <h2>{checkedOutCount}</h2>
           </div>
           <div className="stat-icon gray">🚪</div>
         </div>
-
       </div>
 
       {/* TABLE */}
@@ -151,9 +142,7 @@ const Attendance = () => {
             {attendanceData.map((item, index) => (
               <tr key={index}>
                 <td className="member-cell">
-                  <div className="avatar">
-                    {item.name.charAt(0)}
-                  </div>
+                  <div className="avatar">{item.name[0]}</div>
                   <span>{item.name}</span>
                 </td>
                 <td>{item.rfid}</td>
@@ -161,11 +150,7 @@ const Attendance = () => {
                 <td>{item.checkOut}</td>
                 <td>{item.duration}</td>
                 <td>
-                  <span
-                    className={`status ${
-                      item.status === "Active" ? "active" : "completed"
-                    }`}
-                  >
+                  <span className={`status ${item.status === "Active" ? "active" : "completed"}`}>
                     {item.status}
                   </span>
                 </td>

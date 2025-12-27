@@ -1,15 +1,28 @@
 import "./TotalCheck_ins.css";
 
-const TotalCheckins = () => {
+const TotalCheck_ins = () => {
+  const today = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
   return (
-    <div className="attendance-details-page">
-      <div className="attendance-details-header">
-        <h1>Total Check-ins</h1>
-        <p>All members checked in today</p>
+    <div className="total-checkins-page">
+      {/* HEADER */}
+      <div className="total-checkins-header">
+        <div>
+          <h1>Total Check-ins</h1>
+          <p>All members checked in today</p>
+        </div>
+
+        {/* DATE (RIGHT TOP) */}
+        <div className="page-date">{today}</div>
       </div>
 
-      <div className="attendance-details-table-wrapper">
-        <table className="attendance-details-table">
+      {/* TABLE CARD */}
+      <div className="checkins-card">
+        <table className="checkins-table">
           <thead>
             <tr>
               <th>Member Name</th>
@@ -21,18 +34,18 @@ const TotalCheckins = () => {
 
           <tbody>
             <tr>
-              <td>Ahmed Hassan</td>
-              <td>RF-001</td>
-              <td>06:15 AM</td>
+              <td className="member-name">Ahmed Hassan</td>
+              <td className="rfid">RF-001</td>
+              <td className="checkin-time">06:15 AM</td>
               <td>
                 <span className="status completed">Completed</span>
               </td>
             </tr>
 
             <tr>
-              <td>Usman Malik</td>
-              <td>RF-005</td>
-              <td>07:30 AM</td>
+              <td className="member-name">Fatima Zahra</td>
+              <td className="rfid">RF-002</td>
+              <td className="checkin-time">06:45 AM</td>
               <td>
                 <span className="status active">Active</span>
               </td>
@@ -44,4 +57,4 @@ const TotalCheckins = () => {
   );
 };
 
-export default TotalCheckins;
+export default TotalCheck_ins;

@@ -104,7 +104,7 @@ const AddMember = () => {
               <video ref={videoRef} autoPlay />
               <button
                 type="button"
-                className="btn-secondary"
+                className="btn-secondary btn-eee"
                 onClick={capturePhoto}
               >
                 Capture
@@ -212,15 +212,14 @@ const AddMember = () => {
               </ul>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* ACTIONS */}
+          {/* ACTIONS */}
       <div className="form-actions">
         <button className="btn-outline">Cancel</button>
         <button className="btn-primary">
           <FaUserPlus /> Add Member
         </button>
+      </div>
+        </div>
       </div>
     </div>
   );

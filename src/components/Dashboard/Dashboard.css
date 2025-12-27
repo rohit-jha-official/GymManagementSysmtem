@@ -37,12 +37,12 @@
 /* GRID */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  
   gap: 20px;
 }
 
 .stat-card {
-  background: linear-gradient(145deg, #11151c, #0c1016);
+  background: linear-gradient(145deg, #000000, #0c1016);
   border-radius: 16px;
   padding: 22px;
   display: flex;
@@ -54,13 +54,13 @@
 /* Top row: 4 equal cards */
 .top-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr) !important;
 }
 
 /* Bottom row: 3 equal cards (fills full width) */
 .bottom-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr) !important;
   margin-top: 22px;
 }
 

@@ -1,4 +1,5 @@
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 import RecentActivity from "../RecentActivity/Recentactivity";
 import MemberGrowth from "../MemberGrowth/MemberGrowth";
 import ExpiringSoon from "../Expiring Soon/ExpiringSoon";
@@ -14,6 +15,8 @@ import {
 } from "react-icons/fa";
 
 const Dashboard = () => {
+  const navigate = useNavigate(); // ✅ STEP 2
+
   return (
     <>
       {/* HEADER */}
@@ -30,7 +33,10 @@ const Dashboard = () => {
             <h2>420</h2>
             <span className="positive">+12% from last month</span>
           </div>
-          <FaUsers className="icon orange" />
+          <FaUsers
+            className="icon orange clickable"
+            onClick={() => navigate("/members")}
+          />
         </div>
 
         <div className="stat-card">
@@ -39,7 +45,10 @@ const Dashboard = () => {
             <h2>156</h2>
             <span>82% of active members</span>
           </div>
-          <FaUserCheck className="icon green" />
+          <FaUserCheck
+            className="icon green clickable"
+            onClick={() => navigate("/attendance/total-checkins")}
+          />
         </div>
 
         <div className="stat-card">
@@ -48,7 +57,10 @@ const Dashboard = () => {
             <h2>385</h2>
             <span>35 unassigned</span>
           </div>
-          <FaIdCard className="icon orange" />
+          <FaIdCard
+            className="icon orange clickable"
+            onClick={() => navigate("/rfid")}
+          />
         </div>
 
         <div className="stat-card">
@@ -57,7 +69,10 @@ const Dashboard = () => {
             <h2>28</h2>
             <span className="danger">Next 7 days</span>
           </div>
-          <FaExclamationTriangle className="icon yellow" />
+          <FaExclamationTriangle
+            className="icon yellow clickable"
+            onClick={() => navigate("/members/expiring")}
+          />
         </div>
       </div>
 

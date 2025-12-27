@@ -40,8 +40,8 @@
 }
 
 .photo-circle {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   background: #1b2028;
   border-radius: 50%;
   display: flex;
@@ -143,4 +143,9 @@
   filter: invert(1);
   opacity: 1;
   cursor: pointer;
+}
+.btn-eee{
+  position: relative;
+  top: -95px;
+  left: 10px;
 }

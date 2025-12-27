@@ -2,6 +2,7 @@ import "./Topbar.css";
 import { FaBell, FaSearch, FaUserCircle } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaChevronDown } from "react-icons/fa";
 
 const Topbar = () => {
   const [now, setNow] = useState(new Date());
@@ -66,15 +67,21 @@ const Topbar = () => {
         {/* USER DROPDOWN */}
         <div className="user-wrapper" ref={profileRef}>
           <div
-            className="user-info clickable"
-            onClick={() => setOpenProfile(!openProfile)}
-          >
-            <FaUserCircle className="user-icon" />
-            <div>
-              <div className="user-name">Admin</div>
-              <div className="user-role">Super Admin</div>
+              className="user-info clickable"
+              onClick={() => setOpenProfile(!openProfile)}
+            >
+              <FaUserCircle className="user-icon" />
+
+              <div className="user-text">
+                <div className="user-name">Admin</div>
+                <div className="user-role">Super Admin</div>
+              </div>
+
+              <FaChevronDown
+                className={`dropdown-arrow ${openProfile ? "rotate" : ""}`}
+              />
             </div>
-          </div>
+
 
           {openProfile && (
             <div className="user-dropdown">

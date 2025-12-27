@@ -1,5 +1,5 @@
 import "./ExpiringSoon.css";
-
+import { useNavigate } from "react-router-dom";
 const members = [
   {
     name: "Ahmed Hassan",
@@ -38,6 +38,7 @@ const getColor = (days) => {
 };
 
 const ExpiringSoon = () => {
+  const navigate = useNavigate();
   return (
     <div className="expiring-card">
       {/* Header */}
@@ -46,7 +47,7 @@ const ExpiringSoon = () => {
           <h3>Expiring Soon</h3>
           <p>Next 7 days</p>
         </div>
-        <span className="view-all">View All →</span>
+        <span className="view-all" onClick={() => navigate("/members/expiring")}>View All →</span>
       </div>
 
       {/* List */}

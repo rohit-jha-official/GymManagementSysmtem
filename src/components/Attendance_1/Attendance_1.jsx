@@ -1,4 +1,4 @@
-import "./Attendance.css";
+import "./Attendance_1.css";
 import { FaUsers, FaUserCheck, FaUserTimes } from "react-icons/fa";
 
 const attendanceData = [

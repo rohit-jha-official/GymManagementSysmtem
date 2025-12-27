@@ -13,6 +13,7 @@ import Cardlist from "./components/RFIDcards/Cardlist";
 import Replace from "./components/RFIDcards/Replace";
 import ExpiredMembers from "./components/ExpiredMembers/ExpiredMembers";
 import ExpiringSoon from "./components/ExpiringSoon_1/ExpiringSoon_1";
+import Attendance from "./components/Attendance_1/Attendance_1";
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/rfid/replace" element={<Replace />} />
           <Route path="/members/expired" element={<ExpiredMembers />} />
           <Route path="/members/expiring" element={<ExpiringSoon />} />
+          <Route path="/attendance/today" element={<Attendance />} />
 
         </Route>
       </Routes>

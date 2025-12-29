@@ -145,3 +145,41 @@
 .user-info:hover {
   background: rgba(210, 141, 31, 0.462);
 }
+/* LOGIN SWITCH ICON */
+.login-switch {
+  position: relative;
+  margin-left: 10px;
+  margin-right: 6px;
+}
+
+.login-icon {
+  font-size: 16px;
+  color: #fbbf24; /* yellow like UI */
+  cursor: pointer;
+}
+
+/* LOGIN DROPDOWN */
+.login-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 140px;
+  background: #111827;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 2000;
+}
+
+.login-dropdown .dropdown-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-dropdown .dropdown-item:hover {
+  background: #fbbf24;
+  color: #000;
+}

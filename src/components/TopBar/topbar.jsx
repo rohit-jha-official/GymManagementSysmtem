@@ -1,29 +1,52 @@
 import "./Topbar.css";
-import { FaBell, FaSearch, FaUserCircle } from "react-icons/fa";
+import {
+  FaBell,
+  FaSearch,
+  FaUserCircle,
+  FaChevronDown,
+  FaSignInAlt,
+} from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaChevronDown } from "react-icons/fa";
 
 const Topbar = () => {
   const [now, setNow] = useState(new Date());
+
   const [openProfile, setOpenProfile] = useState(false);
+  const [openLoginSwitch, setOpenLoginSwitch] = useState(false);
+
   const profileRef = useRef(null);
+  const loginSwitchRef = useRef(null);
+
   const navigate = useNavigate();
 
+  /* LIVE TIME */
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // close dropdown on outside click
+  /* CLOSE DROPDOWNS ON OUTSIDE CLICK */
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target)
+      ) {
         setOpenProfile(false);
       }
+
+      if (
+        loginSwitchRef.current &&
+        !loginSwitchRef.current.contains(e.target)
+      ) {
+        setOpenLoginSwitch(false);
+      }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const time = now.toLocaleTimeString("en-IN", {
@@ -50,6 +73,7 @@ const Topbar = () => {
 
       {/* RIGHT */}
       <div className="topbar-right">
+        {/* TIME */}
         <div className="topbar-time">
           <span className="time">{time}</span>
           <span className="date">{date}</span>
@@ -64,25 +88,27 @@ const Topbar = () => {
           <span className="badge">5</span>
         </div>
 
-        {/* USER DROPDOWN */}
+        {/* USER + LOGIN SWITCH */}
         <div className="user-wrapper" ref={profileRef}>
           <div
-              className="user-info clickable"
-              onClick={() => setOpenProfile(!openProfile)}
-            >
-              <FaUserCircle className="user-icon" />
+            className="user-info clickable"
+            onClick={() => setOpenProfile(!openProfile)}
+          >
+            <FaUserCircle className="user-icon" />
 
-              <div className="user-text">
-                <div className="user-name">Admin</div>
-                <div className="user-role">Super Admin</div>
-              </div>
-
-              <FaChevronDown
-                className={`dropdown-arrow ${openProfile ? "rotate" : ""}`}
-              />
+            <div className="user-text">
+              <div className="user-name">Admin</div>
+              <div className="user-role">Super Admin</div>
             </div>
 
+            <FaChevronDown
+              className={`dropdown-arrow ${
+                openProfile ? "rotate" : ""
+              }`}
+            />
+          </div>
 
+          {/* PROFILE DROPDOWN */}
           {openProfile && (
             <div className="user-dropdown">
               <div
@@ -93,7 +119,43 @@ const Topbar = () => {
               </div>
             </div>
           )}
+
+          
         </div>
+        {/* LOGIN SWITCH ICON */}
+            <div
+              className="login-switch"
+              ref={loginSwitchRef}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <FaSignInAlt
+                className="login-icon"
+                onClick={() =>
+                  setOpenLoginSwitch(!openLoginSwitch)
+                }
+              />
+
+              {openLoginSwitch && (
+                <div className="login-dropdown">
+                  <div
+                    className="dropdown-item"
+                    onClick={() =>
+                      navigate("/login/user")
+                    }
+                  >
+                    User Login
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    onClick={() =>
+                      navigate("/login/admin")
+                    }
+                  >
+                    Admin Login
+                  </div>
+                </div>
+              )}
+            </div>
       </div>
     </div>
   );

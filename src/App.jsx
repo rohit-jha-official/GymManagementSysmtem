@@ -16,15 +16,22 @@ import ExpiringSoon from "./components/ExpiringSoon_1/ExpiringSoon_1";
 import Attendance from "./components/Attendance_1/Attendance_1";
 import MembershipPlans from "./components/MembershipPlans/MembershipPlans";
 import CurrentlyActive from "./components/Attendance_1/CurrentlyActive";
-import TotalCheck_ins from "./components/Attendance_1/TotalCheck_ins"
+import TotalCheck_ins from "./components/Attendance_1/TotalCheck_ins";
 import CheckedOutMembers from "./components/Attendance_1/Checked_out";
 
+import Login from "./components/Auth/Login";
+import Signup from "./components/Auth/Signup";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Layout wrapper */}
+
+        {/* AUTH ROUTES (NO LAYOUT) */}
+        <Route path="/login/:role" element={<Login />} />
+        <Route path="/signup/:role" element={<Signup />} />
+
+        {/* MAIN APP WITH LAYOUT */}
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -44,6 +51,7 @@ function App() {
           <Route path="/attendance/active" element={<CurrentlyActive />} />
           <Route path="/attendance/checked-out" element={<CheckedOutMembers />} />
         </Route>
+
       </Routes>
     </BrowserRouter>
   );

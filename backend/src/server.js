@@ -1,22 +1,17 @@
-import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from "./config/db.js";
-
 dotenv.config();
 
-const app = express();
+console.log("ENV OK");
 
-app.use(cors());
-app.use(express.json());
+import app from "./app.js";
+console.log("APP LOADED");
 
-// 👇 THIS LINE IS CRITICAL
+import connectDB from "./config/db.js";
+console.log("DB IMPORTED");
+
 connectDB();
 
-app.get("/", (req, res) => {
-  res.send("Server running");
-});
-
-app.listen(5001, () => {
-  console.log("Server running on port 5001");
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

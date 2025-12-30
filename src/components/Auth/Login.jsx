@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./auth.css";
 import { FaUser, FaLock } from "react-icons/fa";
 
@@ -13,34 +14,52 @@ const Login = () => {
     remember: false,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
 
-  const handleLogin = (e) => {
+  // 🔐 REAL BACKEND LOGIN
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const payload = {
-      email: formData.email,
-      password: formData.password,
-      role: role,
-    };
+    try {
+      const res = await axios.post(
+        "http://localhost:5001/api/auth/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
 
-    console.log("LOGIN PAYLOAD:", payload);
+      // Save JWT token
+      localStorage.setItem("token", res.data.token);
 
-    // 🔐 Backend call later
-    // axios.post("/api/auth/login", payload)
+      // Save admin info (optional)
+      localStorage.setItem("admin", JSON.stringify(res.data.admin));
 
-    // TEMP redirect
-    navigate("/dashboard");
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="auth-page">
+      {/* LOGO */}
       <div className="auth-logo">
         <span className="logo-icon">☰</span>
         <div>
@@ -49,22 +68,25 @@ const Login = () => {
         </div>
       </div>
 
+      {/* LOGIN CARD */}
       <div className="auth-card">
         <h2>{role === "admin" ? "Admin Login" : "User Login"}</h2>
 
         <form onSubmit={handleLogin}>
+          {/* EMAIL */}
           <div className="input-box">
             <FaUser />
             <input
-              type="text"
+              type="email"
               name="email"
-              placeholder="Username or Email"
+              placeholder="Email"
               value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
 
+          {/* PASSWORD */}
           <div className="input-box">
             <FaLock />
             <input
@@ -77,9 +99,17 @@ const Login = () => {
             />
           </div>
 
+          {/* ERROR MESSAGE */}
+          {error && <p className="error-text">{error}</p>}
+
+          {/* LOGIN ROW */}
           <div className="login-row">
-            <button type="submit" className="primary-btn">
-              LOGIN
+            <button
+              type="submit"
+              className="primary-btn"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "LOGIN"}
             </button>
 
             <label className="checkbox">

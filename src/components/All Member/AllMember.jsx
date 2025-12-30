@@ -1,5 +1,14 @@
 import "./AllMembers.css";
-import { FiSearch, FiFilter, FiMoreVertical, FiDownload } from "react-icons/fi";
+import { useState, useRef, useEffect } from "react";
+import {
+  FiSearch,
+  FiFilter,
+  FiMoreVertical,
+  FiDownload,
+  FiEye,
+  FiEdit2,
+  FiTrash2,
+} from "react-icons/fi";
 
 const members = [
   {
@@ -50,6 +59,22 @@ const members = [
 ];
 
 const AllMembers = () => {
+  const [openActionIndex, setOpenActionIndex] = useState(null);
+  const actionRef = useRef(null);
+
+  /* CLOSE ACTION DROPDOWN ON OUTSIDE CLICK */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (actionRef.current && !actionRef.current.contains(e.target)) {
+        setOpenActionIndex(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div className="members-page">
       {/* HEADER */}
@@ -108,7 +133,31 @@ const AllMembers = () => {
               {m.status}
             </span>
 
-            <FiMoreVertical className="action-icon" />
+            {/* ACTIONS (LAST COLUMN – UNCHANGED POSITION) */}
+            <div className="action-wrapper" ref={actionRef}>
+              <FiMoreVertical
+                className="action-icon"
+                onClick={() =>
+                  setOpenActionIndex(
+                    openActionIndex === i ? null : i
+                  )
+                }
+              />
+
+              {openActionIndex === i && (
+                <div className="action-dropdown">
+                  <div className="action-item">
+                    <FiEye /> View Details
+                  </div>
+                  <div className="action-item">
+                    <FiEdit2 /> Edit Member
+                  </div>
+                  <div className="action-item delete">
+                    <FiTrash2 /> Delete
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

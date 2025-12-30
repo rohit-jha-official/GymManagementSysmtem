@@ -168,3 +168,21 @@
   );
   pointer-events: none;
 }
+/* ACTION ROW */
+.login-row {
+  display: flex;
+  flex-direction: column;   /* ⬅ button on top, checkbox below */
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+/* CHECKBOX */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.85;
+  white-space: nowrap;      /* ⬅ keeps text in single line */
+}

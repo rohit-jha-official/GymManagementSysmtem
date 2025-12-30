@@ -82,15 +82,6 @@ const Login = () => {
               LOGIN
             </button>
 
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={formData.remember}
-                onChange={handleChange}
-              />
-              <span>Remember me</span>
-            </label>
           </div>
         </form>
 

@@ -125,3 +125,270 @@
   color: #9ca3af;
   margin-top: 4px;
 }
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+======================================== */
+
+/* Large Tablets (1024px and below) */
+@media (max-width: 1024px) {
+  .notification-stats {
+    gap: 16px;
+  }
+
+  .notif-card {
+    padding: 16px;
+  }
+}
+
+/* Tablets (768px and below) */
+@media (max-width: 768px) {
+  .notifications-page {
+    padding: 16px;
+  }
+
+  .notifications-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .mark-read-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .notification-stats {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .notif-tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .notif-tab {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .notif-content {
+    padding: 16px;
+  }
+}
+
+/* Mobile (640px and below) */
+@media (max-width: 640px) {
+  .notifications-header h1 {
+    font-size: 24px;
+  }
+
+  .notifications-header p {
+    font-size: 13px;
+  }
+
+  .notif-card h2 {
+    font-size: 22px;
+  }
+
+  .notif-card p {
+    font-size: 12px;
+  }
+
+  .notif-content h2 {
+    font-size: 18px;
+  }
+
+  .notif-content h3 {
+    font-size: 13px;
+  }
+
+  .notif-item {
+    padding: 12px;
+  }
+
+  .notif-item strong {
+    font-size: 14px;
+  }
+
+  .notif-item p {
+    font-size: 13px;
+  }
+}
+
+/* iPhone 14 Pro Max & Similar (430px and below) */
+@media (max-width: 430px) {
+  .notifications-page {
+    padding: 12px;
+  }
+
+  .notifications-header {
+    margin-bottom: 18px;
+  }
+
+  .notifications-header h1 {
+    font-size: 22px;
+  }
+
+  .mark-read-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .mark-read-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .notification-stats {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .notif-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .notif-card svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .notif-card h2 {
+    font-size: 20px;
+  }
+
+  .notif-tabs {
+    padding: 5px;
+    gap: 5px;
+    margin-bottom: 16px;
+  }
+
+  .notif-tab {
+    padding: 8px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .notif-tab .count {
+    padding: 2px 6px;
+    font-size: 11px;
+  }
+
+  .notif-content {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .notif-content h2 {
+    font-size: 17px;
+  }
+
+  .notif-content h3 {
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+
+  .notif-item {
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .notif-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .notif-item strong {
+    font-size: 13px;
+  }
+
+  .notif-item p {
+    font-size: 12px;
+  }
+
+  .notif-item span {
+    font-size: 11px;
+  }
+}
+
+/* Small Mobile (375px and below) */
+@media (max-width: 375px) {
+  .notifications-page {
+    padding: 10px;
+  }
+
+  .notifications-header h1 {
+    font-size: 20px;
+  }
+
+  .mark-read-btn {
+    font-size: 12px;
+    padding: 9px 12px;
+  }
+
+  .notif-card {
+    padding: 12px;
+  }
+
+  .notif-card h2 {
+    font-size: 18px;
+  }
+
+  .notif-tab {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .notif-content {
+    padding: 12px;
+  }
+
+  .notif-item {
+    padding: 10px;
+    gap: 10px;
+  }
+}
+
+/* Extra Small Mobile (360px and below) */
+@media (max-width: 360px) {
+  .notif-tabs {
+    width: 100%;
+  }
+
+  .notif-tab {
+    font-size: 11px;
+    padding: 7px 8px;
+  }
+
+  .notif-tab .count {
+    font-size: 10px;
+    padding: 1px 5px;
+  }
+
+  .mark-read-btn span {
+    display: none;
+  }
+
+  .mark-read-btn {
+    padding: 10px;
+    justify-content: center;
+  }
+}
+
+/* Landscape Mode Adjustments */
+@media (max-width: 932px) and (orientation: landscape) {
+  .notification-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .notif-card {
+    padding: 12px;
+  }
+
+  .notif-item {
+    padding: 10px;
+  }
+}

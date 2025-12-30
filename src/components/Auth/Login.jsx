@@ -31,11 +31,6 @@ const Login = () => {
     };
 
     console.log("LOGIN PAYLOAD:", payload);
-
-    // 🔐 Backend call later
-    // axios.post("/api/auth/login", payload)
-
-    // TEMP redirect
     navigate("/dashboard");
   };
 
@@ -81,18 +76,20 @@ const Login = () => {
             <button type="submit" className="primary-btn">
               LOGIN
             </button>
-
           </div>
         </form>
 
         <p className="link-text">Forgot Password?</p>
 
-        <p className="switch-text">
-          Don’t have an account?{" "}
-          <span onClick={() => navigate(`/signup/${role}`)}>
-            Sign up here
-          </span>
-        </p>
+        {/* ✅ USER ONLY SIGNUP LINK */}
+        {role === "user" && (
+          <p className="switch-text">
+            Don’t have an account?{" "}
+            <span onClick={() => navigate("/signup/user")}>
+              Sign up here
+            </span>
+          </p>
+        )}
       </div>
     </div>
   );

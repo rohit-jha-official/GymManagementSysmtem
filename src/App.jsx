@@ -22,18 +22,6 @@ import CheckedOutMembers from "./components/Attendance_1/Checked_out";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 
-
-import UserLayout from "./components/User/UserLayout/UserLayout";
-import UserDashboard from "./components/User/User_dashboard/User_dashboard";
-
-
-/* ===== USER DUMMY PAGES (TEMPORARY) ===== */
-const UserWorkout = () => <h1 style={{ color: "#fff" }}>Workout</h1>;
-const UserRanks = () => <h1 style={{ color: "#fff" }}>Ranks</h1>;
-const UserPlans = () => <h1 style={{ color: "#fff" }}>Plans</h1>;
-const UserProfile = () => <h1 style={{ color: "#fff" }}>Profile</h1>;
-
-
 function App() {
   return (
     <BrowserRouter>
@@ -44,7 +32,7 @@ function App() {
         <Route path="/signup/:role" element={<Signup />} />
 
         {/* MAIN APP WITH LAYOUT */}
-        <Route path="/" element={<Layout />}>
+        <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/members" element={<AllMembers />} />
@@ -64,13 +52,6 @@ function App() {
           <Route path="/attendance/checked-out" element={<CheckedOutMembers />} />
         </Route>
 
-        <Route path="/user" element={<UserLayout />}>
-          <Route path="/user/dashboard" element={<UserDashboard />} />
-          <Route path="/user/workout" element={<UserWorkout />} />
-          <Route path="/user/ranks" element={<UserRanks />} />
-          <Route path="/user/plans" element={<UserPlans />} />
-          <Route path="/user/profile" element={<UserProfile />} />
-        </Route>
       </Routes>
     </BrowserRouter>
   );

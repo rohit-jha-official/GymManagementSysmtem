@@ -1,10 +1,19 @@
 import express from "express";
-import { addMember, getMembers } from "../controllers/memberController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import {
+  addMember,
+  getAllMembers,
+  getExpiredMembers,
+  getExpiringSoon,
+  renewMember,
+} from "../controllers/memberController.js";
 
 const router = express.Router();
 
-router.post("/", protect, addMember);
-router.get("/", protect, getMembers);
+router.post("/add", addMember);
+router.get("/", getAllMembers);
+router.get("/expired", getExpiredMembers);
+router.get("/expiring", getExpiringSoon);
+router.put("/renew/:id", renewMember);
 
 export default router;
+

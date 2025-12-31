@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./auth.css";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 
@@ -21,6 +22,9 @@ const Signup = () => {
     terms: false,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
     setFormData({
@@ -29,8 +33,11 @@ const Signup = () => {
     });
   };
 
-  const handleSignup = (e) => {
+  // 🔐 BACKEND SIGNUP
+  const handleSignup = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     const payload = {
       name: formData.name,

@@ -25,7 +25,7 @@ const Login = () => {
     }));
   };
 
-  // 🔐 REAL BACKEND LOGIN
+  // 🔐 BACKEND LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -46,7 +46,6 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      {/* LOGO */}
       <div className="auth-logo">
         <span className="logo-icon">☰</span>
         <div>
@@ -55,12 +54,10 @@ const Login = () => {
         </div>
       </div>
 
-      {/* LOGIN CARD */}
       <div className="auth-card">
         <h2>{role === "admin" ? "Admin Login" : "User Login"}</h2>
 
         <form onSubmit={handleLogin}>
-          {/* EMAIL */}
           <div className="input-box">
             <FaUser />
             <input
@@ -73,7 +70,6 @@ const Login = () => {
             />
           </div>
 
-          {/* PASSWORD */}
           <div className="input-box">
             <FaLock />
             <input
@@ -86,10 +82,8 @@ const Login = () => {
             />
           </div>
 
-          {/* ERROR MESSAGE */}
           {error && <p className="error-text">{error}</p>}
 
-          {/* LOGIN ROW */}
           <div className="login-row">
             <button
               type="submit"

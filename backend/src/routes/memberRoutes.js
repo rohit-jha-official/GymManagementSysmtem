@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.post("/add", addMember);
+router.post("/", addMember);
 router.get("/", getAllMembers);
 router.get("/expired", getExpiredMembers);
 router.get("/expiring", getExpiringSoon);

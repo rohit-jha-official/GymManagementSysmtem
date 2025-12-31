@@ -39,7 +39,7 @@ const AddMember = () => {
       });
 
       videoRef.current.srcObject = stream;
-    } catch (err) {
+    } catch {
       alert("Camera permission denied");
     }
   };
@@ -79,45 +79,52 @@ const AddMember = () => {
   };
 
   /* 🚀 SUBMIT */
-  const handleSubmit = async () => {
-    if (!fullName || !phone || membershipPlan === "Select a plan") {
-      alert("Please fill required fields");
+ const handleSubmit = async () => {
+  if (!fullName || !phone || membershipPlan === "Select a plan") {
+    alert("Please fill required fields");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/members`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName,
+        phone,
+        email,
+        gender,
+        dob,
+        address,
+        plan: membershipPlan,
+        rfid,
+      }),
+    });
+
+    const data = await res.json();   // 🔥 READ BACKEND RESPONSE
+
+    if (!res.ok) {
+      alert(data.message || "Backend error");
       return;
     }
 
-    try {
-      const res = await fetch(`${API_BASE}/members/add`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName,
-          phone,
-          email,
-          gender,
-          dob,
-          address,
-          plan: membershipPlan,
-          rfid,
-        }),
-      });
+    alert("Member added successfully ✅");
 
-      if (!res.ok) throw new Error("Failed to add member");
+    setFullName("");
+    setPhone("");
+    setEmail("");
+    setDob("");
+    setAddress("");
+    setRfid("");
+    setMembershipPlan("Select a plan");
+    setPhoto(null);
 
-      alert("Member added successfully ✅");
+  } catch (err) {
+    console.error("NETWORK ERROR:", err);
+    alert("Network error (frontend → backend)");
+  }
+};
 
-      /* RESET */
-      setFullName("");
-      setPhone("");
-      setEmail("");
-      setDob("");
-      setAddress("");
-      setRfid("");
-      setMembershipPlan("Select a plan");
-      setPhoto(null);
-    } catch {
-      alert("Backend not reachable");
-    }
-  };
 
   return (
     <div className="add-member-page">
@@ -193,7 +200,13 @@ const AddMember = () => {
           {planOpen && (
             <ul className="dropdown-list">
               {membershipOptions.map(p => (
-                <li key={p} onClick={() => { setMembershipPlan(p); setPlanOpen(false); }}>
+                <li
+                  key={p}
+                  onClick={() => {
+                    setMembershipPlan(p);
+                    setPlanOpen(false);
+                  }}
+                >
                   {p}
                 </li>
               ))}
@@ -202,7 +215,7 @@ const AddMember = () => {
         </div>
 
         <div className="form-actions">
-          <button className="btn-primary" onClick={handleSubmit}>
+          <button type="button" className="btn-primary" onClick={handleSubmit}>
             <FaUserPlus /> Add Member
           </button>
         </div>

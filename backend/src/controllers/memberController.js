@@ -12,9 +12,14 @@ export const addMember = async (req, res) => {
     if (!fullName || !phone || !plan) {
       return res.status(400).json({ message: "Required fields missing" });
     }
+   
 
     const startDate = new Date();
     const expiryDate = new Date();
+
+     if (!planDays[plan]) {
+      return res.status(400).json({ message: "Invalid membership plan" });
+    }
     expiryDate.setDate(expiryDate.getDate() + planDays[plan]);
 
     const member = await Member.create({

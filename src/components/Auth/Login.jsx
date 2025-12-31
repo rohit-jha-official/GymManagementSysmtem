@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./auth.css";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 const Login = () => {
   const { role } = useParams(); // admin | user
   const navigate = useNavigate();
+const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -22,17 +24,21 @@ const Login = () => {
   };
 
   const handleLogin = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const payload = {
-      email: formData.email,
-      password: formData.password,
-      role: role,
-    };
-
-    console.log("LOGIN PAYLOAD:", payload);
+  // ✅ DUMMY ADMIN LOGIN (NO BACKEND)
+  if (
+    role === "admin" &&
+    formData.email === "admin@gmail.com" &&
+    formData.password === "admin123"
+  ) {
+    localStorage.setItem("isAdminLoggedIn", "true");
     navigate("/dashboard");
-  };
+  } else {
+    alert("Invalid Admin Credentials");
+  }
+};
+
 
   return (
     <div className="auth-page">
@@ -61,16 +67,25 @@ const Login = () => {
           </div>
 
           <div className="input-box">
-            <FaLock />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+  <FaLock />
+
+  <input
+    type={showPassword ? "text" : "password"}
+    name="password"
+    placeholder="Password"
+    value={formData.password}
+    onChange={handleChange}
+    required
+  />
+
+  <span
+    className="password-toggle"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
+
 
           <div className="login-row">
             <button type="submit" className="primary-btn">

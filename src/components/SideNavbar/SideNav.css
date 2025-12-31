@@ -64,7 +64,7 @@
 }
 
 .nav-item.active {
-  background: linear-gradient(90deg, #ff8a00, #ffb347);
+  background:  #ff8a00;
   color: #000;
 }
 
@@ -115,7 +115,7 @@
 
 .nav-item.active,
 .submenu-item.active {
-  background: linear-gradient(90deg, #ff8a00, #ffb347);
+  background:  #ff8a00;
   color: #000;
 }
 
@@ -130,7 +130,7 @@
 
 
 .submenu-item.active {
-  background: linear-gradient(90deg, #ff8a00, #ffb347);
+  background: #ff8a00;
   color: #000000;
 }
 .sidebar {
@@ -155,181 +155,6 @@
 
 
 /*-----------------------------------------------------------------------------*/
-/* ===============================
-   SIDEBAR BASE
-================================ */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 260px;
-  height: 100vh;
-  background: linear-gradient(to bottom, #0b0f14, #0e1218);
-  color: #d1d5db;
-  padding: 18px 12px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  z-index: 2000;
-  transition: left 0.3s ease;
-}
-
-/* Hide scrollbar but keep scroll */
-.sidebar::-webkit-scrollbar {
-  width: 0;
-}
-.sidebar {
-  scrollbar-width: none;
-}
-
-/* ===============================
-   LOGO
-================================ */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  margin-bottom: 14px;
-}
-
-.logo-icon {
-  background: #f59e0b;
-  color: #000;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-}
-
-.logo-text h3 {
-  margin: 0;
-  font-size: 15px;
-  color: #fff;
-}
-
-.logo-text span {
-  font-size: 11px;
-  color: #9ca3af;
-}
-
-/* ===============================
-   NAV ITEMS
-================================ */
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 14px;
-  border-radius: 12px;
-  font-size: 14px;
-  color: #d1d5db;
-  cursor: pointer;
-  margin-bottom: 4px;
-  text-decoration: none;
-}
-
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.nav-item.active {
-  background: #f59e0b;
-  color: #000;
-  font-weight: 600;
-}
-
-.nav-item svg {
-  font-size: 16px;
-}
-
-/* ===============================
-   CHEVRON
-================================ */
-.chevron {
-  margin-left: auto;
-  font-size: 12px;
-  transition: transform 0.25s ease;
-}
-
-.chevron.rotate {
-  transform: rotate(180deg);
-}
-
-/* ===============================
-   SUBMENU
-================================ */
-.submenu {
-  padding-left: 14px;
-  margin-bottom: 6px;
-}
-
-.submenu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 14px;
-  font-size: 13px;
-  border-radius: 10px;
-  color: #9ca3af;
-  margin-bottom: 4px;
-  text-decoration: none;
-}
-
-.submenu-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-}
-
-.submenu-item.active {
-  background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
-  font-weight: 500;
-}
-
-/* ===============================
-   BADGES
-================================ */
-.badge {
-  position: relative;
-}
-
-.count {
-  background: #f59e0b;
-  color: #000;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 999px;
-  margin-left: auto;
-}
-
-/* ===============================
-   FOOTER
-================================ */
-/* .nav-footer {
-  margin-top: auto;
-  padding-top: 10px;
-} */
-
-/* ===============================
-   MOBILE OVERLAY
-================================ */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 1500;
-}
-
-/* ===============================
-   RESPONSIVE
-================================ */
-
 /* MOBILE */
 @media (max-width: 768px) {
   .sidebar {
@@ -341,3 +166,32 @@
   }
 }
 
+
+
+:root {
+  --sidenav-active: #ff8a00;
+}
+
+/* TOP LEVEL NAV */
+.sidebar .nav-item.active {
+  background: var(--sidenav-active);
+  color: #000000;
+}
+
+/* SUBMENU ITEM */
+.sidebar .submenu-item.active {
+  background: rgba(255, 138, 0, 0.18);
+  color: var(--sidenav-active);
+}
+
+/* ICON COLOR INSIDE ACTIVE ITEMS */
+.sidebar .nav-item.active svg,
+.sidebar .submenu-item.active svg {
+  color: inherit;
+}
+
+/* BADGE COUNT INSIDE ACTIVE */
+.sidebar .active .count {
+  background: #fff;
+  color: var(--sidenav-active);
+}

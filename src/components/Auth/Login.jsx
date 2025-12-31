@@ -25,7 +25,7 @@ const Login = () => {
     }));
   };
 
-  // 🔐 REAL BACKEND LOGIN
+  // 🔐 BACKEND LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -43,11 +43,15 @@ const Login = () => {
       // Save JWT token
       localStorage.setItem("token", res.data.token);
 
-      // Save admin info (optional)
+      // Save admin info
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
 
-      // Redirect to dashboard
-      navigate("/dashboard");
+      // Redirect
+      if (role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message || "Login failed. Please try again."
@@ -59,7 +63,6 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      {/* LOGO */}
       <div className="auth-logo">
         <span className="logo-icon">☰</span>
         <div>
@@ -68,12 +71,10 @@ const Login = () => {
         </div>
       </div>
 
-      {/* LOGIN CARD */}
       <div className="auth-card">
         <h2>{role === "admin" ? "Admin Login" : "User Login"}</h2>
 
         <form onSubmit={handleLogin}>
-          {/* EMAIL */}
           <div className="input-box">
             <FaUser />
             <input
@@ -86,7 +87,6 @@ const Login = () => {
             />
           </div>
 
-          {/* PASSWORD */}
           <div className="input-box">
             <FaLock />
             <input
@@ -99,10 +99,8 @@ const Login = () => {
             />
           </div>
 
-          {/* ERROR MESSAGE */}
           {error && <p className="error-text">{error}</p>}
 
-          {/* LOGIN ROW */}
           <div className="login-row">
             <button
               type="submit"
@@ -123,8 +121,6 @@ const Login = () => {
             </label>
           </div>
         </form>
-
-        <p className="link-text">Forgot Password?</p>
 
         <p className="switch-text">
           Don’t have an account?{" "}

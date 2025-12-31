@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./auth.css";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 
@@ -14,6 +15,9 @@ const Signup = () => {
     terms: false,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
     setFormData({
@@ -22,22 +26,28 @@ const Signup = () => {
     });
   };
 
-  const handleSignup = (e) => {
+  // 🔐 BACKEND SIGNUP
+  const handleSignup = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const payload = {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      role: role,
-    };
+    try {
+      await axios.post("http://localhost:5001/api/auth/signup", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    console.log("SIGNUP PAYLOAD:", payload);
-
-    // 🔐 Backend later
-    // axios.post("/api/auth/signup", payload)
-
-    navigate(`/login/${role}`);
+      alert("Admin created successfully");
+      navigate(`/login/${role}`);
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Signup failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,9 +100,15 @@ const Signup = () => {
             />
           </div>
 
+          {error && <p className="error-text">{error}</p>}
+
           <div className="login-row">
-            <button type="submit" className="primary-btn">
-              SIGN UP
+            <button
+              type="submit"
+              className="primary-btn"
+              disabled={loading}
+            >
+              {loading ? "Signing up..." : "SIGN UP"}
             </button>
 
             <label className="checkbox">

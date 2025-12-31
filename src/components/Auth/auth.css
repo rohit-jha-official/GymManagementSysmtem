@@ -184,3 +184,8 @@
   transform: translateY(-1px);
   
 }
+.password-toggle {
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 16px;
+}

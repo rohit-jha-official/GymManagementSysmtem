@@ -1,176 +1,10 @@
-// import "./Topbar.css";
-// import {
-//   FaBell,
-//   FaSearch,
-//   FaUserCircle,
-//   FaChevronDown,
-//   FaSignInAlt,
-// } from "react-icons/fa";
-// import { useEffect, useRef, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// const Topbar = () => {
-//   const [now, setNow] = useState(new Date());
-
-//   const [openProfile, setOpenProfile] = useState(false);
-//   const [openLoginSwitch, setOpenLoginSwitch] = useState(false);
-
-//   const profileRef = useRef(null);
-//   const loginSwitchRef = useRef(null);
-
-//   const navigate = useNavigate();
-
-//   /* LIVE TIME */
-//   useEffect(() => {
-//     const timer = setInterval(() => setNow(new Date()), 1000);
-//     return () => clearInterval(timer);
-//   }, []);
-
-//   /* CLOSE DROPDOWNS ON OUTSIDE CLICK */
-//   useEffect(() => {
-//     const handleClickOutside = (e) => {
-//       if (
-//         profileRef.current &&
-//         !profileRef.current.contains(e.target)
-//       ) {
-//         setOpenProfile(false);
-//       }
-
-//       if (
-//         loginSwitchRef.current &&
-//         !loginSwitchRef.current.contains(e.target)
-//       ) {
-//         setOpenLoginSwitch(false);
-//       }
-//     };
-
-//     document.addEventListener("mousedown", handleClickOutside);
-//     return () =>
-//       document.removeEventListener("mousedown", handleClickOutside);
-//   }, []);
-
-//   const time = now.toLocaleTimeString("en-IN", {
-//     hour: "2-digit",
-//     minute: "2-digit",
-//     second: "2-digit",
-//     hour12: true,
-//   });
-
-//   const date = now.toLocaleDateString("en-IN", {
-//     weekday: "long",
-//     year: "numeric",
-//     month: "long",
-//     day: "numeric",
-//   });
-
-//   return (
-//     <div className="topbar">
-//       {/* LEFT */}
-//       <div className="topbar-search">
-//         <FaSearch className="search-icon" />
-//         <input placeholder="Search members, cards, transactions..." />
-//       </div>
-
-//       {/* RIGHT */}
-//       <div className="topbar-right">
-//         {/* TIME */}
-//         <div className="topbar-time">
-//           <span className="time">{time}</span>
-//           <span className="date">{date}</span>
-//         </div>
-
-//         {/* NOTIFICATION */}
-//         <div
-//           className="notification"
-//           onClick={() => navigate("/notifications")}
-//         >
-//           <FaBell />
-//           <span className="badge">5</span>
-//         </div>
-
-//         {/* USER + LOGIN SWITCH */}
-//         <div className="user-wrapper" ref={profileRef}>
-//           <div
-//             className="user-info clickable"
-//             onClick={() => setOpenProfile(!openProfile)}
-//           >
-//             <FaUserCircle className="user-icon" />
-
-//             <div className="user-text">
-//               <div className="user-name">Admin</div>
-//               <div className="user-role">Super Admin</div>
-//             </div>
-
-//             <FaChevronDown
-//               className={`dropdown-arrow ${
-//                 openProfile ? "rotate" : ""
-//               }`}
-//             />
-//           </div>
-
-//           {/* PROFILE DROPDOWN */}
-//           {openProfile && (
-//             <div className="user-dropdown">
-//               <div
-//                 className="dropdown-item"
-//                 onClick={() => navigate("/settings")}
-//               >
-//                 Profile Settings
-//               </div>
-//             </div>
-//           )}
-
-          
-//         </div>
-//         {/* LOGIN SWITCH ICON */}
-//             <div
-//               className="login-switch"
-//               ref={loginSwitchRef}
-//               onClick={(e) => e.stopPropagation()}
-//             >
-//               <FaSignInAlt
-//                 className="login-icon"
-//                 onClick={() =>
-//                   setOpenLoginSwitch(!openLoginSwitch)
-//                 }
-//               />
-
-//               {openLoginSwitch && (
-//                 <div className="login-dropdown">
-//                   <div
-//                     className="dropdown-item"
-//                     onClick={() =>
-//                       navigate("/login/user")
-//                     }
-//                   >
-//                     User Login
-//                   </div>
-//                   <div
-//                     className="dropdown-item"
-//                     onClick={() =>
-//                       navigate("/login/admin")
-//                     }
-//                   >
-//                     Admin Login
-//                   </div>
-//                 </div>
-//               )}
-//             </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Topbar;
-
-
-
 import "./Topbar.css";
 import {
   FaBell,
   FaSearch,
   FaUserCircle,
   FaChevronDown,
+  FaSignOutAlt,
   FaSignInAlt,
   FaBars,
 } from "react-icons/fa";
@@ -180,12 +14,10 @@ import { useNavigate } from "react-router-dom";
 const Topbar = ({ toggleSidebar }) => {
   const [now, setNow] = useState(new Date());
   const [openProfile, setOpenProfile] = useState(false);
-  const [openLoginSwitch, setOpenLoginSwitch] = useState(false);
-
   const profileRef = useRef(null);
-  const loginSwitchRef = useRef(null);
-
   const navigate = useNavigate();
+
+  const isLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
 
   /* LIVE TIME */
   useEffect(() => {
@@ -193,21 +25,13 @@ const Topbar = ({ toggleSidebar }) => {
     return () => clearInterval(timer);
   }, []);
 
-  /* CLOSE DROPDOWNS ON OUTSIDE CLICK */
+  /* CLOSE PROFILE DROPDOWN */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setOpenProfile(false);
       }
-
-      if (
-        loginSwitchRef.current &&
-        !loginSwitchRef.current.contains(e.target)
-      ) {
-        setOpenLoginSwitch(false);
-      }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
@@ -227,16 +51,20 @@ const Topbar = ({ toggleSidebar }) => {
     day: "numeric",
   });
 
+  /* LOGOUT */
+  const handleLogout = () => {
+    localStorage.removeItem("isAdminLoggedIn");
+    navigate("/login/admin");
+  };
+
   return (
     <div className="topbar">
       {/* LEFT */}
       <div className="topbar-left">
-        {/* MOBILE HAMBURGER */}
         <div className="mobile-menu-btn" onClick={toggleSidebar}>
           <FaBars />
         </div>
 
-        {/* SEARCH (DESKTOP) */}
         <div className="topbar-search">
           <FaSearch className="search-icon" />
           <input placeholder="Search members, cards, transactions..." />
@@ -245,13 +73,11 @@ const Topbar = ({ toggleSidebar }) => {
 
       {/* RIGHT */}
       <div className="topbar-right">
-        {/* TIME */}
         <div className="topbar-time">
           <span className="time">{time}</span>
           <span className="date">{date}</span>
         </div>
 
-        {/* NOTIFICATION */}
         <div
           className="notification"
           onClick={() => navigate("/notifications")}
@@ -260,68 +86,54 @@ const Topbar = ({ toggleSidebar }) => {
           <span className="badge">5</span>
         </div>
 
-        {/* USER PROFILE */}
-        <div className="user-wrapper" ref={profileRef}>
-          <div
-            className="user-info clickable"
-            onClick={() => setOpenProfile(!openProfile)}
-          >
-            <FaUserCircle className="user-icon" />
-
-            <div className="user-text">
-              <div className="user-name">Admin</div>
-              <div className="user-role">Super Admin</div>
-            </div>
-
-            <FaChevronDown
-              className={`dropdown-arrow ${
-                openProfile ? "rotate" : ""
-              }`}
-            />
-          </div>
-
-          {openProfile && (
-            <div className="user-dropdown">
+        {isLoggedIn ? (
+          <>
+            {/* PROFILE */}
+            <div className="user-wrapper" ref={profileRef}>
               <div
-                className="dropdown-item"
-                onClick={() => navigate("/settings")}
+                className="user-info clickable"
+                onClick={() => setOpenProfile(!openProfile)}
               >
-                Profile Settings
+                <FaUserCircle className="user-icon" />
+                <div className="user-text">
+                  <div className="user-name">Admin</div>
+                  <div className="user-role">Super Admin</div>
+                </div>
+                <FaChevronDown
+                  className={`dropdown-arrow ${
+                    openProfile ? "rotate" : ""
+                  }`}
+                />
               </div>
+
+              {openProfile && (
+                <div className="user-dropdown">
+                  <div
+                    className="dropdown-item"
+                    onClick={() => navigate("/settings")}
+                  >
+                    Profile Settings
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* LOGIN SWITCH */}
-<div
-  className="login-switch clickable"
-  ref={loginSwitchRef}
-  onClick={(e) => {
-    e.stopPropagation();
-    setOpenLoginSwitch(!openLoginSwitch);
-  }}
->
-  <FaSignInAlt className="login-icon" />
-  <span className="login-text">Login</span>
-
-  {openLoginSwitch && (
-    <div className="login-dropdown">
-      <div
-        className="dropdown-item"
-        onClick={() => navigate("/login/user")}
-      >
-        User Login
-      </div>
-      <div
-        className="dropdown-item"
-        onClick={() => navigate("/login/admin")}
-      >
-        Admin Login
-      </div>
-    </div>
-  )}
-</div>
-
+            {/* LOGOUT */}
+            <div className="login-switch clickable" onClick={handleLogout}>
+              <FaSignOutAlt />
+              <span className="login-text">Logout</span>
+            </div>
+          </>
+        ) : (
+          /* LOGIN */
+          <div
+            className="login-switch clickable"
+            onClick={() => navigate("/login/admin")}
+          >
+            <FaSignInAlt />
+            <span className="login-text">Login</span>
+          </div>
+        )}
       </div>
     </div>
   );

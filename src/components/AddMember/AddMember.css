@@ -122,19 +122,11 @@
   border-radius: 10px;
   cursor: pointer;
 }
-
-.dropdown-list {
-  margin-top: 8px;
-  background: #11151c;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.dropdown-list li {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.dropdown-list li:hover {
-  background: #1b2028;
+.btn-eee{
+    position: relative;
+    top: -63px;
+    left: 10px;
+    border-radius: 100%;
+    width: 100px;
+    height: 100px;
 }

@@ -40,25 +40,8 @@ const Login = () => {
         }
       );
 
-      // Save JWT token
-      localStorage.setItem("token", res.data.token);
-
-      // Save admin info
-      localStorage.setItem("admin", JSON.stringify(res.data.admin));
-
-      // Redirect
-      if (role === "admin") {
-        navigate("/dashboard");
-      } else {
-        navigate("/");
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Login failed. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
+    console.log("LOGIN PAYLOAD:", payload);
+    navigate("/dashboard");
   };
 
   return (
@@ -109,25 +92,20 @@ const Login = () => {
             >
               {loading ? "Logging in..." : "LOGIN"}
             </button>
-
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                name="remember"
-                checked={formData.remember}
-                onChange={handleChange}
-              />
-              <span>Remember me</span>
-            </label>
           </div>
         </form>
 
-        <p className="switch-text">
-          Don’t have an account?{" "}
-          <span onClick={() => navigate(`/signup/${role}`)}>
-            Sign up here
-          </span>
-        </p>
+        <p className="link-text">Forgot Password?</p>
+
+        {/* ✅ USER ONLY SIGNUP LINK */}
+        {role === "user" && (
+          <p className="switch-text">
+            Don’t have an account?{" "}
+            <span onClick={() => navigate("/signup/user")}>
+              Sign up here
+            </span>
+          </p>
+        )}
       </div>
     </div>
   );

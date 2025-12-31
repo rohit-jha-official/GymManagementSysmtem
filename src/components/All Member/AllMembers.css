@@ -81,8 +81,8 @@
 .table-head,
 .table-row {
   display: grid;
-  grid-template-columns: 1.4fr 2fr 1fr 1fr 1fr 1fr 0.5fr;
-  align-items: center;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr ;
+  place-items: normal;
   padding: 12px 10px;
 }
 
@@ -147,4 +147,98 @@
 .action-icon {
   cursor: pointer;
   color: #9ca3af;
+}
+/*----------------------------------------------------------------------*/
+
+
+/* ===============================
+   ACTION DROPDOWN
+================================ */
+.action-wrapper {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.action-icon {
+  cursor: pointer;
+  font-size: 18px;
+  color: #9ca3af;
+}
+
+.action-icon:hover {
+  color: #ffdf0e;
+}
+
+.action-dropdown {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: #0f172a;
+  border-radius: 14px;
+  padding: 8px;
+  min-width: 170px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #e5e7eb;
+}
+
+.action-item:hover {
+  background: rgba(245, 160, 4, 0.574);
+}
+
+.action-item.delete {
+  color: #ef4444;
+}
+
+.action-item.delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+/* TABLET */
+@media (max-width: 1000px) {
+  .search-box {
+    width: 220px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .members-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .members-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .members-table {
+    overflow-x: auto;
+  }
+
+  .table-head,
+  .table-row {
+    min-width: 820px;
+  }
 }

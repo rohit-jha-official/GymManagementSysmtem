@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 
 const DownloadReports = () => {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [reportType, setReportType] = useState("Select type");
 
   // 🔹 OPTIONS LIST
@@ -17,6 +17,39 @@ const DownloadReports = () => {
     "Monthly Summary",
     "Detailed Report",
   ];
+
+  // 🔹 TEMP DOWNLOAD (NO BACKEND)
+  const downloadExcel = () => {
+    const blob = new Blob(
+      ["Placeholder Excel report.\nBackend not integrated yet."],
+      {
+        type:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      }
+    );
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "attendance-report.xlsx";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const downloadPDF = () => {
+    const blob = new Blob(
+      ["Placeholder PDF report.\nBackend not integrated yet."],
+      { type: "application/pdf" }
+    );
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "attendance-report.pdf";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="download-reports-page">
       {/* HEADER */}
@@ -40,33 +73,33 @@ const DownloadReports = () => {
             <input type="date" />
           </div>
 
-                    <div className="dropdown">
-                        <label>Report Type</label>
-                            <div
-                                className={`dropdown-header ${open ? "active" : ""}`}
-                                onClick={() => setOpen(!open)}
-                            >
-                                {reportType}
-                                <span className="arrow">▾</span>
-                            </div>
+          <div className="dropdown">
+            <label>Report Type</label>
 
-                            {open && (
-                                <ul className="dropdown-list">
-                                {options.map((opt) => (
-                                    <li
-                                    key={opt}
-                                    onClick={() => {
-                                        setReportType(opt);
-                                        setOpen(false);
-                                    }}
-                                    >
-                                    {opt}
-                                    </li>
-                                ))}
-                                </ul>
-                            )}
-                            </div>
+            <div
+              className={`dropdown-header ${open ? "active" : ""}`}
+              onClick={() => setOpen(!open)}
+            >
+              {reportType}
+              <span className="arrow">▾</span>
+            </div>
 
+            {open && (
+              <ul className="dropdown-list">
+                {options.map((opt) => (
+                  <li
+                    key={opt}
+                    onClick={() => {
+                      setReportType(opt);
+                      setOpen(false);
+                    }}
+                  >
+                    {opt}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
 
@@ -84,7 +117,7 @@ const DownloadReports = () => {
             </div>
           </div>
 
-          <button className="btn-success">
+          <button className="btn-success" onClick={downloadExcel}>
             <FaDownload /> Download
           </button>
         </div>
@@ -101,7 +134,10 @@ const DownloadReports = () => {
             </div>
           </div>
 
-          <button className="btn-danger-outline">
+          <button
+            className="btn-danger-outline"
+            onClick={downloadPDF}
+          >
             <FaDownload /> Download
           </button>
         </div>

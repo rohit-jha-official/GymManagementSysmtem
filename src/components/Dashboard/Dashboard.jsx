@@ -1,9 +1,13 @@
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 import RecentActivity from "../RecentActivity/Recentactivity";
 import MemberGrowth from "../MemberGrowth/MemberGrowth";
 import ExpiringSoon from "../Expiring Soon/ExpiringSoon";
 import TodaysAttendance from "../Todays Attendance/TodaysAttendance";
+
 import {
   FaUsers,
   FaUserCheck,
@@ -14,9 +18,33 @@ import {
   FaRedoAlt,
 } from "react-icons/fa";
 
-const Dashboard = () => {
-  const navigate = useNavigate(); // ✅ STEP 2
+import { API_BASE } from "../../config/api";
 
+const Dashboard = () => {
+  const navigate = useNavigate();
+
+  /* ✅ DASHBOARD STATS STATE */
+  const [stats, setStats] = useState({
+    totalMembers: 0,
+    expiringSoon: 0,
+    newRegistrations: 0,
+  });
+
+  /* ✅ FETCH DASHBOARD STATS */
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/dashboard/stats`);
+        setStats(res.data);
+      } catch (error) {
+        console.error("Dashboard stats error:", error);
+      }
+    };
+
+    fetchStats();
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <>
       {/* HEADER */}
@@ -30,7 +58,7 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Total Members</p>
-            <h2>420</h2>
+            <h2>{stats.totalMembers}</h2>
             <span className="positive">+12% from last month</span>
           </div>
           <FaUsers
@@ -66,7 +94,7 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Expiring Soon</p>
-            <h2>28</h2>
+            <h2>{stats.expiringSoon}</h2>
             <span className="danger">Next 7 days</span>
           </div>
           <FaExclamationTriangle
@@ -90,7 +118,7 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>New Registrations</p>
-            <h2>32</h2>
+            <h2>{stats.newRegistrations}</h2>
             <span>This month</span>
           </div>
           <FaChartLine className="icon orange" />

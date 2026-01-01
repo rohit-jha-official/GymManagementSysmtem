@@ -1,71 +1,53 @@
 import "./ExpiringSoon_1.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { FaPhoneAlt } from "react-icons/fa";
-
-
-const expiringSoonMembers = [
-  {
-    name: "Ahmed Hassan",
-    phone: "0300-1234567",
-    plan: "Monthly",
-    expiresOn: "2024-12-07",
-    daysLeft: 1,
-  },
-  {
-    name: "Fatima Zahra",
-    phone: "0321-9876543",
-    plan: "3 Months",
-    expiresOn: "2024-12-08",
-    daysLeft: 2,
-  },
-  {
-    name: "Usman Malik",
-    phone: "0312-8765432",
-    plan: "Monthly",
-    expiresOn: "2024-12-09",
-    daysLeft: 3,
-  },
-  {
-    name: "Ayesha Khan",
-    phone: "0345-2345678",
-    plan: "6 Months",
-    expiresOn: "2024-12-10",
-    daysLeft: 4,
-  },
-  {
-    name: "Hassan Ahmed",
-    phone: "0321-4445566",
-    plan: "3 Months",
-    expiresOn: "2024-12-11",
-    daysLeft: 5,
-  },
-  {
-    name: "Maria Bibi",
-    phone: "0333-1122334",
-    plan: "Monthly",
-    expiresOn: "2024-12-12",
-    daysLeft: 6,
-  },
-  {
-    name: "Kamran Ali",
-    phone: "0345-9988776",
-    plan: "Monthly",
-    expiresOn: "2024-12-13",
-    daysLeft: 7,
-  },
-];
+import { API_BASE } from "../../config/api";
 
 export default function ExpiringSoon() {
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  /* 🔹 FETCH EXPIRING MEMBERS FROM DB */
+  useEffect(() => {
+    const fetchExpiringMembers = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/members/expiring`);
+
+        // ✅ SHOW ONLY MEMBERS WITH 5 DAYS OR LESS LEFT
+        const filtered = res.data.filter(
+          (m) => m.daysLeft <= 5 && m.daysLeft >= 0
+        );
+
+        setMembers(filtered);
+      } catch (error) {
+        console.error("Failed to fetch expiring members", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExpiringMembers();
+  }, []);
+
+  /* 🔹 COLOR BASED ON DAYS LEFT */
+  const getBadgeClass = (days) => {
+    if (days <= 1) return "danger";
+    if (days <= 3) return "warning";
+    return "safe";
+  };
+
   return (
     <div className="expiring-page">
       <div className="expiring-header">
         <div>
           <h2>Expiring Soon</h2>
-          <p>
-            {expiringSoonMembers.length} memberships expiring in next 7 days
-          </p>
+          <p>{members.length} memberships expiring in next 5 days</p>
         </div>
 
-        <button className="reminder-btn">Send Reminders</button>
+        <button className="reminder-btn">
+          Send Reminders
+        </button>
       </div>
 
       <div className="expiring-table">
@@ -78,26 +60,46 @@ export default function ExpiringSoon() {
           <span>Actions</span>
         </div>
 
-        {expiringSoonMembers.map((m, i) => (
-          <div className="table-row" key={i}>
-            <div className="member-name">{m.name}</div>
-            <div>{m.phone}</div>
-            <div>{m.plan}</div>
-            <div>{m.expiresOn}</div>
+        {loading ? (
+          <p className="loading">Loading expiring members...</p>
+        ) : members.length === 0 ? (
+          <p className="loading">No memberships expiring soon</p>
+        ) : (
+          members.map((m) => (
+            <div className="table-row" key={m.id}>
+              <span className="member-name">{m.name}</span>
 
-            <div className={`days-left d-${m.daysLeft}`}>
-              {m.daysLeft} day{m.daysLeft > 1 ? "s" : ""}
-            </div>
+              <span>{m.phone}</span>
 
-            <div className="actions">
-              <button className="call-btn">
-                <FaPhoneAlt size={13} />
-                Call
+              <span>{m.plan}</span>
+
+              <span>
+                {new Date(m.expiryDate).toLocaleDateString()}
+              </span>
+
+              <span
+                className={`days-badge ${getBadgeClass(
+                  m.daysLeft
+                )}`}
+              >
+                {m.daysLeft} day{m.daysLeft > 1 ? "s" : ""}
+              </span>
+
+              <div className="actions">
+                <a
+                  href={`tel:${m.phone}`}
+                  className="call-btn"
+                >
+                  <FaPhoneAlt size={13} /> Call
+                </a>
+
+                <button className="renew-btn">
+                  Renew
                 </button>
-              <button className="renew-btn">Renew</button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

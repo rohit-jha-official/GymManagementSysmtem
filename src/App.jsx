@@ -19,6 +19,9 @@ import CurrentlyActive from "./components/Attendance_1/CurrentlyActive";
 import TotalCheck_ins from "./components/Attendance_1/TotalCheck_ins";
 import CheckedOutMembers from "./components/Attendance_1/Checked_out";
 
+import ForgotPassword from "./components/Auth/ForgotPassword";
+import ResetPassword from "./components/Auth/ResetPassword";
+
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 
@@ -50,6 +53,8 @@ function App() {
           <Route path="/attendance/total-checkins" element={<TotalCheck_ins />} />
           <Route path="/attendance/active" element={<CurrentlyActive />} />
           <Route path="/attendance/checked-out" element={<CheckedOutMembers />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Route>
 
       </Routes>

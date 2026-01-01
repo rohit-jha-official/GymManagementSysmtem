@@ -1,57 +1,36 @@
 import { FaPhoneAlt } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import "./ExpiredMembers.css";
-
-
-
-const expiredMembers = [
-  {
-    name: "Ali Raza",
-    phone: "0333-5678901",
-    email: "ali@email.com",
-    plan: "Monthly",
-    expiredOn: "2024-11-20",
-    days: 16,
-  },
-  {
-    name: "Zainab Bibi",
-    phone: "0333-7778899",
-    email: "zainab@email.com",
-    plan: "Monthly",
-    expiredOn: "2024-11-01",
-    days: 35,
-  },
-  {
-    name: "Imran Khan",
-    phone: "0345-1234567",
-    email: "imran@email.com",
-    plan: "3 Months",
-    expiredOn: "2024-10-15",
-    days: 52,
-  },
-  {
-    name: "Sana Malik",
-    phone: "0300-9998877",
-    email: "sana@email.com",
-    plan: "Monthly",
-    expiredOn: "2024-11-10",
-    days: 26,
-  },
-  {
-    name: "Bilal Ahmed",
-    phone: "0321-5556677",
-    email: "bilal@email.com",
-    plan: "6 Months",
-    expiredOn: "2024-10-01",
-    days: 65,
-  },
-];
+import { API_BASE } from "../../config/api";
 
 export default function ExpiredMembers() {
+  const [expiredMembers, setExpiredMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  /* 🔹 FETCH EXPIRED MEMBERS FROM DATABASE */
+  useEffect(() => {
+    const fetchExpiredMembers = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/members/expired`);
+        setExpiredMembers(res.data);
+      } catch (error) {
+        console.error("Failed to load expired members", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExpiredMembers();
+  }, []);
+
   return (
     <div className="expired-page">
       <div className="expired-header">
         <h2>Expired Members</h2>
-        <p>{expiredMembers.length} members with expired memberships</p>
+        <p>
+          {expiredMembers.length} members with expired memberships
+        </p>
       </div>
 
       <div className="expired-table">
@@ -64,28 +43,45 @@ export default function ExpiredMembers() {
           <span>Action</span>
         </div>
 
-        {expiredMembers.map((m, i) => (
-          <div className="table-row" key={i}>
-            <div className="member-name">{m.name}</div>
+        {loading ? (
+          <p className="loading">Loading expired members...</p>
+        ) : expiredMembers.length === 0 ? (
+          <p className="loading">No expired members</p>
+        ) : (
+          expiredMembers.map((m) => (
+            <div className="table-row" key={m.id}>
+              <div className="member-name">{m.name}</div>
 
-            <div>
-              <div>{m.phone}</div>
-              <small>{m.email}</small>
-            </div>
+              <div>
+                <div>{m.phone}</div>
+                <small>{m.email}</small>
+              </div>
 
-            <div>{m.plan}</div>
-            <div>{m.expiredOn}</div>
+              <div>{m.plan}</div>
 
-            <div className="days-expired">{m.days} days</div>
+              <div>
+                {new Date(m.expiryDate).toLocaleDateString()}
+              </div>
 
-            <div className="actions">
-              <button className="call-btn"><FaPhoneAlt size={13} />
-                Call
+              <div className="days-expired">
+                {m.daysExpired} days
+              </div>
+
+              <div className="actions">
+                <a
+                  href={`tel:${m.phone}`}
+                  className="call-btn"
+                >
+                  <FaPhoneAlt size={13} /> Call
+                </a>
+
+                <button className="renew-btn">
+                  Renew
                 </button>
-              <button className="renew-btn">Renew</button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

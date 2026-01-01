@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendEmail } from "../utils/sendEmail.js";
 
-/* ================= LOGIN ================= */
+/* ================= ADMIN LOGIN ================= */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -20,70 +20,106 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: admin._id },
+      { adminId: admin._id },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
     res.json({
+      message: "Login successful",
       token,
       admin: {
         id: admin._id,
-        name: admin.name,
         email: admin.email
       }
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
 /* ================= FORGOT PASSWORD ================= */
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  const admin = await Admin.findOne({ email });
-  if (!admin) {
-    // Security: don’t reveal if email exists
-    return res.json({ message: "If email exists, reset link sent" });
+    const admin = await Admin.findOne({ email });
+
+    // ✅ SECURITY: Do not reveal whether email exists
+    if (!admin) {
+      return res.json({
+        message: "If the email exists, a reset link has been sent"
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    admin.resetToken = resetToken;
+    admin.resetTokenExpiry = Date.now() + 2 * 60 * 1000; // 15 minutes
+    await admin.save();
+
+    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+    await sendEmail(
+      admin.email,
+      "PowerFit Admin Password Reset",
+      `
+Hello Admin,
+
+You requested to reset your password.
+
+Click the link below to reset it:
+${resetLink}
+
+⏳ This link will expire in 15 minutes.
+
+If you did not request this, please ignore this email.
+
+– PowerFit Team
+      `
+    );
+
+    res.json({ message: "Reset link sent to email" });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  const token = crypto.randomBytes(32).toString("hex");
-
-  admin.resetToken = token;
-  admin.resetTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
-  await admin.save();
-
-  const resetLink = `http://localhost:5173/reset-password/${token}`;
-
-  await sendEmail(
-    email,
-    "PowerFit Password Reset",
-    `Click the link to reset your password:\n\n${resetLink}\n\nThis link expires in 15 minutes.`
-  );
-
-  res.json({ message: "Reset link sent to email" });
 };
 
 /* ================= RESET PASSWORD ================= */
 export const resetPassword = async (req, res) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
 
-  const admin = await Admin.findOne({
-    resetToken: token,
-    resetTokenExpiry: { $gt: Date.now() }
-  });
+    if (!newPassword || newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
 
-  if (!admin) {
-    return res.status(400).json({ message: "Invalid or expired token" });
+    const admin = await Admin.findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: Date.now() }
+    });
+
+    if (!admin) {
+      return res.status(400).json({
+        message: "Invalid or expired reset link"
+      });
+    }
+
+    // 🔐 Hash new password
+    admin.password = await bcrypt.hash(newPassword, 10);
+    admin.resetToken = undefined;
+    admin.resetTokenExpiry = undefined;
+
+    await admin.save();
+
+    res.json({ message: "Password reset successful" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  admin.password = await bcrypt.hash(newPassword, 10);
-  admin.resetToken = undefined;
-  admin.resetTokenExpiry = undefined;
-
-  await admin.save();
-
-  res.json({ message: "Password reset successful" });
 };

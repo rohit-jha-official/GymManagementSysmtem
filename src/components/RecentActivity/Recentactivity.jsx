@@ -6,6 +6,7 @@ import {
   FaUserPlus,
   FaMoneyBill,
   FaExclamationTriangle,
+  FaTrash,
 } from "react-icons/fa";
 import { API_BASE } from "../../config/api";
 
@@ -43,32 +44,45 @@ const RecentActivity = () => {
 
   useEffect(() => {
     const fetchRecentActivity = async () => {
-      try {
-        const res = await axios.get(
-          `${API_BASE}/activity/recent`
-        );
-        setActivities(res.data);
-      } catch (error) {
-        console.error("Failed to load recent activity", error);
-      }
+      const res = await axios.get(
+        `${API_BASE}/activity/recent`
+      );
+      setActivities(res.data);
     };
 
     fetchRecentActivity();
   }, []);
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Delete this activity?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${API_BASE}/activity/${id}`);
+
+      setActivities((prev) =>
+        prev.filter((a) => a._id !== id)
+      );
+    } catch (error) {
+      alert("Failed to delete activity");
+    }
+  };
+
   return (
     <div className="recent-activity">
       <div className="ra-header">
         <h3>Recent Activity</h3>
-        {/* <span className="view-all">View All</span> */}
+        <span className="view-all">View All</span>
       </div>
 
       <div className="ra-list">
         {activities.length === 0 ? (
           <p className="ra-empty">No recent activity</p>
         ) : (
-          activities.map((item, index) => (
-            <div className="ra-item" key={index}>
+          activities.map((item) => (
+            <div className="ra-item" key={item._id}>
               <div
                 className={`ra-icon ${getTypeClass(
                   item.type
@@ -76,12 +90,24 @@ const RecentActivity = () => {
               >
                 {getIcon(item.type)}
               </div>
+
               <div className="ra-content">
                 <p className="ra-title">{item.message}</p>
                 <span className="ra-time">
-                  {new Date(item.createdAt).toLocaleTimeString()}
+                  {new Date(
+                    item.createdAt
+                  ).toLocaleTimeString()}
                 </span>
               </div>
+
+              <button
+                className="ra-delete"
+                onClick={() =>
+                  handleDelete(item._id)
+                }
+              >
+                <FaTrash />
+              </button>
             </div>
           ))
         )}

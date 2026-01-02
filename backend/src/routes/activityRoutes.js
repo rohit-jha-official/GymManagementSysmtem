@@ -1,8 +1,12 @@
 import express from "express";
-import { getRecentActivity } from "../controllers/activityController.js";
+import {
+  getRecentActivity,
+  deleteActivity,
+} from "../controllers/activityController.js";
 
 const router = express.Router();
 
 router.get("/recent", getRecentActivity);
+router.delete("/:id", deleteActivity);
 
 export default router;

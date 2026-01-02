@@ -5,16 +5,16 @@
   color: #fff;
   width: 100%;
 
-  height: auto;   
-  max-height: 420px;  
-  overflow-y: auto; 
+  max-height: 420px;
+  overflow-y: auto;
 }
 
+/* HEADER */
 .ra-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px; /* ⬇ reduced */
 }
 
 .ra-header h3 {
@@ -28,26 +28,31 @@
   cursor: pointer;
 }
 
+/* ACTIVITY LIST */
 .ra-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px; /* ⬅ REDUCED spacing between activities */
 }
 
+/* ACTIVITY ITEM */
 .ra-item {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  padding: 10px 14px; /* ⬅ REDUCED padding */
+  border-radius: 12px;
 }
 
+/* ICON */
 .ra-icon {
-  width: 42px;
-  height: 42px;
+  width: 40px;  /* ⬅ slightly smaller */
+  height: 40px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 /* Icon color variants */
@@ -66,7 +71,9 @@
   color: #f59e0b;
 }
 
+/* CONTENT */
 .ra-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -79,6 +86,54 @@
 .ra-time {
   font-size: 12px;
   color: #9ca3af;
-  margin-top: 4px;
+  margin-top: 2px; /* ⬅ reduced */
 }
 
+/* DELETE BUTTON */
+.ra-delete {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  padding: 4px; /* ⬅ reduced */
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* DELETE ICON */
+.ra-delete svg {
+  color: #fa8a00;
+  font-size: 16px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.ra-delete:hover svg {
+  transform: scale(1.1);
+  opacity: 0.85;
+}
+
+/* SCROLLBAR – YELLOW */
+.ra-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ra-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ra-list::-webkit-scrollbar-thumb {
+  background-color: #fa8a00;
+  border-radius: 10px;
+}
+
+.ra-list::-webkit-scrollbar-thumb:hover {
+  background-color: #ff9f1a;
+}
+
+/* FIREFOX */
+.ra-list {
+  scrollbar-width: thin;
+  scrollbar-color: #fa8a00 transparent;
+}

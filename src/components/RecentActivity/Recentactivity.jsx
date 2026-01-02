@@ -74,7 +74,7 @@ const RecentActivity = () => {
     <div className="recent-activity">
       <div className="ra-header">
         <h3>Recent Activity</h3>
-        <span className="view-all">View All</span>
+        
       </div>
 
       <div className="ra-list">

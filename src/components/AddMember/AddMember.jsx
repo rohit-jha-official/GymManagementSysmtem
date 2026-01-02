@@ -180,7 +180,14 @@ const AddMember = () => {
           <input placeholder="Full Name *" value={fullName} onChange={e => setFullName(e.target.value)} />
           <input placeholder="Phone Number *" value={phone} onChange={e => setPhone(e.target.value)} />
           <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-          <input type="date" value={dob} onChange={e => setDob(e.target.value)} />
+         <input
+  type="text"
+  placeholder="Date of Birth"
+  onFocus={(e) => (e.target.type = "date")}
+  onBlur={(e) => !e.target.value && (e.target.type = "text")}
+  value={dob}
+  onChange={(e) => setDob(e.target.value)}
+/>
           <input placeholder="Address" value={address} onChange={e => setAddress(e.target.value)} />
           <input placeholder="RFID (optional)" value={rfid} onChange={e => setRfid(e.target.value)} />
         </div>

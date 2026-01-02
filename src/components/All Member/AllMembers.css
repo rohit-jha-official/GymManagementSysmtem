@@ -178,7 +178,6 @@
   border-radius: 14px;
   padding: 8px;
   min-width: 170px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
   z-index: 1000;
 }
 
@@ -261,4 +260,8 @@
 .table-row > :last-child {
     
     left: -20px;
+}
+.table-row:last-child .action-dropdown {
+  top: auto;
+  bottom: -36px;
 }

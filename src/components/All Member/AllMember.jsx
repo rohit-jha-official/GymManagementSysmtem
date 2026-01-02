@@ -1,5 +1,5 @@
 import "./AllMembers.css";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   FiSearch,
@@ -17,9 +17,7 @@ const AllMembers = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [openActionIndex, setOpenActionIndex] = useState(null);
-  const actionRef = useRef(null);
 
-  /* 🔹 FETCH MEMBERS FROM BACKEND */
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -28,7 +26,7 @@ const AllMembers = () => {
         );
         setMembers(res.data);
       } catch (error) {
-        console.error("Error fetching members:", error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -37,64 +35,77 @@ const AllMembers = () => {
     fetchMembers();
   }, [search]);
 
-  /* 🔹 CLOSE ACTION DROPDOWN ON OUTSIDE CLICK */
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (actionRef.current && !actionRef.current.contains(e.target)) {
-        setOpenActionIndex(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
+    const closeDropdown = () => setOpenActionIndex(null);
+    document.addEventListener("click", closeDropdown);
     return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", closeDropdown);
   }, []);
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this member?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${API_BASE}/members/${id}`);
+
+      setMembers((prev) =>
+        prev.filter((m) => m._id !== id)
+      );
+
+      setOpenActionIndex(null);
+    } catch (error) {
+      console.error(error);
+      alert("Delete failed");
+    }
+  };
+
   const exportToCSV = () => {
-  if (members.length === 0) return;
+    if (members.length === 0) return;
 
-  const headers = [
-    "Name",
-    "Phone",
-    "Email",
-    "Plan",
-    "RFID",
-    "End Date",
-    "Status",
-  ];
+    const headers = [
+      "Name",
+      "Phone",
+      "Email",
+      "Plan",
+      "RFID",
+      "End Date",
+      "Status",
+    ];
 
-  const rows = members.map((m) => [
-    m.name,
-    m.phone,
-    m.email,
-    m.plan,
-    m.rfid || "",
-    new Date(m.endDate).toLocaleDateString(),
-    m.status,
-  ]);
+    const rows = members.map((m) => [
+      m.name,
+      m.phone,
+      m.email,
+      m.plan,
+      m.rfid || "",
+      new Date(m.endDate).toLocaleDateString(),
+      m.status,
+    ]);
 
-  let csvContent =
-    headers.join(",") +
-    "\n" +
-    rows.map((row) => row.join(",")).join("\n");
+    const csvContent =
+      headers.join(",") +
+      "\n" +
+      rows.map((row) => row.join(",")).join("\n");
 
-  const blob = new Blob([csvContent], {
-    type: "text/csv;charset=utf-8;",
-  });
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "members.csv");
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "members.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="members-page">
-      {/* HEADER */}
       <div className="members-header">
         <div>
           <h1>All Members</h1>
@@ -102,12 +113,10 @@ const AllMembers = () => {
         </div>
 
         <button className="export-btn" onClick={exportToCSV}>
-           <FiDownload /> Export List
+          <FiDownload /> Export List
         </button>
-
       </div>
 
-      {/* SEARCH + FILTER */}
       <div className="members-toolbar">
         <div className="search-box">
           <FiSearch />
@@ -123,7 +132,6 @@ const AllMembers = () => {
         </button>
       </div>
 
-      {/* TABLE */}
       <div className="members-table">
         <div className="table-head">
           <span>Member</span>
@@ -141,9 +149,11 @@ const AllMembers = () => {
           <p className="loading">No members found</p>
         ) : (
           members.map((m, i) => (
-            <div className="table-row" key={m.id}>
+            <div className="table-row" key={m._id}>
               <div className="member">
-                <div className="avatar">{m.name.charAt(0)}</div>
+                <div className="avatar">
+                  {m.name.charAt(0)}
+                </div>
                 <span>{m.name}</span>
               </div>
 
@@ -171,8 +181,10 @@ const AllMembers = () => {
                 {m.status}
               </span>
 
-              {/* ACTIONS */}
-              <div className="action-wrapper" ref={actionRef}>
+              <div
+                className="action-wrapper"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <FiMoreVertical
                   className="action-icon"
                   onClick={() =>
@@ -190,7 +202,10 @@ const AllMembers = () => {
                     <div className="action-item">
                       <FiEdit2 /> Edit Member
                     </div>
-                    <div className="action-item delete">
+                    <div
+                      className="action-item delete"
+                      onClick={() => handleDelete(m._id)}
+                    >
                       <FiTrash2 /> Delete
                     </div>
                   </div>

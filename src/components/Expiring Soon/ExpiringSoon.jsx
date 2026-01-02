@@ -1,35 +1,8 @@
 import "./ExpiringSoon.css";
 import { useNavigate } from "react-router-dom";
-const members = [
-  {
-    name: "Ahmed Hassan",
-    phone: "0300-1234567",
-    plan: "Monthly",
-    days: 1,
-    initial: "A",
-  },
-  {
-    name: "Fatima Zahra",
-    phone: "0321-9876543",
-    plan: "3 Months",
-    days: 2,
-    initial: "F",
-  },
-  {
-    name: "Ali Raza",
-    phone: "0333-5678901",
-    plan: "Monthly",
-    days: 3,
-    initial: "A",
-  },
-  {
-    name: "Ayesha Khan",
-    phone: "0345-2345678",
-    plan: "6 Months",
-    days: 5,
-    initial: "A",
-  },
-];
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_BASE } from "../../config/api";
 
 const getColor = (days) => {
   if (days <= 1) return "danger";
@@ -39,6 +12,26 @@ const getColor = (days) => {
 
 const ExpiringSoon = () => {
   const navigate = useNavigate();
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExpiringSoon = async () => {
+      try {
+        const res = await axios.get(
+          `${API_BASE}/dashboard/expiring-soon`
+        );
+        setMembers(res.data);
+      } catch (error) {
+        console.error("Failed to load expiring members", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExpiringSoon();
+  }, []);
+
   return (
     <div className="expiring-card">
       {/* Header */}
@@ -47,30 +40,44 @@ const ExpiringSoon = () => {
           <h3>Expiring Soon</h3>
           <p>Next 7 days</p>
         </div>
-        <span className="view-all" onClick={() => navigate("/members/expiring")}>View All →</span>
+        <span
+          className="view-all"
+          onClick={() => navigate("/members/expiring")}
+        >
+          View All →
+        </span>
       </div>
 
       {/* List */}
       <div className="expiring-list">
-        {members.map((m, index) => (
-          <div className="expiring-item" key={index}>
-            <div className="left">
-              <div className="avatar">{m.initial}</div>
-              <div>
-                <h4>{m.name}</h4>
-                <span>{m.phone}</span>
-              </div>
-            </div>
+        {loading && <p className="loading">Loading...</p>}
 
-            <div className="right">
-              <div className="plan">{m.plan}</div>
-              <div className={`days ${getColor(m.days)}`}>
-                {m.days} day{m.days > 1 && "s"}
+        {!loading && members.length === 0 && (
+          <p className="empty">No memberships expiring soon</p>
+        )}
+
+        {!loading &&
+          members.map((m) => (
+            <div className="expiring-item" key={m._id}>
+              <div className="left">
+                <div className="avatar">
+                  {m.fullName.charAt(0)}
+                </div>
+                <div>
+                  <h4>{m.fullName}</h4>
+                  <span>{m.phone}</span>
+                </div>
               </div>
-              <button className="renew-btn">Renew</button>
+
+              <div className="right">
+                <div className="plan">{m.plan}</div>
+                <div className={`days ${getColor(m.daysLeft)}`}>
+                  {m.daysLeft} day{m.daysLeft > 1 && "s"}
+                </div>
+                <button className="renew-btn">Renew</button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );

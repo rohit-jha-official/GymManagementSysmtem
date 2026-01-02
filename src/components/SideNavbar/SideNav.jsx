@@ -152,11 +152,11 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
         {/* RFID */}
         <div className="nav-item" onClick={() => toggleMenu("rfid")}>
           <FaIdCard />
-          <span>RFID Cards</span>
-          <FaChevronDown className={`chevron ${openMenu.rfid ? "rotate" : ""}`} />
+          <span>RFID Cards (coming soon)</span>
+          {/* <FaChevronDown className={`chevron ${openMenu.rfid ? "rotate" : ""}`} /> */}
         </div>
 
-        {openMenu.rfid && (
+        {/* {openMenu.rfid && (
           <div className="submenu">
             <NavLink to="/rfid" end onClick={handleNavClick}
               className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
@@ -168,7 +168,7 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
               Replace Lost Card
             </NavLink>
           </div>
-        )}
+        )} */}
 
         {/* FOOTER */}
         <div className="nav-footer">

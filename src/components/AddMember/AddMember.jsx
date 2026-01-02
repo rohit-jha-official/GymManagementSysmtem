@@ -134,7 +134,7 @@ const AddMember = () => {
       </div>
 
       {/* PROFILE PHOTO */}
-      <div className="card">
+      {/* <div className="card">
         <div className="card-title">Profile Photo</div>
 
         <div className="photo-section">
@@ -168,7 +168,7 @@ const AddMember = () => {
             </div>
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* PERSONAL INFO */}
       <div className="card">

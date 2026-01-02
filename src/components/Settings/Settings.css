@@ -211,7 +211,7 @@ input {
   position: absolute;
   width: 18px;
   height: 18px;
-  background: #000;
+  /* background: #000; */
   border-radius: 50%;
   top: 2px;
   left: 2px;
@@ -426,7 +426,7 @@ input {
   position: absolute;
   width: 18px;
   height: 18px;
-  background: #000;
+  /* background: #000; */
   border-radius: 50%;
   top: 2px;
   left: 2px;
@@ -630,7 +630,7 @@ input {
   content: "";
   width: 18px;
   height: 18px;
-  background: #000;
+  /* background: #000; */
   border-radius: 50%;
   position: absolute;
   top: 2px;
@@ -775,7 +775,7 @@ input {
   content: "";
   width: 18px;
   height: 18px;
-  background: #000;
+  /* background: #000; */
   border-radius: 50%;
   position: absolute;
   top: 2px;
@@ -1051,10 +1051,10 @@ input {
     height: 20px;
   }
 
-  .toggle::after {
+  /* .toggle::after {
     width: 16px;
     height: 16px;
-  }
+  } */
 
   .toggle.active::after {
     left: 20px;

@@ -17,7 +17,8 @@ const Topbar = ({ toggleSidebar }) => {
   const profileRef = useRef(null);
   const navigate = useNavigate();
 
-  const isLoggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
+  /* ✅ TOKEN-BASED LOGIN CHECK */
+  const isLoggedIn = !!localStorage.getItem("token");
 
   /* LIVE TIME */
   useEffect(() => {
@@ -25,7 +26,7 @@ const Topbar = ({ toggleSidebar }) => {
     return () => clearInterval(timer);
   }, []);
 
-  /* CLOSE PROFILE DROPDOWN */
+  /* CLOSE PROFILE DROPDOWN ON OUTSIDE CLICK */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -37,12 +38,14 @@ const Topbar = ({ toggleSidebar }) => {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const time = now.toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  }).toUpperCase();
+  const time = now
+    .toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    })
+    .toUpperCase();
 
   const date = now.toLocaleDateString("en-IN", {
     weekday: "long",
@@ -51,9 +54,10 @@ const Topbar = ({ toggleSidebar }) => {
     day: "numeric",
   });
 
-  /* LOGOUT */
+  /* ✅ LOGOUT */
   const handleLogout = () => {
-    localStorage.removeItem("isAdminLoggedIn");
+    localStorage.removeItem("token");
+    localStorage.removeItem("admin");
     navigate("/login/admin");
   };
 

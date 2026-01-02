@@ -1,7 +1,10 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Layout from "./components/Layout/Layout";
+
+/* DASHBOARD PAGES */
 import Dashboard from "./components/Dashboard/Dashboard";
 import AllMembers from "./components/All Member/AllMember";
 import AddMember from "./components/AddMember/AddMember";
@@ -19,42 +22,54 @@ import CurrentlyActive from "./components/Attendance_1/CurrentlyActive";
 import TotalCheck_ins from "./components/Attendance_1/TotalCheck_ins";
 import CheckedOutMembers from "./components/Attendance_1/Checked_out";
 
+/* AUTH PAGES */
+import Login from "./components/Auth/Login";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
-
-import Login from "./components/Auth/Login";
-import Signup from "./components/Auth/Signup";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* AUTH ROUTES (NO LAYOUT) */}
+        {/* 🔓 AUTH ROUTES (NO LAYOUT) */}
         <Route path="/login/:role" element={<Login />} />
-        <Route path="/signup/:role" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-        {/* MAIN APP WITH LAYOUT */}
-        <Route element={<Layout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/members" element={<AllMembers />} />
-          <Route path="/members/add" element={<AddMember />} />
-          <Route path="/attendance/search" element={<SearchAttendance />} />
-          <Route path="/attendance/reports" element={<DownloadReports />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/rfid" element={<Cardlist />} />
-          <Route path="/rfid/replace" element={<Replace />} />
-          <Route path="/members/expired" element={<ExpiredMembers />} />
-          <Route path="/members/expiring" element={<ExpiringSoon />} />
-          <Route path="/attendance/today" element={<Attendance />} />
-          <Route path="/plan" element={<MembershipPlans />} />
-          <Route path="/attendance/total-checkins" element={<TotalCheck_ins />} />
-          <Route path="/attendance/active" element={<CurrentlyActive />} />
-          <Route path="/attendance/checked-out" element={<CheckedOutMembers />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
+        {/* 🔁 DEFAULT → LOGIN */}
+        <Route path="/" element={<Navigate to="/login/admin" replace />} />
+
+        {/* 🔐 PROTECTED ROUTES */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+
+            <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* MEMBERS */}
+            <Route path="/members" element={<AllMembers />} />
+            <Route path="/members/add" element={<AddMember />} />
+            <Route path="/members/expired" element={<ExpiredMembers />} />
+            <Route path="/members/expiring" element={<ExpiringSoon />} />
+
+            {/* ATTENDANCE */}
+            <Route path="/attendance/search" element={<SearchAttendance />} />
+            <Route path="/attendance/reports" element={<DownloadReports />} />
+            <Route path="/attendance/today" element={<Attendance />} />
+            <Route path="/attendance/total-checkins" element={<TotalCheck_ins />} />
+            <Route path="/attendance/active" element={<CurrentlyActive />} />
+            <Route path="/attendance/checked-out" element={<CheckedOutMembers />} />
+
+            {/* RFID */}
+            <Route path="/rfid" element={<Cardlist />} />
+            <Route path="/rfid/replace" element={<Replace />} />
+
+            {/* OTHER */}
+            <Route path="/plan" element={<MembershipPlans />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/settings" element={<Settings />} />
+
+          </Route>
         </Route>
 
       </Routes>

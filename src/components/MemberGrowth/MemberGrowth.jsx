@@ -11,25 +11,25 @@ import {
 import "./MemberGrowth.css";
 
 const yearData = [
-  { month: "Jan", members: 120 },
-  { month: "Feb", members: 145 },
-  { month: "Mar", members: 165 },
-  { month: "Apr", members: 190 },
-  { month: "May", members: 215 },
-  { month: "Jun", members: 250 },
-  { month: "Jul", members: 280 },
-  { month: "Aug", members: 300 },
-  { month: "Sep", members: 325 },
-  { month: "Oct", members: 360 },
-  { month: "Nov", members: 390 },
-  { month: "Dec", members: 420 },
+  { month: "Jan", members: 0 },
+  { month: "Feb", members: 0 },
+  { month: "Mar", members: 0 },
+  { month: "Apr", members: 0 },
+  { month: "May", members: 0 },
+  { month: "Jun", members: 0 },
+  { month: "Jul", members: 0 },
+  { month: "Aug", members: 0 },
+  { month: "Sep", members: 0 },
+  { month: "Oct", members: 0 },
+  { month: "Nov", members: 0 },
+  { month: "Dec", members: 0 },
 ];
 
 const monthData = [
-  { week: "W1", members: 320 },
-  { week: "W2", members: 340 },
-  { week: "W3", members: 365 },
-  { week: "W4", members: 390 },
+  { week: "W1", members: 0 },
+  { week: "W2", members: 0 },
+  { week: "W3", members: 0 },
+  { week: "W4", members: 0 },
 ];
 
 const MemberGrowth = () => {

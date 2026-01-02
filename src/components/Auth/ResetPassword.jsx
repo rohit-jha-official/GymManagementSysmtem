@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { API_BASE } from "../../config/api";
-import "./Auth.css"; // optional
+import "./auth.css"; // optional
 
 export default function ResetPassword() {
   const { token } = useParams();

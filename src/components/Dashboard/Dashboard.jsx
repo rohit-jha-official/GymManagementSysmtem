@@ -59,7 +59,7 @@ const Dashboard = () => {
           <div>
             <p>Total Members</p>
             <h2>{stats.totalMembers}</h2>
-            <span className="positive">+12% from last month</span>
+            {/* <span className="positive">+12% from last month</span> */}
           </div>
           <FaUsers
             className="icon orange clickable"
@@ -70,8 +70,8 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Today's Check-ins</p>
-            <h2>156</h2>
-            <span>82% of active members</span>
+            {/* <h2>156</h2>
+            <span>82% of active members</span> */}
           </div>
           <FaUserCheck
             className="icon green clickable"
@@ -82,8 +82,8 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Active RFID Cards</p>
-            <h2>385</h2>
-            <span>35 unassigned</span>
+            {/* <h2>385</h2>
+            <span>35 unassigned</span> */}
           </div>
           <FaIdCard
             className="icon orange clickable"
@@ -109,8 +109,8 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>This Month's Revenue</p>
-            <h2>Rs. 485,000</h2>
-            <span className="positive">+18% from last month</span>
+            {/* <h2>Rs. 485,000</h2>
+            <span className="positive">+18% from last month</span> */}
           </div>
           <FaWallet className="icon green" />
         </div>
@@ -127,8 +127,8 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Renewal Rate</p>
-            <h2>78%</h2>
-            <span className="positive">+5% improvement</span>
+            {/* <h2>78%</h2>
+            <span className="positive">+5% improvement</span> */}
           </div>
           <FaRedoAlt className="icon orange" />
         </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../../config/api";
-import "./Auth.css"; // optional, only if you have auth styles
+import "./auth.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -28,24 +28,46 @@ export default function ForgotPassword() {
 
   return (
     <div className="auth-page">
-      <h2>Forgot Password</h2>
-      <p>Enter your admin email to receive a reset link</p>
+      {/* LOGO (same as login) */}
+      <div className="auth-logo">
+        <span className="logo-icon">☰</span>
+        <div>
+          <h3>PowerFit</h3>
+          <p>Management</p>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="auth-form">
-        <input
-          type="email"
-          placeholder="Admin email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      {/* CARD */}
+      <div className="auth-card">
+        <h2>Forgot Password</h2>
+        <p className="auth-subtext">
+          Enter your admin email to receive a reset link
+        </p>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send Reset Link"}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div className="input-box">
+            <input
+              type="email"
+              placeholder="Admin email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-      {message && <p className="auth-message">{message}</p>}
+          <button
+            type="submit"
+            className="primary-btn"
+            disabled={loading}
+          >
+            {loading ? "Sending..." : "Send Reset Link"}
+          </button>
+        </form>
+
+        {message && (
+          <p className="auth-message">{message}</p>
+        )}
+      </div>
     </div>
   );
 }

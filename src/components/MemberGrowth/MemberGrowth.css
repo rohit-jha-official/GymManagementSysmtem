@@ -1,3 +1,4 @@
+/* ================= CARD ================= */
 .member-growth {
   background: linear-gradient(145deg, #11151c, #0c1016);
   border-radius: 16px;
@@ -5,86 +6,71 @@
   height: 100%;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 .growth-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  padding-right: 40px;
 }
 
 .growth-header h3 {
   color: #fff;
   font-size: 18px;
-  margin-bottom: 4px;
+  margin: 0;
 }
 
 .growth-header p {
   color: #9ca3af;
   font-size: 13px;
+  margin-top: 4px;
 }
 
-/* TOGGLE */
+/* ================= TOGGLE ================= */
 .toggle {
   display: flex;
   gap: 8px;
+  margin-right: 60px;
 }
 
-/* .toggle button {
-  background: #1b2028;
-  color: #cbd5e1;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 13px;
-} */
-
-/* .toggle button.active {
-  background: #ff8a00;
-  color: #000;
-  font-weight: 600;
-} */
-
-/* CHART */
-.chart-wrapper {
-  width: 100%;
-  height: 260px;
-}
-
-.growth-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  padding-right: 40px; /* 👈 ADD THIS */
-}
-.toggle {
-  display: flex;
-  gap: 8px;
-  margin-right: 60px; /* 👈 increase/decrease as needed */
-}
 .toggle button {
   background: #1b2028;
   color: #cbd5e1;
   border: none;
-  padding: 7px 16px;
-  /* border-radius: 999px; */
+  padding: 7px 18px;
+  border-radius: 999px;      /* pill shape */
   cursor: pointer;
   font-size: 13px;
+  line-height: 1;
 
-  outline: none;          /* 🔥 remove white border */
-  box-shadow: none;       /* 🔥 remove black ring */
-}
-.toggle button:focus,
-.toggle button:focus-visible {
   outline: none;
   box-shadow: none;
+  appearance: none;
+  transition: background 0.2s ease, color 0.2s ease;
 }
+
+.toggle button:hover {
+  background: #232833;
+}
+
+/* ACTIVE STATE */
 .toggle button.active {
   background: #ff8a00;
   color: #000;
   font-weight: 600;
 }
 
+/* REMOVE DEFAULT BROWSER STYLES */
+.toggle button:focus,
+.toggle button:focus-visible,
+.toggle button:active {
+  outline: none;
+  box-shadow: none;
+}
 
+/* ================= CHART ================= */
+.chart-wrapper {
+  width: 100%;
+  height: 260px;
+}

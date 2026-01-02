@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./auth.css";
-import { FaUser, FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+
 const Login = () => {
   const { role } = useParams(); // admin | user
   const navigate = useNavigate();
@@ -14,8 +14,17 @@ const Login = () => {
     remember: false,
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  /* 🔁 REDIRECT IF ALREADY LOGGED IN */
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
@@ -25,7 +34,7 @@ const Login = () => {
     }));
   };
 
-  // 🔐 REAL BACKEND LOGIN
+  /* 🔐 BACKEND LOGIN */
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -37,16 +46,13 @@ const Login = () => {
         {
           email: formData.email,
           password: formData.password,
+          role: role,
         }
       );
 
-      // Save JWT token
       localStorage.setItem("token", res.data.token);
-
-      // Save admin info (optional)
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
 
-      // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
       setError(
@@ -86,23 +92,30 @@ const Login = () => {
             />
           </div>
 
-          {/* PASSWORD */}
-          <div className="input-box">
+          {/* PASSWORD WITH TOGGLE */}
+          <div className="input-box password-box">
             <FaLock />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
               required
             />
+
+            <span
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
 
-          {/* ERROR MESSAGE */}
+          {/* ERROR */}
           {error && <p className="error-text">{error}</p>}
 
-          {/* LOGIN ROW */}
+          {/* ACTION ROW */}
           <div className="login-row">
             <button
               type="submit"
@@ -124,16 +137,12 @@ const Login = () => {
           </div>
         </form>
 
-        <Link to="/forgot-password" className="forgot-link">
-           Forgot Password?
-        </Link>
-
-        <p className="switch-text">
-          Don’t have an account?{" "}
-          <span onClick={() => navigate(`/signup/${role}`)}>
-            Sign up here
-          </span>
-        </p>
+        {/* CENTERED FORGOT PASSWORD */}
+        <div style={{ textAlign: "center", marginTop: "16px" }}>
+          <Link to="/forgot-password" className="forgot-link">
+            Forgot Password?
+          </Link>
+        </div>
       </div>
     </div>
   );

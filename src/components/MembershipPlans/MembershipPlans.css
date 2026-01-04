@@ -319,3 +319,39 @@
     font-size: 13px;
   }
 }
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;          /* 🔥 allows features to expand */
+}
+
+.members {
+  background: #111827;
+  color: #e5e7eb;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-align: center;
+  width: fit-content;
+
+  margin: 12px auto 14px; /* 🔥 centers + keeps fixed spacing */
+}
+/* BADGE */
+.badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.badge.popular {
+  background: #f7910b;
+  color: #000000;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}

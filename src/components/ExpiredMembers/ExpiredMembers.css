@@ -98,3 +98,27 @@
   min-width: 80px;
   font-weight: 500;
 }
+/* TABLE SCROLL WRAPPER */
+.expired-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* FIXED TABLE WIDTH */
+.expired-table {
+  min-width: 950px; /* 🔥 important */
+  background: #151922;
+  border-radius: 12px;
+  overflow: hidden;
+}
+@media (max-width: 1000px) {
+  .expired-page {
+    padding: 18px;
+  }
+
+  .expired-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}

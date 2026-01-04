@@ -1,0 +1,366 @@
+* {
+  box-sizing: border-box;
+}
+
+.renew-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 16px;
+  overflow-y: auto;
+  z-index: 200000;
+}
+
+.renew-modal {
+  width: 480px;
+  background: linear-gradient(180deg, #0e1218, #0b0f14);
+  border-radius: 18px;
+  padding: 18px;
+  color: #fff;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+}
+
+/* HEADER */
+.renew-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.renew-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px; /* ⬆ bigger */
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px; /* ⬆ bigger */
+  cursor: pointer;
+}
+/* 🔥 REMOVE WHITE FOCUS BORDER ON CLOSE BUTTON */
+.close-btn:focus,
+.close-btn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* MEMBER CARD */
+.member-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px; /* ⬆ */
+  background: #121722;
+  border-radius: 12px;
+  margin: 16px 0;
+}
+
+.avatar {
+  width: 42px; /* ⬆ */
+  height: 42px;
+  border-radius: 50%;
+  background: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: #000;
+}
+
+/* RENEW ICON */
+.renew-icon {
+  color: #f48a00;
+}
+
+/* MEMBER INFO */
+.member-info h4 {
+  margin: 0;
+  font-size: 16px; /* ⬆ */
+}
+
+.member-info p {
+  margin: 2px 0;
+  font-size: 13px; /* ⬆ */
+}
+
+.member-info span {
+  font-size: 12px; /* ⬆ */
+}
+
+/* SECTION TITLE */
+.section-title {
+  font-size: 14px; /* ⬆ */
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* PLANS */
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan {
+  position: relative;
+  background: #111827;
+  padding: 14px 14px 14px 42px; /* ⬆ */
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.plan h4 {
+  margin: 0;
+  font-size: 15px; /* ⬆ */
+}
+
+.plan span {
+  font-size: 12px; /* ⬆ */
+}
+
+.plan strong {
+  font-size: 15px; /* ⬆ */
+  color: #f59e0b;
+}
+
+.plan.active {
+  border-color: #f59e0b;
+  background: linear-gradient(
+    180deg,
+    rgba(245, 158, 11, 0.18),
+    rgba(245, 158, 11, 0.05)
+  );
+}
+
+/* RADIO DOT */
+.plan::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #6b7280;
+}
+
+.plan.active::before {
+  border-color: #f59e0b;
+}
+
+.plan.active::after {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
+/* AMOUNT */
+.amount-box {
+  margin-top: 16px;
+}
+
+.amount-box label {
+  font-size: 14px; /* ⬆ */
+  font-weight: 600;
+}
+
+.amount-box input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px; /* ⬆ */
+  font-size: 14px;
+  border-radius: 10px;
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  color: #fff;
+}
+
+.hint {
+  font-size: 12px; /* ⬆ */
+  margin-top: 6px;
+  color: #9ca3af;
+}
+
+/* CHECKBOX */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 14px; /* ⬆ */
+}
+
+.checkbox-row input[type="checkbox"] {
+  appearance: auto;
+  width: 18px;
+  height: 18px;
+  accent-color: #f59e0b;
+  cursor: pointer;
+}
+
+/* 🔥 PAYMENT SUMMARY – SOLID YELLOW */
+.summary {
+  background: #f59f0b6c;
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 18px;
+  color: #000;
+}
+
+.summary h4 {
+  font-size: 18px; /* ⬆ */
+  margin-bottom: 14px;
+  font-weight: 800;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px; /* ⬆ */
+  margin-bottom: 10px;
+  
+}
+
+.summary-row.success span:last-child {
+  color: #14532d;
+}
+
+.summary-row.danger span:last-child {
+  color: #7f1d1d;
+}
+
+.warning {
+  font-size: 14px; /* ⬆ */
+  margin-top: 10px;
+  color: #7f1d1d;
+}
+
+/* FOOTER */
+.renew-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px; /* ⬆ */
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px; /* ⬆ */
+}
+
+.btn.cancel {
+  background: #111827;
+  color: #fff;
+}
+
+.btn.confirm {
+  background: #f59e0b;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+/* PAYMENT SUMMARY – EXACT MATCH */
+.summary {
+  background: rgba(245, 158, 11, 0.18);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 16px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.12);
+}
+
+/* TITLE */
+.summary h4 {
+  font-size: 18px;
+  color: #f59e0b;
+  margin-bottom: 10px;
+}
+
+/* ROWS */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  color: #e5e7eb;
+  margin-bottom: 6px;
+}
+
+/* VALUES */
+
+
+/* PAID */
+.summary-row.success span:last-child {
+  color: #22c55e;
+}
+
+/* DUE */
+.summary-row.danger span:last-child {
+  color: #ef4444;
+}
+
+/* WARNING TEXT */
+.warning {
+  font-size: 10px;
+  color: #ef4444;
+  margin-top: 6px;
+}/* DIVIDER ABOVE DUE AMOUNT */
+.summary-divider {
+  height: 1px;
+  background: rgba(245, 158, 11, 0.3);
+  margin: 8px 0;
+}
+
+/* DUE ROW ICON */
+.due-row span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.due-icon {
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* WARNING TEXT */
+.due-warning {
+  color: #ef4444;
+}
+
+.btn.cancel:hover {
+  background: #f59e0b;   /* yellow */
+  color: #000;           /* black text */
+}
+
+/* if Cancel ever contains an icon */
+.btn.cancel:hover svg {
+  color: #000;
+}
+
+

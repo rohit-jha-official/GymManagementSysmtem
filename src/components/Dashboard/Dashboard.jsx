@@ -143,7 +143,7 @@ const Dashboard = () => {
       {/* EXPIRING + ATTENDANCE */}
       <div className="dashboard-row">
         <ExpiringSoon />
-        <TodaysAttendance />
+        {/* <TodaysAttendance /> */}
       </div>
     </>
   );

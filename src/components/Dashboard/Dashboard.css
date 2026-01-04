@@ -181,3 +181,26 @@
     margin-left: 0 !important;
   }
 }
+.dashboard-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 24px;
+}
+
+/* TABLET */
+@media (max-width: 1024px) {
+  .dashboard-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .dashboard-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

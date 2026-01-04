@@ -1,0 +1,145 @@
+/* OVERLAY */
+.edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+/* MODAL */
+.edit-modal {
+  width: 420px;
+  background: linear-gradient(180deg, #0b0f14, #0f172a);
+  border-radius: 18px;
+  padding: 20px;
+  color: #fff;
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.35);
+}
+
+/* HEADER */
+.edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.edit-header h3 {
+  color: #f59e0b;
+  font-size: 18px;
+}
+
+.edit-header button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* BODY */
+.edit-body {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-body label {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.edit-body input {
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 10px;
+  color: #fff;
+}
+
+/* BADGE OPTIONS */
+.badge-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge-option {
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.badge-option.active {
+  background: #f59e0b;
+  color: #000;
+  border-color: #f59e0b;
+}
+
+/* FEATURES */
+.features-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feature-row {
+  display: flex;
+  gap: 8px;
+}
+
+.feature-row input {
+  flex: 1;
+}
+
+.feature-row button {
+  background: #111827;
+  border: none;
+  border-radius: 8px;
+  color: #ef4444;
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* ADD FEATURE */
+.add-feature {
+  margin-top: 6px;
+  background: none;
+  border: 1px dashed #f59e0b;
+  color: #f59e0b;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* FOOTER */
+.edit-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.edit-footer .cancel {
+  background: #111827;
+  color: #fff;
+}
+
+.edit-footer .save {
+  background: #f59e0b;
+  color: #000;
+}
+
+.edit-footer button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}

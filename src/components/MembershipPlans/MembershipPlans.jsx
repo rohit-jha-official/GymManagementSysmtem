@@ -1,11 +1,21 @@
+import { useState } from "react";
 import "./MembershipPlans.css";
-import { FaBolt, FaStar, FaCrown, FaGem, FaCheck } from "react-icons/fa";
+import {
+  FaBolt,
+  FaStar,
+  FaCrown,
+  FaGem,
+  FaCheck,
+} from "react-icons/fa";
 
-const plans = [
+import EditPlanModal from "../EditPlanModal/EditPlanModal";
+
+/* 🔥 INITIAL PLANS (PRICE AS NUMBER ONLY) */
+const initialPlans = [
   {
     name: "Monthly",
     duration: "1 Month",
-    price: "₹999",
+    price: 999,
     icon: <FaBolt />,
     features: [
       "Full Gym Access",
@@ -14,12 +24,12 @@ const plans = [
       "1 PT Session",
     ],
     members: 45,
-    popular: false,
+    badge: null,
   },
   {
     name: "Quarterly",
     duration: "3 Months",
-    price: "₹2,499",
+    price: 2499,
     icon: <FaStar />,
     features: [
       "Full Gym Access",
@@ -29,12 +39,12 @@ const plans = [
       "Diet Plan",
     ],
     members: 78,
-    popular: true,
+    badge: "popular",
   },
   {
     name: "Half Yearly",
     duration: "6 Months",
-    price: "₹4,499",
+    price: 4499,
     icon: <FaCrown />,
     features: [
       "Full Gym Access",
@@ -45,12 +55,12 @@ const plans = [
       "Sauna Access",
     ],
     members: 52,
-    popular: false,
+    badge: "very",
   },
   {
     name: "Yearly",
     duration: "12 Months",
-    price: "₹7,999",
+    price: 7999,
     icon: <FaGem />,
     features: [
       "Full Gym Access",
@@ -62,11 +72,25 @@ const plans = [
       "Guest Passes",
     ],
     members: 34,
-    popular: false,
+    badge: "premium",
   },
 ];
 
 const MembershipPlans = () => {
+  /* ✅ STATE */
+  const [plans, setPlans] = useState(initialPlans);
+  const [editingPlan, setEditingPlan] = useState(null);
+
+  /* ✅ SAVE HANDLER FROM MODAL */
+  const handleSavePlan = (updatedPlan) => {
+    setPlans((prev) =>
+      prev.map((p) =>
+        p.name === updatedPlan.name ? updatedPlan : p
+      )
+    );
+    setEditingPlan(null);
+  };
+
   return (
     <div className="membership-page">
       {/* HEADER */}
@@ -75,38 +99,45 @@ const MembershipPlans = () => {
         <p>Manage gym membership plans and pricing</p>
       </div>
 
-      {/* PLANS */}
+      {/* PLANS GRID */}
       <div className="plans-grid">
         {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={`plan-card ${plan.popular ? "popular" : ""}`}
-          >
-            {plan.popular && <span className="popular-badge">Popular</span>}
+          <div key={plan.name} className="plan-card">
+            {/* 🔥 BADGE */}
+            {plan.badge && (
+              <span className={`badge ${plan.badge}`}>
+                {plan.badge === "popular" && "Popular"}
+                {plan.badge === "very" && "Very Popular"}
+                {plan.badge === "premium" && "Premium"}
+              </span>
+            )}
 
             <div className="plan-icon">{plan.icon}</div>
 
             <h2>{plan.name}</h2>
             <p className="duration">{plan.duration}</p>
 
-            <div className="price">{plan.price}</div>
+            {/* 💰 PRICE DISPLAY */}
+            <div className="price">₹{plan.price}</div>
 
+            {/* FEATURES */}
             <ul className="features">
-              {plan.features.map((f) => (
-                <li key={f}>
+              {plan.features.map((f, i) => (
+                <li key={i}>
                   <FaCheck /> {f}
                 </li>
               ))}
             </ul>
 
+            {/* MEMBERS */}
             <div className="members">
               {plan.members} Active Members
             </div>
 
+            {/* EDIT */}
             <button
-              className={`edit-btn ${
-                plan.popular ? "highlight" : ""
-              }`}
+              className="edit-btn"
+              onClick={() => setEditingPlan(plan)}
             >
               Edit Plan
             </button>
@@ -117,27 +148,28 @@ const MembershipPlans = () => {
       {/* STATISTICS */}
       <div className="stats-card">
         <h2>Plan Statistics</h2>
-        <p className="sub-text">Overview of membership distribution</p>
+        <p className="sub-text">
+          Overview of membership distribution
+        </p>
 
         <div className="stats-grid">
-          <div>
-            <span className="counttt">45</span>
-            <span>Monthly Members</span>
-          </div>
-          <div>
-            <span className="counttt">78</span>
-            <span>Quarterly Members</span>
-          </div>
-          <div>
-            <span className="counttt">52</span>
-            <span>Half Yearly Members</span>
-          </div>
-          <div>
-            <span className="counttt">34</span>
-            <span>Yearly Members</span>
-          </div>
+          {plans.map((p) => (
+            <div key={p.name}>
+              <span className="counttt">{p.members}</span>
+              <span>{p.name} Members</span>
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* 🔥 EDIT PLAN MODAL */}
+      {editingPlan && (
+        <EditPlanModal
+          plan={editingPlan}
+          onClose={() => setEditingPlan(null)}
+          onSave={handleSavePlan}
+        />
+      )}
     </div>
   );
 };

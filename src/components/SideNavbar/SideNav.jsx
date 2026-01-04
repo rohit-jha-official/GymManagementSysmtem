@@ -119,28 +119,28 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
         {/* ATTENDANCE */}
         <div className="nav-item" onClick={() => toggleMenu("attendance")}>
           <FaCalendarCheck />
-          <span>Attendance</span>
-          <FaChevronDown className={`chevron ${openMenu.attendance ? "rotate" : ""}`} />
+          <span>Attendance(coming soon)</span>
+          {/* <FaChevronDown className={`chevron ${openMenu.attendance ? "rotate" : ""}`} /> */}
         </div>
 
-        {openMenu.attendance && (
+        {/* {openMenu.attendance && (
           <div className="submenu">
             <NavLink to="/attendance/today" onClick={handleNavClick}
               className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaCalendarCheck /> Today’s Attendance
-            </NavLink>
+            </NavLink> */}
 
-            <NavLink to="/attendance/search" onClick={handleNavClick}
+            {/* <NavLink to="/attendance/search" onClick={handleNavClick}
               className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaSearch /> Search Records
-            </NavLink>
+            </NavLink> */}
 
-            <NavLink to="/attendance/reports" onClick={handleNavClick}
+            {/* <NavLink to="/attendance/reports" onClick={handleNavClick}
               className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaDownload /> Download Reports
             </NavLink>
           </div>
-        )}
+        )} */}
 
         {/* MEMBERSHIP */}
         <NavLink to="/plan" onClick={handleNavClick}

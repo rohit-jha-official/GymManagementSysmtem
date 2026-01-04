@@ -115,3 +115,32 @@
   border-radius: 8px;
   cursor: pointer;
 }
+/* TABLE SCROLL WRAPPER */
+.expiring-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* KEEP TABLE WIDTH FIXED */
+.expiring-table {
+  min-width: 950px; /* 🔥 key line */
+  background: #151922;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media (max-width: 1000px) {
+  .expiring-page {
+    padding: 18px;
+  }
+
+  .expiring-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .reminder-btn {
+    align-self: flex-end;
+  }
+}

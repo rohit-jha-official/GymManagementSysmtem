@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../../config/api";
+import RenewMembership from "../RenewMembership/RenewMembership"; // ✅ ADD
 
 const getColor = (days) => {
   if (days <= 1) return "danger";
@@ -14,6 +15,10 @@ const ExpiringSoon = () => {
   const navigate = useNavigate();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // ✅ NEW STATES
+  const [showRenew, setShowRenew] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   useEffect(() => {
     const fetchExpiringSoon = async () => {
@@ -31,6 +36,16 @@ const ExpiringSoon = () => {
 
     fetchExpiringSoon();
   }, []);
+
+  // ✅ HANDLER
+  const handleRenewClick = (member) => {
+    setSelectedMember({
+      name: member.fullName,
+      phone: member.phone,
+      plan: member.plan,
+    });
+    setShowRenew(true);
+  };
 
   return (
     <div className="expiring-card">
@@ -74,11 +89,26 @@ const ExpiringSoon = () => {
                 <div className={`days ${getColor(m.daysLeft)}`}>
                   {m.daysLeft} day{m.daysLeft > 1 && "s"}
                 </div>
-                <button className="renew-btn">Renew</button>
+
+                {/* ✅ UPDATED */}
+                <button
+                  className="renew-btn"
+                  onClick={() => handleRenewClick(m)}
+                >
+                  Renew
+                </button>
               </div>
             </div>
           ))}
       </div>
+
+      {/* ✅ RENEW MODAL */}
+      {showRenew && (
+        <RenewMembership
+          member={selectedMember}
+          onClose={() => setShowRenew(false)}
+        />
+      )}
     </div>
   );
 };

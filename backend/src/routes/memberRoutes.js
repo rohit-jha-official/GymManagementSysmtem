@@ -4,7 +4,7 @@ import {
   getAllMembers,
   getExpiredMembers,
   getExpiringSoon,
-  renewMember,
+  renewMembership,
   deleteMember,
 } from "../controllers/memberController.js";
 
@@ -14,7 +14,8 @@ router.post("/", addMember);
 router.get("/", getAllMembers);
 router.get("/expired", getExpiredMembers);
 router.get("/expiring", getExpiringSoon);
-router.put("/renew/:id", renewMember);
 router.delete("/:id", deleteMember);
+router.post("/renew/:id", renewMembership);
+
 export default router;
 

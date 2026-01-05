@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./MembershipPlans.css";
 import {
   FaBolt,
@@ -7,88 +7,68 @@ import {
   FaGem,
   FaCheck,
 } from "react-icons/fa";
-
+import axios from "axios";
+import { API_BASE } from "../../config/api";
 import EditPlanModal from "../EditPlanModal/EditPlanModal";
 
-/* 🔥 INITIAL PLANS (PRICE AS NUMBER ONLY) */
-const initialPlans = [
-  {
-    name: "Monthly",
-    duration: "1 Month",
-    price: 999,
-    icon: <FaBolt />,
-    features: [
-      "Full Gym Access",
-      "Locker Room",
-      "Basic Equipment",
-      "1 PT Session",
-    ],
-    members: 45,
-    badge: null,
-  },
-  {
-    name: "Quarterly",
-    duration: "3 Months",
-    price: 2499,
-    icon: <FaStar />,
-    features: [
-      "Full Gym Access",
-      "Locker Room",
-      "All Equipment",
-      "3 PT Sessions",
-      "Diet Plan",
-    ],
-    members: 78,
-    badge: "popular",
-  },
-  {
-    name: "Half Yearly",
-    duration: "6 Months",
-    price: 4499,
-    icon: <FaCrown />,
-    features: [
-      "Full Gym Access",
-      "Locker Room",
-      "All Equipment",
-      "6 PT Sessions",
-      "Diet Plan",
-      "Sauna Access",
-    ],
-    members: 52,
-    badge: "very",
-  },
-  {
-    name: "Yearly",
-    duration: "12 Months",
-    price: 7999,
-    icon: <FaGem />,
-    features: [
-      "Full Gym Access",
-      "Locker Room",
-      "All Equipment",
-      "12 PT Sessions",
-      "Diet Plan",
-      "Sauna Access",
-      "Guest Passes",
-    ],
-    members: 34,
-    badge: "premium",
-  },
-];
+/* 🔥 ICON MAP (UI UNCHANGED) */
+const planIcons = {
+  Monthly: <FaBolt />,
+  Quarterly: <FaStar />,
+  "Half Yearly": <FaCrown />,
+  Yearly: <FaGem />,
+};
 
 const MembershipPlans = () => {
-  /* ✅ STATE */
-  const [plans, setPlans] = useState(initialPlans);
+  const [plans, setPlans] = useState([]);
   const [editingPlan, setEditingPlan] = useState(null);
 
-  /* ✅ SAVE HANDLER FROM MODAL */
-  const handleSavePlan = (updatedPlan) => {
-    setPlans((prev) =>
-      prev.map((p) =>
-        p.name === updatedPlan.name ? updatedPlan : p
-      )
-    );
-    setEditingPlan(null);
+  /* ✅ FETCH PLANS FROM BACKEND */
+  const fetchPlans = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/plans`);
+
+      const formattedPlans = res.data.map((p) => ({
+        _id: p._id,
+        name: p.name,
+        duration: `${p.durationMonths} Months`,
+        price: p.price,
+        icon: planIcons[p.name],
+        features: p.features,
+        members: p.activeMembers, // ✅ FROM DB
+        badge: p.isPremium
+          ? "premium"
+          : p.isPopular
+          ? "popular"
+          : null,
+      }));
+
+      setPlans(formattedPlans);
+    } catch (err) {
+      console.error("Failed to load plans", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  /* ✅ SAVE HANDLER (ADMIN EDIT) */
+  const handleSavePlan = async (updatedPlan) => {
+    try {
+      await axios.put(
+        `${API_BASE}/plans/${updatedPlan._id}`,
+        {
+          price: updatedPlan.price,
+          features: updatedPlan.features,
+        }
+      );
+
+      fetchPlans(); // refresh real data
+      setEditingPlan(null);
+    } catch (error) {
+      alert("Failed to update plan");
+    }
   };
 
   return (
@@ -107,7 +87,6 @@ const MembershipPlans = () => {
             {plan.badge && (
               <span className={`badge ${plan.badge}`}>
                 {plan.badge === "popular" && "Popular"}
-                {plan.badge === "very" && "Very Popular"}
                 {plan.badge === "premium" && "Premium"}
               </span>
             )}
@@ -117,7 +96,7 @@ const MembershipPlans = () => {
             <h2>{plan.name}</h2>
             <p className="duration">{plan.duration}</p>
 
-            {/* 💰 PRICE DISPLAY */}
+            {/* 💰 PRICE */}
             <div className="price">₹{plan.price}</div>
 
             {/* FEATURES */}
@@ -129,7 +108,7 @@ const MembershipPlans = () => {
               ))}
             </ul>
 
-            {/* MEMBERS */}
+            {/* MEMBERS (REAL DATA) */}
             <div className="members">
               {plan.members} Active Members
             </div>
@@ -162,7 +141,7 @@ const MembershipPlans = () => {
         </div>
       </div>
 
-      {/* 🔥 EDIT PLAN MODAL */}
+      {/* EDIT PLAN MODAL */}
       {editingPlan && (
         <EditPlanModal
           plan={editingPlan}

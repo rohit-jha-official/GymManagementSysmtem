@@ -11,7 +11,7 @@ const memberSchema = new mongoose.Schema(
 
     plan: {
       type: String,
-      enum: ["Monthly", "3 Months", "6 Months", "12 Months"],
+      enum: ["Monthly", "Quarterly", "Half Yearly", "Yearly"],
       required: true,
     },
 

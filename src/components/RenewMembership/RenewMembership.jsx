@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FaSyncAlt, FaCheck } from "react-icons/fa";
+import axios from "axios";
+import { API_BASE } from "../../config/api";
 import "./RenewMembership.css";
 
 /* 🔹 PLANS */
@@ -11,23 +13,57 @@ const plans = [
   { name: "Yearly", duration: "12 Months", price: 7199 },
 ];
 
-/* 🔹 ADMISSION CHARGE */
 const ADMISSION_CHARGE = 700;
 
 const RenewMembership = ({ member, onClose }) => {
-  const [selectedPlan, setSelectedPlan] = useState("6 Months");
+  const [selectedPlan, setSelectedPlan] = useState("");
   const [paidAmount, setPaidAmount] = useState("");
-  const [sendReceipt, setSendReceipt] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const plan = plans.find((p) => p.name === selectedPlan);
 
-  /* 🔹 TOTAL & DUE CALCULATION */
-  const totalAmount = plan.price + ADMISSION_CHARGE;
+  const totalAmount = plan
+    ? plan.price + ADMISSION_CHARGE
+    : 0;
 
-  const dueAmount = Math.max(
-    totalAmount - (Number(paidAmount) || 0),
-    0
-  );
+  const dueAmount =
+    plan && paidAmount
+      ? Math.max(totalAmount - Number(paidAmount), 0)
+      : totalAmount;
+
+  /* ✅ FORM VALIDATION */
+  const isFormValid =
+    selectedPlan !== "" &&
+    paidAmount !== "" &&
+    Number(paidAmount) > 0;
+
+  /* ✅ CONFIRM HANDLER */
+  const handleConfirmRenewal = async () => {
+    if (!isFormValid) return;
+
+    try {
+      setLoading(true);
+
+      await axios.post(
+        `${API_BASE}/members/renew/${member._id}`,
+        {
+          plan: selectedPlan,
+          paidAmount: Number(paidAmount),
+          admissionCharge: ADMISSION_CHARGE,
+        }
+      );
+
+      alert("Membership renewed successfully");
+      onClose();
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Renewal failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="renew-overlay">
@@ -35,7 +71,7 @@ const RenewMembership = ({ member, onClose }) => {
         {/* HEADER */}
         <div className="renew-header">
           <div className="renew-title">
-            <FaSyncAlt className="renew-icon" />
+            <FaSyncAlt />
             <span>Renew Membership</span>
           </div>
           <button className="close-btn" onClick={onClose}>
@@ -48,16 +84,15 @@ const RenewMembership = ({ member, onClose }) => {
           <div className="avatar">
             {member?.name?.charAt(0)}
           </div>
-          <div className="member-info">
+          <div>
             <h4>{member?.name}</h4>
             <p>{member?.phone}</p>
             <span>Current Plan: {member?.plan}</span>
           </div>
         </div>
 
-        {/* SELECT PLAN */}
-        <h5 className="section-title">Select New Plan</h5>
-
+        {/* PLANS */}
+        <h5>Select New Plan</h5>
         <div className="plan-list">
           {plans.map((p) => (
             <div
@@ -71,82 +106,59 @@ const RenewMembership = ({ member, onClose }) => {
                 <h4>{p.name}</h4>
                 <span>{p.duration}</span>
               </div>
-              <strong>Rs. {p.price.toLocaleString()}</strong>
+              <strong>Rs. {p.price}</strong>
             </div>
           ))}
         </div>
 
-        {/* AMOUNT PAID */}
+        {/* AMOUNT */}
         <div className="amount-box">
           <label>Amount Paid</label>
           <input
             type="number"
-            placeholder="Rs. Enter paid amount"
+            placeholder="Enter paid amount"
             value={paidAmount}
             onChange={(e) => setPaidAmount(e.target.value)}
           />
-          <p className="hint">
-            Plan price: Rs. {plan.price.toLocaleString()} + Admission Rs. {ADMISSION_CHARGE}
-          </p>
+          {plan && (
+            <p className="hint">
+              Plan Rs. {plan.price} + Admission Rs. {ADMISSION_CHARGE}
+            </p>
+          )}
         </div>
 
-        {/* PAYMENT SUMMARY */}
-        <div className="summary">
-          <h4>Payment Summary</h4>
-
-          <div className="summary-row">
-            <span>Plan</span>
-            <span>{plan.name}</span>
-          </div>
-
-          <div className="summary-row">
-            <span>Duration</span>
-            <span>{plan.duration}</span>
-          </div>
-
-          <div className="summary-row">
-            <span>Admission Charge</span>
-            <span>Rs. {ADMISSION_CHARGE}</span>
-          </div>
-
-          <div className="summary-row">
-            <span>Total Amount</span>
-            <span>Rs. {totalAmount.toLocaleString()}</span>
-          </div>
-
-          <div className="summary-row success">
-            <span>Paid Amount</span>
-            <span>Rs. {paidAmount || 0}</span>
-          </div>
-
-          {/* DIVIDER */}
-          <div className="summary-divider"></div>
-
-          {/* DUE AMOUNT + WARNING */}
-          <div className="due-group">
-            <div className="summary-row danger due-row">
-              <span className="due-left">
-                <span className="due-icon">ⓘ</span>
-                Due Amount
-              </span>
-              <span>Rs. {dueAmount.toLocaleString()}</span>
+        {/* SUMMARY */}
+        {plan && (
+          <div className="summary">
+            <h4>Payment Summary</h4>
+            <div className="summary-row">
+              <span>Total</span>
+              <span>Rs. {totalAmount}</span>
             </div>
-
-            <div className="due-warning">
-              <span className="due-icon">ⓘ</span>
-              Remaining balance to be collected
+            <div className="summary-row success">
+              <span>Paid</span>
+              <span>Rs. {paidAmount || 0}</span>
+            </div>
+            <div className="summary-row danger">
+              <span>Due</span>
+              <span>Rs. {dueAmount}</span>
             </div>
           </div>
-        </div>
+        )}
 
         {/* FOOTER */}
         <div className="renew-footer">
           <button className="btn cancel" onClick={onClose}>
             Cancel
           </button>
-          <button className="btn confirm">
+
+          <button
+            className="btn confirm"
+            onClick={handleConfirmRenewal}
+            disabled={!isFormValid || loading}
+          >
             <FaCheck />
-            Confirm Renewal
+            {loading ? "Processing..." : "Confirm Renewal"}
           </button>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../../config/api";
-import RenewMembership from "../RenewMembership/RenewMembership"; // ✅ ADD
+import RenewMembership from "../RenewMembership/RenewMembership";
 
 const getColor = (days) => {
   if (days <= 1) return "danger";
@@ -15,31 +15,29 @@ const ExpiringSoon = () => {
   const navigate = useNavigate();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // ✅ NEW STATES
   const [showRenew, setShowRenew] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  useEffect(() => {
-    const fetchExpiringSoon = async () => {
-      try {
-        const res = await axios.get(
-          `${API_BASE}/dashboard/expiring-soon`
-        );
-        setMembers(res.data);
-      } catch (error) {
-        console.error("Failed to load expiring members", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchExpiringSoon = async () => {
+    try {
+      const res = await axios.get(
+        `${API_BASE}/dashboard/expiring-soon`
+      );
+      setMembers(res.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchExpiringSoon();
   }, []);
 
-  // ✅ HANDLER
   const handleRenewClick = (member) => {
     setSelectedMember({
+      _id: member._id,
       name: member.fullName,
       phone: member.phone,
       plan: member.plan,
@@ -49,7 +47,6 @@ const ExpiringSoon = () => {
 
   return (
     <div className="expiring-card">
-      {/* Header */}
       <div className="expiring-header">
         <div>
           <h3>Expiring Soon</h3>
@@ -63,12 +60,10 @@ const ExpiringSoon = () => {
         </span>
       </div>
 
-      {/* List */}
       <div className="expiring-list">
-        {loading && <p className="loading">Loading...</p>}
-
+        {loading && <p>Loading...</p>}
         {!loading && members.length === 0 && (
-          <p className="empty">No memberships expiring soon</p>
+          <p>No memberships expiring soon</p>
         )}
 
         {!loading &&
@@ -90,7 +85,6 @@ const ExpiringSoon = () => {
                   {m.daysLeft} day{m.daysLeft > 1 && "s"}
                 </div>
 
-                {/* ✅ UPDATED */}
                 <button
                   className="renew-btn"
                   onClick={() => handleRenewClick(m)}
@@ -102,11 +96,13 @@ const ExpiringSoon = () => {
           ))}
       </div>
 
-      {/* ✅ RENEW MODAL */}
       {showRenew && (
         <RenewMembership
           member={selectedMember}
-          onClose={() => setShowRenew(false)}
+          onClose={() => {
+            setShowRenew(false);
+            fetchExpiringSoon();
+          }}
         />
       )}
     </div>

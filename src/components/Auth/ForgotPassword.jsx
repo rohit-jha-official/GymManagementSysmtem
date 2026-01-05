@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../../config/api";
+import logo from "../../assets/logo.png";
 import "./auth.css";
 
 export default function ForgotPassword() {
@@ -29,13 +30,29 @@ export default function ForgotPassword() {
   return (
     <div className="auth-page">
       {/* LOGO (same as login) */}
-      <div className="auth-logo">
-        <span className="logo-icon">☰</span>
-        <div>
-          <h3>PowerFit</h3>
-          <p>Management</p>
-        </div>
-      </div>
+
+<div className="auth-logo">
+  <div className="logo-text">
+    <h3>
+      THE WELLNESS{" "}
+      <img
+        src={logo}
+        alt="The Wellness Club Gym"
+        className="logo-image"
+      />{" "}
+      CLUB GYM
+    </h3>
+
+    <span className="tag-color-2 tag-rrr">XPRESS</span>
+
+    <p className="logo-tagline">
+      <span className="tag-color-1">THE LARGEST</span>{" "}
+      <span className="tag-color-2">GYM CHAIN</span>{" "}
+      <span className="tag-color-3">IN INDIA</span>
+    </p>
+  </div>
+</div>
+
 
       {/* CARD */}
       <div className="auth-card">

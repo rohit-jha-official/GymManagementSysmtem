@@ -2,7 +2,9 @@ import { useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { API_BASE } from "../../config/api";
-import "./auth.css"; // optional
+import logo from "../../assets/logo.png";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import "./auth.css";
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -10,6 +12,8 @@ export default function ResetPassword() {
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
@@ -28,32 +32,66 @@ export default function ResetPassword() {
       setMessage(res.data.message);
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setMessage(
-        err.response?.data?.message || "Reset failed"
-      );
+      setMessage(err.response?.data?.message || "Reset failed");
     }
   };
 
   return (
     <div className="auth-page">
-      <h2>Reset Password</h2>
+      {/* LOGO */}
+      <div className="auth-logo">
+        <div className="logo-text">
+          <h3>
+            THE WELLNESS{" "}
+            <img src={logo} alt="The Wellness Club Gym" className="logo-image" />{" "}
+            CLUB GYM
+          </h3>
 
+          <span className="tag-color-2 tag-rrr">XPRESS</span>
+
+          <p className="logo-tagline">
+            <span className="tag-color-1">THE LARGEST</span>{" "}
+            <span className="tag-color-2">GYM CHAIN</span>{" "}
+            <span className="tag-color-3">IN INDIA</span>
+          </p>
+        </div>
+      </div>
+
+      {/* FORM */}
       <form onSubmit={handleSubmit} className="auth-form">
-        <input
-          type="password"
-          placeholder="New password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-        />
+        {/* NEW PASSWORD */}
+        <div className="password-field">
+          <input
+            type={showNewPassword ? "text" : "password"}
+            placeholder="New password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+          <span
+            className="eye-icon"
+            onClick={() => setShowNewPassword((prev) => !prev)}
+          >
+            {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
 
-        <input
-          type="password"
-          placeholder="Confirm new password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
+        {/* CONFIRM PASSWORD */}
+        <div className="password-field">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <span
+            className="eye-icon"
+            onClick={() => setShowConfirmPassword((prev) => !prev)}
+          >
+            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
 
         <button type="submit">Reset Password</button>
       </form>

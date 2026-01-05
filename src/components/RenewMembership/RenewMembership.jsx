@@ -11,8 +11,6 @@ const plans = [
   { name: "Yearly", duration: "12 Months", price: 7199 },
 ];
 
-/* 🔹 ADMISSION CHARGE */
-const ADMISSION_CHARGE = 700;
 
 const RenewMembership = ({ member, onClose }) => {
   const [selectedPlan, setSelectedPlan] = useState("6 Months");
@@ -22,7 +20,7 @@ const RenewMembership = ({ member, onClose }) => {
   const plan = plans.find((p) => p.name === selectedPlan);
 
   /* 🔹 TOTAL & DUE CALCULATION */
-  const totalAmount = plan.price + ADMISSION_CHARGE;
+  const totalAmount = plan.price ;
 
   const dueAmount = Math.max(
     totalAmount - (Number(paidAmount) || 0),
@@ -86,7 +84,7 @@ const RenewMembership = ({ member, onClose }) => {
             onChange={(e) => setPaidAmount(e.target.value)}
           />
           <p className="hint">
-            Plan price: Rs. {plan.price.toLocaleString()} + Admission Rs. {ADMISSION_CHARGE}
+            Plan price: Rs. {plan.price.toLocaleString()} - Enter the amount client has paid 
           </p>
         </div>
 
@@ -104,10 +102,7 @@ const RenewMembership = ({ member, onClose }) => {
             <span>{plan.duration}</span>
           </div>
 
-          <div className="summary-row">
-            <span>Admission Charge</span>
-            <span>Rs. {ADMISSION_CHARGE}</span>
-          </div>
+        
 
           <div className="summary-row">
             <span>Total Amount</span>

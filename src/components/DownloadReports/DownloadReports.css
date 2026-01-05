@@ -226,9 +226,9 @@ select.selector option:checked {
   align-items: center;
 }
 
-.dropdown-header.active {
+/* .dropdown-header.active {
   border-color: #fefefe;
-}
+} */
 
 .dropdown-list {
   position: absolute;

@@ -11,12 +11,22 @@ const AddMember = () => {
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
   const [rfid, setRfid] = useState("");
-  const [gender, setGender] = useState("Male");
+
+  /* 🔹 GENDER */
+  const [gender, setGender] = useState("Select gender");
+  const [genderOpen, setGenderOpen] = useState(false);
+  const genderOptions = ["Male", "Female", "Other"];
 
   /* 🔹 MEMBERSHIP */
   const [planOpen, setPlanOpen] = useState(false);
   const [membershipPlan, setMembershipPlan] = useState("Select a plan");
-  const membershipOptions = ["Monthly", "3 Months", "6 Months","9 Months", "12 Months"];
+  const membershipOptions = [
+    "Monthly",
+    "3 Months",
+    "6 Months",
+    "9 Months",
+    "12 Months",
+  ];
 
   /* 🔹 PHOTO STATE */
   const fileInputRef = useRef(null);
@@ -29,7 +39,7 @@ const AddMember = () => {
   const handleCameraClick = async () => {
     try {
       if (videoRef.current?.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach(t => t.stop());
+        videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
       }
 
       setCameraOn(true);
@@ -58,7 +68,7 @@ const AddMember = () => {
     setPhoto(canvas.toDataURL("image/png"));
 
     if (video.srcObject) {
-      video.srcObject.getTracks().forEach(t => t.stop());
+      video.srcObject.getTracks().forEach((t) => t.stop());
     }
     setCameraOn(false);
   };
@@ -66,7 +76,7 @@ const AddMember = () => {
   /* 📁 UPLOAD PHOTO */
   const handleUploadClick = () => {
     if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach(t => t.stop());
+      videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
       setCameraOn(false);
     }
     fileInputRef.current.value = "";
@@ -79,52 +89,56 @@ const AddMember = () => {
   };
 
   /* 🚀 SUBMIT */
- const handleSubmit = async () => {
-  if (!fullName || !phone || membershipPlan === "Select a plan") {
-    alert("Please fill required fields");
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_BASE}/members`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName,
-        phone,
-        email,
-        gender,
-        dob,
-        address,
-        plan: membershipPlan,
-        rfid,
-      }),
-    });
-
-    const data = await res.json();   // 🔥 READ BACKEND RESPONSE
-
-    if (!res.ok) {
-      alert(data.message || "Backend error");
+  const handleSubmit = async () => {
+    if (
+      !fullName ||
+      !phone ||
+      membershipPlan === "Select a plan" ||
+      gender === "Select gender"
+    ) {
+      alert("Please fill all required fields");
       return;
     }
 
-    alert("Member added successfully ✅");
+    try {
+      const res = await fetch(`${API_BASE}/members`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName,
+          phone,
+          email,
+          gender,
+          dob,
+          address,
+          plan: membershipPlan,
+          rfid,
+        }),
+      });
 
-    setFullName("");
-    setPhone("");
-    setEmail("");
-    setDob("");
-    setAddress("");
-    setRfid("");
-    setMembershipPlan("Select a plan");
-    setPhoto(null);
+      const data = await res.json();
 
-  } catch (err) {
-    console.error("NETWORK ERROR:", err);
-    alert("Network error (frontend → backend)");
-  }
-};
+      if (!res.ok) {
+        alert(data.message || "Backend error");
+        return;
+      }
 
+      alert("Member added successfully ✅");
+
+      setFullName("");
+      setPhone("");
+      setEmail("");
+      setDob("");
+      setAddress("");
+      setRfid("");
+      setGender("Select gender");
+      setMembershipPlan("Select a plan");
+      setPhoto(null);
+    } catch (err) {
+      console.error("NETWORK ERROR:", err);
+      alert("Network error (frontend → backend)");
+    }
+  };
 
   return (
     <div className="add-member-page">
@@ -168,7 +182,7 @@ const AddMember = () => {
             </div>
           )}
         </div>
-      </div> 
+      </div>
 
       {/* PERSONAL INFO */}
       <div className="card">
@@ -177,19 +191,67 @@ const AddMember = () => {
         </div>
 
         <div className="form-grid">
-          <input placeholder="Full Name *" value={fullName} onChange={e => setFullName(e.target.value)} />
-          <input placeholder="Phone Number *" value={phone} onChange={e => setPhone(e.target.value)} />
-          <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-         <input
-  type="text"
-  placeholder="Date of Birth"
-  onFocus={(e) => (e.target.type = "date")}
-  onBlur={(e) => !e.target.value && (e.target.type = "text")}
-  value={dob}
-  onChange={(e) => setDob(e.target.value)}
-/>
-          <input placeholder="Address" value={address} onChange={e => setAddress(e.target.value)} />
-          <input placeholder="RFID (optional)" value={rfid} onChange={e => setRfid(e.target.value)} />
+          <input
+            placeholder="Full Name *"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+          <input
+            placeholder="Phone Number *"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Date of Birth"
+            onFocus={(e) => (e.target.type = "date")}
+            onBlur={(e) => !e.target.value && (e.target.type = "text")}
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+          />
+
+          {/* GENDER DROPDOWN */}
+          <div className="dropdown">
+            <div
+              className={`dropdown-header ${genderOpen ? "open" : ""}`}
+              onClick={() => setGenderOpen(!genderOpen)}
+            >
+              {gender}
+            </div>
+
+            {genderOpen && (
+              <ul className="dropdown-list">
+                {genderOptions.map((g) => (
+                  <li
+                    key={g}
+                    onClick={() => {
+                      setGender(g);
+                      setGenderOpen(false);
+                    }}
+                  >
+                    {g}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <input
+            placeholder="Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <input
+            placeholder="RFID (optional)"
+            value={rfid}
+            onChange={(e) => setRfid(e.target.value)}
+          />
         </div>
       </div>
 
@@ -200,13 +262,16 @@ const AddMember = () => {
         </div>
 
         <div className="dropdown">
-          <div className="dropdown-header" onClick={() => setPlanOpen(!planOpen)}>
+          <div
+            className={`dropdown-header ${planOpen ? "open" : ""}`}
+            onClick={() => setPlanOpen(!planOpen)}
+          >
             {membershipPlan}
           </div>
 
           {planOpen && (
             <ul className="dropdown-list">
-              {membershipOptions.map(p => (
+              {membershipOptions.map((p) => (
                 <li
                   key={p}
                   onClick={() => {

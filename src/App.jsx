@@ -21,6 +21,7 @@ import MembershipPlans from "./components/MembershipPlans/MembershipPlans";
 import CurrentlyActive from "./components/Attendance_1/CurrentlyActive";
 import TotalCheck_ins from "./components/Attendance_1/TotalCheck_ins";
 import CheckedOutMembers from "./components/Attendance_1/Checked_out";
+import DuePayments from "./components/DuePayments/DuePayments";
 
 /* AUTH PAGES */
 import Login from "./components/Auth/Login";
@@ -66,6 +67,7 @@ function App() {
 
             {/* OTHER */}
             <Route path="/plan" element={<MembershipPlans />} />
+            <Route path="/due" element={<DuePayments />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/settings" element={<Settings />} />
 

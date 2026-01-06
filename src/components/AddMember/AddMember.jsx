@@ -29,16 +29,16 @@ const AddMember = () => {
 ];
 
 
-  /* 🔹 PHOTO (BASE64 ONLY) */
+  /* 🔹 PHOTO */
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
-  const [photo, setPhoto] = useState(null);           // BASE64 (DB)
+  const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cameraOn, setCameraOn] = useState(false);
 
-  /* 📷 OPEN CAMERA */
+  /* 📷 CAMERA */
   const handleCameraClick = async () => {
     try {
       if (videoRef.current?.srcObject) {
@@ -57,7 +57,7 @@ const AddMember = () => {
     }
   };
 
-  /* 📸 CAPTURE PHOTO → BASE64 (COMPRESSED) */
+  /* 📸 CAPTURE PHOTO */
   const capturePhoto = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -68,19 +68,15 @@ const AddMember = () => {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0);
 
-    // ✅ PHOTO CHANGE: JPEG + QUALITY REDUCED
     const base64 = canvas.toDataURL("image/jpeg", 0.7);
-
     setPhoto(base64);
     setPhotoPreview(base64);
 
-    if (video.srcObject) {
-      video.srcObject.getTracks().forEach((t) => t.stop());
-    }
+    video.srcObject.getTracks().forEach((t) => t.stop());
     setCameraOn(false);
   };
 
-  /* 📁 UPLOAD PHOTO → BASE64 */
+  /* 📁 UPLOAD PHOTO */
   const handleUploadClick = () => {
     if (videoRef.current?.srcObject) {
       videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
@@ -94,15 +90,14 @@ const AddMember = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // ✅ PHOTO CHANGE: SIZE LIMIT
     if (file.size > 300 * 1024) {
-      alert("Photo 300KB se chhoti honi chahiye");
+      alert("Photo must be under 300KB");
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setPhoto(reader.result);       // BASE64
+      setPhoto(reader.result);
       setPhotoPreview(reader.result);
     };
     reader.readAsDataURL(file);
@@ -134,6 +129,12 @@ const AddMember = () => {
       return;
     }
 
+    // ✅ EXACTLY 10 DIGITS CHECK
+    if (phone.length !== 10) {
+      alert("Phone number must be exactly 10 digits");
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE}/members`, {
         method: "POST",
@@ -147,7 +148,7 @@ const AddMember = () => {
           address,
           plan: membershipPlan,
           rfid,
-          photo, // ✅ BASE64 PHOTO
+          photo,
         }),
       });
 
@@ -223,9 +224,31 @@ const AddMember = () => {
         </div>
 
         <div className="form-grid">
-          <input placeholder="Full Name *" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-          <input placeholder="Phone Number *" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            placeholder="Full Name *"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+
+          {/* ✅ PHONE NUMBER – EXACTLY 10 DIGITS */}
+          <input
+            placeholder="Phone Number *"
+            value={phone}
+            maxLength={10}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, "");
+              setPhone(value);
+            }}
+          />
+
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
           <input type="date" value={dobInput} onChange={handleDobChange} />
 
           <div className="dropdown">
@@ -235,7 +258,13 @@ const AddMember = () => {
             {genderOpen && (
               <ul className="dropdown-list">
                 {genderOptions.map((g) => (
-                  <li key={g} onClick={() => { setGender(g); setGenderOpen(false); }}>
+                  <li
+                    key={g}
+                    onClick={() => {
+                      setGender(g);
+                      setGenderOpen(false);
+                    }}
+                  >
                     {g}
                   </li>
                 ))}
@@ -243,8 +272,17 @@ const AddMember = () => {
             )}
           </div>
 
-          <input placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
-          <input placeholder="RFID (optional)" value={rfid} onChange={(e) => setRfid(e.target.value)} />
+          <input
+            placeholder="Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+
+          <input
+            placeholder="RFID (optional)"
+            value={rfid}
+            onChange={(e) => setRfid(e.target.value)}
+          />
         </div>
       </div>
 
@@ -261,7 +299,13 @@ const AddMember = () => {
           {planOpen && (
             <ul className="dropdown-list">
               {membershipOptions.map((p) => (
-                <li key={p} onClick={() => { setMembershipPlan(p); setPlanOpen(false); }}>
+                <li
+                  key={p}
+                  onClick={() => {
+                    setMembershipPlan(p);
+                    setPlanOpen(false);
+                  }}
+                >
                   {p}
                 </li>
               ))}

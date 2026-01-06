@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import logo from "../../assets/logo.png"
 import "./SideNav.css";
 import {
   FaHome,
@@ -13,7 +12,6 @@ import {
   FaDownload,
   FaIdCard,
   FaBell,
-  FaCreditCard,
   FaCog,
   FaChevronDown,
 } from "react-icons/fa";
@@ -68,24 +66,14 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
       )}
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-
-
         {/* LOGO */}
         <div className="logo">
+          <div className="logo-icon">🏋️</div>
           <div className="logo-text">
-              <h3>THE WELLNESS <img src={logo} alt="The Wellness Club Gym" className="logo-image" />CLUB GYM</h3>
-              <span className="tag-color-2 tag-xx">XPRESS</span>
-              <p className="logo-tagline">
-                <span className="tag-color-1">THE LARGEST</span>{" "}
-                <span className="tag-color-2">GYM CHAIN</span>{" "}
-                <span className="tag-color-3">IN INDIA</span>
-              </p>
-              
-            </div>
+            <h3>PowerFit</h3>
+            <span>Gym Management</span>
           </div>
-
-
-
+        </div>
 
         {/* DASHBOARD */}
         <NavLink to="/dashboard" onClick={handleNavClick}
@@ -159,11 +147,6 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
           className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
           <FaIdCard />
           <span>Membership Plans</span>
-        </NavLink>
-        <NavLink to="/due" onClick={handleNavClick}
-          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
-          <FaCreditCard />
-          <span>Due Payments</span>
         </NavLink>
 
         {/* RFID */}

@@ -7,12 +7,11 @@ import {
   FaSignOutAlt,
   FaSignInAlt,
   FaBars,
-  FaTimes,
 } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Topbar = ({ toggleSidebar, sidebarOpen }) => {
+const Topbar = ({ toggleSidebar }) => {
   const [now, setNow] = useState(new Date());
   const [openProfile, setOpenProfile] = useState(false);
   const profileRef = useRef(null);
@@ -55,7 +54,7 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     day: "numeric",
   });
 
-  /* LOGOUT */
+  /* ✅ LOGOUT */
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("admin");
@@ -67,7 +66,7 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
       {/* LEFT */}
       <div className="topbar-left">
         <div className="mobile-menu-btn" onClick={toggleSidebar}>
-          {sidebarOpen ? <FaTimes /> : <FaBars />}
+          <FaBars />
         </div>
 
         <div className="topbar-search">

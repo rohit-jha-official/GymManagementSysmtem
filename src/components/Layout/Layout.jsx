@@ -16,10 +16,7 @@ const Layout = () => {
 
       {/* MAIN CONTENT */}
       <div className="dashboard-main">
-        <Topbar
-          toggleSidebar={() => setSidebarOpen(prev => !prev)}
-          sidebarOpen={sidebarOpen}
-        />
+        <Topbar toggleSidebar={() => setSidebarOpen(true)} />
 
         <div className="dashboard-content">
           <Outlet />

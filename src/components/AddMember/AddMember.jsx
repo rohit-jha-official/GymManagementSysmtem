@@ -14,11 +14,7 @@ const AddMember = () => {
   const [dob, setDob] = useState("");
   const [address, setAddress] = useState("");
   const [rfid, setRfid] = useState("");
-
-  /* 🔹 GENDER */
-  const [gender, setGender] = useState("Select gender");
-  const [genderOpen, setGenderOpen] = useState(false);
-  const genderOptions = ["Male", "Female", "Other"];
+  const [gender, setGender] = useState("Male");
 
   /* 🔹 MEMBERSHIP */
   const [planOpen, setPlanOpen] = useState(false);

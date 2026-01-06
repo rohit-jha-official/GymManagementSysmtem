@@ -11,32 +11,57 @@ import {
 } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { API_BASE } from "../../config/api";
 
 const Topbar = ({ toggleSidebar, sidebarOpen }) => {
   const [now, setNow] = useState(new Date());
   const [openProfile, setOpenProfile] = useState(false);
+  const [notifCount, setNotifCount] = useState(0); // 🔔 NEW
   const profileRef = useRef(null);
   const navigate = useNavigate();
 
   /* ✅ TOKEN-BASED LOGIN CHECK */
   const isLoggedIn = !!localStorage.getItem("token");
 
-  /* LIVE TIME */
+  /* ⏰ LIVE TIME */
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  /* CLOSE PROFILE DROPDOWN ON OUTSIDE CLICK */
+  /* 🔔 FETCH NOTIFICATION COUNT */
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      try {
+        const res = await axios.get(
+          `${API_BASE}/notifications/stats`
+        );
+        setNotifCount(res.data.unreadExpiry || 0);
+      } catch (error) {
+        console.error("Failed to fetch notification count");
+      }
+    };
+
+    fetchNotificationCount();
+  }, []);
+
+  /* ❌ CLOSE PROFILE DROPDOWN ON OUTSIDE CLICK */
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target)
+      ) {
         setOpenProfile(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   const time = now
@@ -55,7 +80,7 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     day: "numeric",
   });
 
-  /* LOGOUT */
+  /* 🚪 LOGOUT */
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("admin");
@@ -66,7 +91,10 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     <div className="topbar">
       {/* LEFT */}
       <div className="topbar-left">
-        <div className="mobile-menu-btn" onClick={toggleSidebar}>
+        <div
+          className="mobile-menu-btn"
+          onClick={toggleSidebar}
+        >
           {sidebarOpen ? <FaTimes /> : <FaBars />}
         </div>
 
@@ -83,12 +111,15 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
           <span className="date">{date}</span>
         </div>
 
+        {/* 🔔 NOTIFICATIONS */}
         <div
           className="notification"
           onClick={() => navigate("/notifications")}
         >
           <FaBell />
-          <span className="badge">5</span>
+          {notifCount > 0 && (
+            <span className="badge">{notifCount}</span>
+          )}
         </div>
 
         {isLoggedIn ? (
@@ -97,12 +128,18 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
             <div className="user-wrapper" ref={profileRef}>
               <div
                 className="user-info clickable"
-                onClick={() => setOpenProfile(!openProfile)}
+                onClick={() =>
+                  setOpenProfile(!openProfile)
+                }
               >
                 <FaUserCircle className="user-icon" />
                 <div className="user-text">
-                  <div className="user-name">Admin</div>
-                  <div className="user-role">Super Admin</div>
+                  <div className="user-name">
+                    Admin
+                  </div>
+                  <div className="user-role">
+                    Super Admin
+                  </div>
                 </div>
                 <FaChevronDown
                   className={`dropdown-arrow ${
@@ -115,7 +152,9 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
                 <div className="user-dropdown">
                   <div
                     className="dropdown-item"
-                    onClick={() => navigate("/settings")}
+                    onClick={() =>
+                      navigate("/settings")
+                    }
                   >
                     Profile Settings
                   </div>
@@ -124,19 +163,28 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
             </div>
 
             {/* LOGOUT */}
-            <div className="login-switch clickable" onClick={handleLogout}>
+            <div
+              className="login-switch clickable"
+              onClick={handleLogout}
+            >
               <FaSignOutAlt />
-              <span className="login-text">Logout</span>
+              <span className="login-text">
+                Logout
+              </span>
             </div>
           </>
         ) : (
           /* LOGIN */
           <div
             className="login-switch clickable"
-            onClick={() => navigate("/login/admin")}
+            onClick={() =>
+              navigate("/login/admin")
+            }
           >
             <FaSignInAlt />
-            <span className="login-text">Login</span>
+            <span className="login-text">
+              Login
+            </span>
           </div>
         )}
       </div>

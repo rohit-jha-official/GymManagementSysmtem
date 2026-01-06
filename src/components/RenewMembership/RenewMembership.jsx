@@ -1,69 +1,75 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSyncAlt, FaCheck } from "react-icons/fa";
 import axios from "axios";
 import { API_BASE } from "../../config/api";
 import "./RenewMembership.css";
 
-/* 🔹 PLANS */
-const plans = [
-  { name: "Monthly", duration: "1 Month", price: 800 },
-  { name: "3 Months", duration: "3 Months", price: 2199 },
-  { name: "6 Months", duration: "6 Months", price: 4199 },
-  { name: "9 Months", duration: "9 Months", price: 6199 },
-  { name: "Yearly", duration: "12 Months", price: 7199 },
-];
-
-const ADMISSION_CHARGE = 700;
-
 const RenewMembership = ({ member, onClose }) => {
+  const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState("");
   const [paidAmount, setPaidAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingPlans, setLoadingPlans] = useState(true);
 
+  /* 🔹 FETCH PLANS FROM BACKEND */
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/plans`);
+        setPlans(res.data);
+      } catch {
+        alert("Failed to load membership plans");
+      } finally {
+        setLoadingPlans(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
+
+  /* 🔹 SELECTED PLAN */
   const plan = plans.find((p) => p.name === selectedPlan);
 
-  const totalAmount = plan
-    ? plan.price + ADMISSION_CHARGE
-    : 0;
+  /* 🔹 CALCULATIONS */
+  const totalAmount = plan ? plan.price : 0;
 
   const dueAmount =
-    plan && paidAmount
+    plan && paidAmount !== ""
       ? Math.max(totalAmount - Number(paidAmount), 0)
       : totalAmount;
 
-  /* ✅ FORM VALIDATION */
+  /* 🔹 VALIDATION */
   const isFormValid =
     selectedPlan !== "" &&
     paidAmount !== "" &&
-    Number(paidAmount) > 0;
+    Number(paidAmount) >= 0;
 
-  /* ✅ CONFIRM HANDLER */
-  const handleConfirmRenewal = async () => {
-    if (!isFormValid) return;
+  /* 🔹 CONFIRM RENEWAL */
+ const handleConfirmRenewal = async () => {
+  if (!isFormValid) return;
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      await axios.post(
-        `${API_BASE}/members/renew/${member._id}`,
-        {
-          plan: selectedPlan,
-          paidAmount: Number(paidAmount),
-          admissionCharge: ADMISSION_CHARGE,
-        }
-      );
+    await axios.put(
+      `${API_BASE}/members/renew/${member._id}`,
+      {
+        plan: selectedPlan,
+        paidAmount: Number(paidAmount),
+        totalAmount: totalAmount, // ✅ IMPORTANT
+      }
+    );
 
-      alert("Membership renewed successfully");
-      onClose();
-    } catch (error) {
-      alert(
-        error.response?.data?.message ||
-          "Renewal failed"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    alert("Membership renewed successfully");
+    onClose();
+  } catch (error) {
+    alert(
+      error.response?.data?.message || "Renewal failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="renew-overlay">
@@ -82,10 +88,10 @@ const RenewMembership = ({ member, onClose }) => {
         {/* MEMBER INFO */}
         <div className="member-card">
           <div className="avatar">
-            {member?.name?.charAt(0)}
+            {member?.fullName?.charAt(0)}
           </div>
           <div>
-            <h4>{member?.name}</h4>
+            <h4>{member?.fullName}</h4>
             <p>{member?.phone}</p>
             <span>Current Plan: {member?.plan}</span>
           </div>
@@ -93,23 +99,28 @@ const RenewMembership = ({ member, onClose }) => {
 
         {/* PLANS */}
         <h5>Select New Plan</h5>
-        <div className="plan-list">
-          {plans.map((p) => (
-            <div
-              key={p.name}
-              className={`plan ${
-                selectedPlan === p.name ? "active" : ""
-              }`}
-              onClick={() => setSelectedPlan(p.name)}
-            >
-              <div>
-                <h4>{p.name}</h4>
-                <span>{p.duration}</span>
+
+        {loadingPlans ? (
+          <p className="loading">Loading plans...</p>
+        ) : (
+          <div className="plan-list">
+            {plans.map((p) => (
+              <div
+                key={p._id}
+                className={`plan ${
+                  selectedPlan === p.name ? "active" : ""
+                }`}
+                onClick={() => setSelectedPlan(p.name)}
+              >
+                <div>
+                  <h4>{p.name}</h4>
+                  <span>{p.durationMonths} Months</span>
+                </div>
+                <strong>Rs. {p.price}</strong>
               </div>
-              <strong>Rs. {p.price}</strong>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* AMOUNT */}
         <div className="amount-box">
@@ -122,7 +133,7 @@ const RenewMembership = ({ member, onClose }) => {
           />
           {plan && (
             <p className="hint">
-              Plan Rs. {plan.price} + Admission Rs. {ADMISSION_CHARGE}
+              Plan Price: Rs. {plan.price}
             </p>
           )}
         </div>
@@ -131,14 +142,17 @@ const RenewMembership = ({ member, onClose }) => {
         {plan && (
           <div className="summary">
             <h4>Payment Summary</h4>
+
             <div className="summary-row">
               <span>Total</span>
               <span>Rs. {totalAmount}</span>
             </div>
+
             <div className="summary-row success">
               <span>Paid</span>
               <span>Rs. {paidAmount || 0}</span>
             </div>
+
             <div className="summary-row danger">
               <span>Due</span>
               <span>Rs. {dueAmount}</span>

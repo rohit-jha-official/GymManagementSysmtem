@@ -21,11 +21,12 @@ const ExpiringSoon = () => {
   const fetchExpiringSoon = async () => {
     try {
       const res = await axios.get(
-        `${API_BASE}/dashboard/expiring-soon`
+        `${API_BASE}/members/expiring`
       );
+
       setMembers(res.data);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to load expiring members", error);
     } finally {
       setLoading(false);
     }
@@ -38,7 +39,7 @@ const ExpiringSoon = () => {
   const handleRenewClick = (member) => {
     setSelectedMember({
       _id: member._id,
-      name: member.fullName,
+      fullName: member.fullName,
       phone: member.phone,
       plan: member.plan,
     });
@@ -62,16 +63,17 @@ const ExpiringSoon = () => {
 
       <div className="expiring-list">
         {loading && <p>Loading...</p>}
+
         {!loading && members.length === 0 && (
           <p>No memberships expiring soon</p>
         )}
 
         {!loading &&
-          members.map((m) => (
+          members.slice(0, 5).map((m) => (
             <div className="expiring-item" key={m._id}>
               <div className="left">
                 <div className="avatar">
-                  {m.fullName.charAt(0)}
+                  {m.fullName?.charAt(0)}
                 </div>
                 <div>
                   <h4>{m.fullName}</h4>

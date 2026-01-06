@@ -54,8 +54,8 @@ const EditPlanModal = ({ plan, onClose, onSave }) => {
           />
 
           {/* BADGE */}
-          <label>Plan Highlight</label>
-          <div className="badge-options">
+          {/* <label>Plan Highlight</label> */}
+          {/* <div className="badge-options">
             {["none", "popular", "very", "premium"].map((b) => (
               <button
                 key={b}
@@ -69,7 +69,7 @@ const EditPlanModal = ({ plan, onClose, onSave }) => {
                 {b === "premium" && "Premium"}
               </button>
             ))}
-          </div>
+          </div> */}
 
           {/* FEATURES */}
           <label>Features</label>

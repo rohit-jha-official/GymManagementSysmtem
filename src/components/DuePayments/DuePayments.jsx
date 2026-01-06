@@ -1,24 +1,60 @@
 import "./DuePayments.css";
 import { FaSearch, FaWallet, FaCheckCircle } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_BASE } from "../../config/api";
+
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 
 const DuePayments = () => {
-  const dues = [
-  {
-    member: "Rohit Jha",
-    plan: "Monthly",
-    total: 1500,
-    paid: 1000,
-    due: 500,
-    date: "08 Jan 2026",
-  },
-];
- // empty state (later replace with API data)
+  const [dues, setDues] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const totalDue = dues.reduce((sum, d) => sum + d.due, 0);
+  const fetchDuePayments = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/members/due`);
+      setDues(res.data);
+    } catch (error) {
+      console.error("Failed to load due payments", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDuePayments();
+  }, []);
+
+  const handleCollect = async (id) => {
+    if (!window.confirm("Mark this due as collected?")) return;
+
+    try {
+      await axios.put(`${API_BASE}/members/collect-due/${id}`);
+      fetchDuePayments(); // refresh list
+    } catch (error) {
+      alert("Failed to collect payment");
+    }
+  };
+
+  const filteredDues = dues.filter(
+    (d) =>
+      d.fullName.toLowerCase().includes(search.toLowerCase()) ||
+      d.phone.includes(search)
+  );
+
+  const totalDue = filteredDues.reduce(
+    (sum, d) => sum + d.dueAmount,
+    0
+  );
 
   return (
     <div className="due-page">
-      {/* HEADER */}
       <div className="due-header">
         <div>
           <h1>Due Payments</h1>
@@ -34,39 +70,55 @@ const DuePayments = () => {
         </div>
       </div>
 
-      {/* SEARCH */}
       <div className="due-search">
         <FaSearch />
-        <input placeholder="Search by name, phone, or member ID..." />
+        <input
+          placeholder="Search by name or phone..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      {/* TABLE */}
       <div className="due-table">
-        <div className="table-head">
+        <div className="table-head-1">
           <span>Member</span>
           <span>Plan</span>
-          <span>Total</span>
-          <span>Paid</span>
           <span>Due</span>
-          <span>Date</span>
+          <span>Expiry</span>
           <span>Action</span>
         </div>
 
-        {dues.length === 0 ? (
+        {loading ? (
+          <div className="empty-state">
+            <p>Loading dues...</p>
+          </div>
+        ) : filteredDues.length === 0 ? (
           <div className="empty-state">
             <FaCheckCircle />
             <p>No pending dues!</p>
           </div>
         ) : (
-          dues.map((item, index) => (
-            <div className="table-row" key={index}>
-              <span>{item.member}</span>
+          filteredDues.map((item) => (
+            <div className="table-row-1" key={item._id}>
+              <div className="member-cell">
+  <div className="avatar-circle">
+    {item.fullName?.charAt(0).toUpperCase()}
+  </div>
+  <span className="member-name">{item.fullName}</span>
+</div>
+
               <span>{item.plan}</span>
-              <span>Rs. {item.total}</span>
-              <span>Rs. {item.paid}</span>
-              <span className="due-amount">Rs. {item.due}</span>
-              <span>{item.date}</span>
-              <button className="collect-btn">Collect</button>
+              <span className="due-amount">
+                Rs. {item.dueAmount}
+              </span>
+              <span>{formatDate(item.expiryDate)}</span>
+
+              <button
+                className="collect-btn"
+                onClick={() => handleCollect(item._id)}
+              >
+                Collect
+              </button>
             </div>
           ))
         )}

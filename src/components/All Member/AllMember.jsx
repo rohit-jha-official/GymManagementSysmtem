@@ -12,6 +12,14 @@ import {
 } from "react-icons/fi";
 import { API_BASE } from "../../config/api";
 
+/* 🔹 DATE FORMATTER: 14 Jan 2004 */
+const formatDate = (date) =>
+  new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
 const AllMembers = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +90,7 @@ const AllMembers = () => {
       m.email,
       m.plan,
       m.rfid || "",
-      new Date(m.endDate).toLocaleDateString(),
+      formatDate(m.endDate), // ✅ UPDATED
       m.status,
     ]);
 
@@ -165,9 +173,8 @@ const AllMembers = () => {
               <span>{m.plan}</span>
               <span>{m.rfid || "-"}</span>
 
-              <span>
-                {new Date(m.endDate).toLocaleDateString()}
-              </span>
+              {/* ✅ UPDATED DATE FORMAT */}
+              <span>{formatDate(m.endDate)}</span>
 
               <span
                 className={`status ${

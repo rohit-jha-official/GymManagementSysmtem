@@ -21,7 +21,13 @@ const AddMember = () => {
   /* 🔹 MEMBERSHIP */
   const [planOpen, setPlanOpen] = useState(false);
   const [membershipPlan, setMembershipPlan] = useState("Select a plan");
-  const membershipOptions = ["Monthly", "3 Months", "6 Months", "12 Months"];
+  const membershipOptions = [
+  "Monthly",
+  "Quarterly",
+  "Half Yearly",
+  "Yearly",
+];
+
 
   /* 🔹 PHOTO (BASE64 ONLY) */
   const fileInputRef = useRef(null);

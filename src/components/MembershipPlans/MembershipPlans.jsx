@@ -29,19 +29,21 @@ const MembershipPlans = () => {
       const res = await axios.get(`${API_BASE}/plans`);
 
       const formattedPlans = res.data.map((p) => ({
-        _id: p._id,
-        name: p.name,
-        duration: `${p.durationMonths} Months`,
-        price: p.price,
-        icon: planIcons[p.name],
-        features: p.features,
-        members: p.activeMembers, // ✅ FROM DB
-        badge: p.isPremium
-          ? "premium"
-          : p.isPopular
-          ? "popular"
-          : null,
-      }));
+  _id: p._id,
+  name: p.name,
+  duration: `${p.durationMonths} Months`,
+  price: p.price,
+  icon: planIcons[p.name],
+  features: p.features,
+  members: p.activeMembers,       // ✅ Active members (small card)
+  totalMembers: p.totalMembers,   // ✅ ALL members (stats)
+  badge: p.isPremium
+    ? "premium"
+    : p.isPopular
+    ? "popular"
+    : null,
+}));
+
 
       setPlans(formattedPlans);
     } catch (err) {
@@ -84,12 +86,12 @@ const MembershipPlans = () => {
         {plans.map((plan) => (
           <div key={plan.name} className="plan-card">
             {/* 🔥 BADGE */}
-            {plan.badge && (
+            {/* {plan.badge && (
               <span className={`badge ${plan.badge}`}>
                 {plan.badge === "popular" && "Popular"}
                 {plan.badge === "premium" && "Premium"}
               </span>
-            )}
+            )} */}
 
             <div className="plan-icon">{plan.icon}</div>
 
@@ -134,7 +136,7 @@ const MembershipPlans = () => {
         <div className="stats-grid">
           {plans.map((p) => (
             <div key={p.name}>
-              <span className="counttt">{p.members}</span>
+              <span className="counttt">{p.totalMembers}</span>
               <span>{p.name} Members</span>
             </div>
           ))}

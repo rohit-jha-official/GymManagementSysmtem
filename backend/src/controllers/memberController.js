@@ -4,6 +4,7 @@ import Activity from "../models/activity.js";
 
 /**
  * ➕ ADD NEW MEMBER
+ * POST /api/members
  */
 export const addMember = async (req, res) => {
   try {
@@ -16,6 +17,7 @@ export const addMember = async (req, res) => {
       address,
       plan,
       rfid,
+      photo, // ✅ BASE64 PHOTO
     } = req.body;
 
     if (!fullName || !phone || !plan) {
@@ -27,7 +29,7 @@ export const addMember = async (req, res) => {
     }
 
     const startDate = new Date();
-    const expiryDate = new Date(startDate);
+    const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + planDays[plan]);
 
     const member = await Member.create({
@@ -41,6 +43,7 @@ export const addMember = async (req, res) => {
       rfid,
       startDate,
       expiryDate,
+      photo, // ✅ STORED IN DB
     });
 
     await Activity.create({
@@ -56,6 +59,7 @@ export const addMember = async (req, res) => {
 
 /**
  * 📋 GET ALL MEMBERS
+ * GET /api/members
  */
 export const getAllMembers = async (req, res) => {
   try {
@@ -99,16 +103,20 @@ export const getAllMembers = async (req, res) => {
 
 /**
  * ❌ DELETE MEMBER
+ * DELETE /api/members/:id
  */
 export const deleteMember = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const member = await Member.findByIdAndDelete(id);
+    const member = await Member.findById(id);
 
     if (!member) {
       return res.status(404).json({ message: "Member not found" });
     }
+
+    // ✅ BASE64 PHOTO → NO FILE DELETE NEEDED
+    await Member.findByIdAndDelete(id);
 
     await Activity.create({
       type: "member",
@@ -123,6 +131,7 @@ export const deleteMember = async (req, res) => {
 
 /**
  * ❌ GET EXPIRED MEMBERS
+ * GET /api/members/expired
  */
 export const getExpiredMembers = async (req, res) => {
   try {
@@ -132,7 +141,19 @@ export const getExpiredMembers = async (req, res) => {
       expiryDate: { $lt: today },
     }).sort({ expiryDate: -1 });
 
-    res.json(members);
+    const result = members.map((m) => ({
+      _id: m._id,
+      name: m.fullName,
+      phone: m.phone,
+      email: m.email,
+      plan: m.plan,
+      expiryDate: m.expiryDate,
+      daysExpired: Math.floor(
+        (today - new Date(m.expiryDate)) / (1000 * 60 * 60 * 24)
+      ),
+    }));
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -140,6 +161,7 @@ export const getExpiredMembers = async (req, res) => {
 
 /**
  * ⏳ GET EXPIRING SOON (NEXT 7 DAYS)
+ * GET /api/members/expiring
  */
 export const getExpiringSoon = async (req, res) => {
   try {
@@ -151,7 +173,19 @@ export const getExpiringSoon = async (req, res) => {
       expiryDate: { $gte: today, $lte: next7Days },
     }).sort({ expiryDate: 1 });
 
-    res.json(members);
+    const result = members.map((m) => ({
+      _id: m._id,
+      name: m.fullName,
+      phone: m.phone,
+      plan: m.plan,
+      expiryDate: m.expiryDate,
+      daysLeft: Math.ceil(
+        (new Date(m.expiryDate) - today) /
+          (1000 * 60 * 60 * 24)
+      ),
+    }));
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -159,54 +193,53 @@ export const getExpiringSoon = async (req, res) => {
 
 /**
  * 🔄 RENEW MEMBERSHIP
+ * PUT /api/members/renew/:id
  */
-export const renewMembership = async (req, res) => {
+export const renewMember = async (req, res) => {
   try {
-    const { plan, paidAmount = 0, admissionCharge = 0 } = req.body;
+    const { plan } = req.body;
 
     if (!plan || !planDays[plan]) {
       return res.status(400).json({ message: "Invalid plan" });
     }
 
-    const member = await Member.findById(req.params.id);
+    const startDate = new Date();
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + planDays[plan]);
+
+    const member = await Member.findByIdAndUpdate(
+      req.params.id,
+      { plan, startDate, expiryDate },
+      { new: true }
+    );
+
     if (!member) {
       return res.status(404).json({ message: "Member not found" });
     }
 
-    const startDate =
-      member.expiryDate && member.expiryDate > new Date()
-        ? new Date(member.expiryDate)
-        : new Date();
-
-    const expiryDate = new Date(startDate);
-    expiryDate.setDate(expiryDate.getDate() + planDays[plan]);
-
-    const planPrices = {
-      Monthly: 800,
-      Quarterly: 2199,
-      "Half Yearly": 4199,
-      Yearly: 7199,
-    };
-
-    const totalAmount = planPrices[plan] + admissionCharge;
-    const dueAmount = totalAmount - paidAmount;
-
-    member.plan = plan;
-    member.startDate = startDate;
-    member.expiryDate = expiryDate;
-    member.dueAmount = dueAmount;
-
-    await member.save();
-
     await Activity.create({
       type: "payment",
-      message: `Membership renewed: ${member.fullName} | Plan: ${plan}`,
+      message: `Membership renewed: ${member.fullName} (${plan})`,
     });
 
-    res.json({
-      message: "Membership renewed successfully",
-      member,
-    });
+    res.json(member);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+/**
+ * 👤 GET SINGLE MEMBER BY ID
+ * GET /api/members/:id
+ */
+export const getMemberById = async (req, res) => {
+  try {
+    const member = await Member.findById(req.params.id);
+
+    if (!member) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    res.json(member); // ✅ Base64 photo bhi yahin se milegi
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

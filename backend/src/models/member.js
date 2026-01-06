@@ -6,19 +6,25 @@ const memberSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     email: String,
     gender: String,
-    dob: Date,
+
+    dob: String, // ✅ DD/MM/YYYY
+
     address: String,
 
     plan: {
       type: String,
-      enum: ["Monthly", "3 Months", "6 Months", "12 Months"],
+      enum: ["Monthly", "3 Months", "6 Months","12 Months"],
       required: true,
     },
 
-    rfid: { type: String, unique: true },
+    rfid: {  type: String, unique: true, sparse: true, trim: true },
 
     startDate: { type: Date, required: true },
     expiryDate: { type: Date, required: true },
+
+    photo: {
+      type: String,   // Base64 string
+    },
   },
   { timestamps: true }
 );

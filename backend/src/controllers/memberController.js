@@ -4,7 +4,7 @@ import Activity from "../models/activity.js";
 
 /**
  * ➕ ADD NEW MEMBER
- * POST /api/members/add
+ * POST /api/members
  */
 export const addMember = async (req, res) => {
   try {
@@ -17,6 +17,7 @@ export const addMember = async (req, res) => {
       address,
       plan,
       rfid,
+      photo, // ✅ BASE64 PHOTO
     } = req.body;
 
     if (!fullName || !phone || !plan) {
@@ -42,9 +43,9 @@ export const addMember = async (req, res) => {
       rfid,
       startDate,
       expiryDate,
+      photo, // ✅ STORED IN DB
     });
 
-    // 🔔 ACTIVITY LOG
     await Activity.create({
       type: "member",
       message: `New member registered: ${fullName}`,
@@ -108,13 +109,15 @@ export const deleteMember = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const member = await Member.findByIdAndDelete(id);
+    const member = await Member.findById(id);
 
     if (!member) {
       return res.status(404).json({ message: "Member not found" });
     }
 
-    // 🔔 ACTIVITY LOG
+    // ✅ BASE64 PHOTO → NO FILE DELETE NEEDED
+    await Member.findByIdAndDelete(id);
+
     await Activity.create({
       type: "member",
       message: `Member deleted: ${member.fullName}`,
@@ -214,13 +217,29 @@ export const renewMember = async (req, res) => {
       return res.status(404).json({ message: "Member not found" });
     }
 
-    // 🔔 ACTIVITY LOG
     await Activity.create({
       type: "payment",
       message: `Membership renewed: ${member.fullName} (${plan})`,
     });
 
     res.json(member);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+/**
+ * 👤 GET SINGLE MEMBER BY ID
+ * GET /api/members/:id
+ */
+export const getMemberById = async (req, res) => {
+  try {
+    const member = await Member.findById(req.params.id);
+
+    if (!member) {
+      return res.status(404).json({ message: "Member not found" });
+    }
+
+    res.json(member); // ✅ Base64 photo bhi yahin se milegi
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

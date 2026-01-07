@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   AreaChart,
   Area,
@@ -9,31 +10,58 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "./MemberGrowth.css";
+import { API_BASE } from "../../config/api";
 
-const yearData = [
-  { month: "Jan", members: 0 },
-  { month: "Feb", members: 0 },
-  { month: "Mar", members: 0 },
-  { month: "Apr", members: 0 },
-  { month: "May", members: 0 },
-  { month: "Jun", members: 0 },
-  { month: "Jul", members: 0 },
-  { month: "Aug", members: 0 },
-  { month: "Sep", members: 0 },
-  { month: "Oct", members: 0 },
-  { month: "Nov", members: 0 },
-  { month: "Dec", members: 0 },
-];
-
-const monthData = [
-  { week: "W1", members: 0 },
-  { week: "W2", members: 0 },
-  { week: "W3", members: 0 },
-  { week: "W4", members: 0 },
+/* LABELS */
+const months = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
 const MemberGrowth = () => {
   const [view, setView] = useState("year");
+  const [yearData, setYearData] = useState([]);
+  const [monthData, setMonthData] = useState([]);
+
+  /* 📊 FETCH YEARLY GROWTH (JAN–DEC) */
+  useEffect(() => {
+    const fetchYearGrowth = async () => {
+      try {
+        const res = await axios.get(
+          `${API_BASE}/dashboard/member-growth`
+        );
+
+        const formatted = res.data.map((count, index) => ({
+          month: months[index],
+          members: count,
+        }));
+
+        setYearData(formatted);
+      } catch (err) {
+        console.error("Year growth fetch failed", err);
+      }
+    };
+
+    fetchYearGrowth();
+  }, []);
+
+  /* 📆 FETCH MONTHLY GROWTH (W1–W4) */
+  useEffect(() => {
+    if (view === "month") {
+      const fetchMonthGrowth = async () => {
+        try {
+          const res = await axios.get(
+            `${API_BASE}/dashboard/member-growth/month`
+          );
+          setMonthData(res.data);
+        } catch (err) {
+          console.error("Month growth fetch failed", err);
+        }
+      };
+
+      fetchMonthGrowth();
+    }
+  }, [view]);
 
   return (
     <div className="member-growth">
@@ -41,7 +69,7 @@ const MemberGrowth = () => {
       <div className="growth-header">
         <div>
           <h3>Member Growth</h3>
-          <p>Monthly membership trend</p>
+          <p>Membership trend analysis</p>
         </div>
 
         <div className="toggle">
@@ -78,17 +106,21 @@ const MemberGrowth = () => {
               strokeDasharray="3 3"
               stroke="rgba(255,255,255,0.05)"
             />
+
             <XAxis
               dataKey={view === "year" ? "month" : "week"}
               stroke="#9ca3af"
               tickLine={false}
               axisLine={false}
             />
+
             <YAxis
               stroke="#9ca3af"
               tickLine={false}
               axisLine={false}
+              allowDecimals={false}
             />
+
             <Tooltip
               contentStyle={{
                 background: "#11151c",
@@ -97,6 +129,7 @@ const MemberGrowth = () => {
                 color: "#fff",
               }}
             />
+
             <Area
               type="monotone"
               dataKey="members"

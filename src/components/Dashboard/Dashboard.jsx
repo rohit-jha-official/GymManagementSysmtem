@@ -23,11 +23,13 @@ import { API_BASE } from "../../config/api";
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  /* ✅ DASHBOARD STATS STATE */
+  /* ✅ DASHBOARD STATS STATE (UPDATED) */
   const [stats, setStats] = useState({
     totalMembers: 0,
     expiringSoon: 0,
     newRegistrations: 0,
+    totalRevenue: 0,     // 🆕
+    renewalRate: 0,      // 🆕
   });
 
   /* ✅ FETCH DASHBOARD STATS */
@@ -45,6 +47,7 @@ const Dashboard = () => {
     const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, []);
+
   return (
     <>
       {/* HEADER */}
@@ -59,7 +62,6 @@ const Dashboard = () => {
           <div>
             <p>Total Members</p>
             <h2>{stats.totalMembers}</h2>
-            {/* <span className="positive">+12% from last month</span> */}
           </div>
           <FaUsers
             className="icon orange clickable"
@@ -70,8 +72,6 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Today's Check-ins</p>
-            {/* <h2>156</h2>
-            <span>82% of active members</span> */}
           </div>
           <FaUserCheck
             className="icon green clickable"
@@ -82,8 +82,6 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Active RFID Cards</p>
-            {/* <h2>385</h2>
-            <span>35 unassigned</span> */}
           </div>
           <FaIdCard
             className="icon orange clickable"
@@ -109,8 +107,7 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>This Month's Revenue</p>
-            {/* <h2>Rs. 485,000</h2>
-            <span className="positive">+18% from last month</span> */}
+            <h2>₹{stats.totalRevenue}</h2> {/* 🆕 */}
           </div>
           <FaWallet className="icon green" />
         </div>
@@ -127,8 +124,7 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <p>Renewal Rate</p>
-            {/* <h2>78%</h2>
-            <span className="positive">+5% improvement</span> */}
+            <h2>{stats.renewalRate}%</h2> {/* 🆕 */}
           </div>
           <FaRedoAlt className="icon orange" />
         </div>

@@ -6,18 +6,22 @@ import "./RenewMembership.css";
 
 const RenewMembership = ({ member, onClose }) => {
   const [plans, setPlans] = useState([]);
-  const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPlanId, setSelectedPlanId] = useState("");
   const [paidAmount, setPaidAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingPlans, setLoadingPlans] = useState(true);
 
-  /* 🔹 FETCH PLANS FROM BACKEND */
+  /* ===============================
+     FETCH MEMBERSHIP PLANS
+     =============================== */
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/plans`);
+        const res = await axios.get(
+          `${API_BASE}/membership-plans`
+        );
         setPlans(res.data);
-      } catch {
+      } catch (error) {
         alert("Failed to load membership plans");
       } finally {
         setLoadingPlans(false);
@@ -27,49 +31,65 @@ const RenewMembership = ({ member, onClose }) => {
     fetchPlans();
   }, []);
 
-  /* 🔹 SELECTED PLAN */
-  const plan = plans.find((p) => p.name === selectedPlan);
+  /* ===============================
+     SELECTED PLAN OBJECT
+     =============================== */
+  const selectedPlan = plans.find(
+    (p) => p._id === selectedPlanId
+  );
 
-  /* 🔹 CALCULATIONS */
-  const totalAmount = plan ? plan.price : 0;
+  /* ===============================
+     CALCULATIONS
+     =============================== */
+  const totalAmount = selectedPlan
+    ? selectedPlan.price
+    : 0;
 
   const dueAmount =
-    plan && paidAmount !== ""
-      ? Math.max(totalAmount - Number(paidAmount), 0)
+    selectedPlan && paidAmount !== ""
+      ? Math.max(
+          totalAmount - Number(paidAmount),
+          0
+        )
       : totalAmount;
 
-  /* 🔹 VALIDATION */
+  /* ===============================
+     VALIDATION
+     =============================== */
   const isFormValid =
-    selectedPlan !== "" &&
+    selectedPlanId !== "" &&
     paidAmount !== "" &&
     Number(paidAmount) >= 0;
 
-  /* 🔹 CONFIRM RENEWAL */
- const handleConfirmRenewal = async () => {
-  if (!isFormValid) return;
+  /* ===============================
+     CONFIRM RENEWAL
+     =============================== */
+  const handleConfirmRenewal = async () => {
+    if (!isFormValid) return;
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    await axios.put(
-      `${API_BASE}/members/renew/${member._id}`,
-      {
-        plan: selectedPlan,
-        paidAmount: Number(paidAmount),
-        totalAmount: totalAmount, // ✅ IMPORTANT
-      }
-    );
+      await axios.put(
+        `${API_BASE}/members/renew/${member._id}`,
+        {
+          plan: selectedPlanId, // ✅ ObjectId
+          paidAmount: Number(paidAmount),
+          totalAmount: totalAmount,
+        }
+      );
 
-    alert("Membership renewed successfully");
-    onClose();
-  } catch (error) {
-    alert(
-      error.response?.data?.message || "Renewal failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      alert("Membership renewed successfully ✅");
+      onClose();
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          "Renewal failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="renew-overlay">
@@ -80,7 +100,10 @@ const RenewMembership = ({ member, onClose }) => {
             <FaSyncAlt />
             <span>Renew Membership</span>
           </div>
-          <button className="close-btn" onClick={onClose}>
+          <button
+            className="close-btn"
+            onClick={onClose}
+          >
             ×
           </button>
         </div>
@@ -93,7 +116,10 @@ const RenewMembership = ({ member, onClose }) => {
           <div>
             <h4>{member?.fullName}</h4>
             <p>{member?.phone}</p>
-            <span>Current Plan: {member?.plan}</span>
+            <span>
+              Current Plan:{" "}
+              {member?.plan?.name || "N/A"}
+            </span>
           </div>
         </div>
 
@@ -101,22 +127,32 @@ const RenewMembership = ({ member, onClose }) => {
         <h5>Select New Plan</h5>
 
         {loadingPlans ? (
-          <p className="loading">Loading plans...</p>
+          <p className="loading">
+            Loading plans...
+          </p>
         ) : (
           <div className="plan-list">
-            {plans.map((p) => (
+            {plans.map((plan) => (
               <div
-                key={p._id}
+                key={plan._id}
                 className={`plan ${
-                  selectedPlan === p.name ? "active" : ""
+                  selectedPlanId === plan._id
+                    ? "active"
+                    : ""
                 }`}
-                onClick={() => setSelectedPlan(p.name)}
+                onClick={() =>
+                  setSelectedPlanId(plan._id)
+                }
               >
                 <div>
-                  <h4>{p.name}</h4>
-                  <span>{p.durationMonths} Months</span>
+                  <h4>{plan.name}</h4>
+                  <span>
+                    {plan.durationMonths} Months
+                  </span>
                 </div>
-                <strong>Rs. {p.price}</strong>
+                <strong>
+                  ₹ {plan.price}
+                </strong>
               </div>
             ))}
           </div>
@@ -129,40 +165,49 @@ const RenewMembership = ({ member, onClose }) => {
             type="number"
             placeholder="Enter paid amount"
             value={paidAmount}
-            onChange={(e) => setPaidAmount(e.target.value)}
+            onChange={(e) =>
+              setPaidAmount(e.target.value)
+            }
           />
-          {plan && (
+
+          {selectedPlan && (
             <p className="hint">
-              Plan Price: Rs. {plan.price}
+              Plan Price: ₹{" "}
+              {selectedPlan.price}
             </p>
           )}
         </div>
 
         {/* SUMMARY */}
-        {plan && (
+        {selectedPlan && (
           <div className="summary">
             <h4>Payment Summary</h4>
 
             <div className="summary-row">
               <span>Total</span>
-              <span>Rs. {totalAmount}</span>
+              <span>₹ {totalAmount}</span>
             </div>
 
             <div className="summary-row success">
               <span>Paid</span>
-              <span>Rs. {paidAmount || 0}</span>
+              <span>
+                ₹ {paidAmount || 0}
+              </span>
             </div>
 
             <div className="summary-row danger">
               <span>Due</span>
-              <span>Rs. {dueAmount}</span>
+              <span>₹ {dueAmount}</span>
             </div>
           </div>
         )}
 
         {/* FOOTER */}
         <div className="renew-footer">
-          <button className="btn cancel" onClick={onClose}>
+          <button
+            className="btn cancel"
+            onClick={onClose}
+          >
             Cancel
           </button>
 
@@ -172,7 +217,9 @@ const RenewMembership = ({ member, onClose }) => {
             disabled={!isFormValid || loading}
           >
             <FaCheck />
-            {loading ? "Processing..." : "Confirm Renewal"}
+            {loading
+              ? "Processing..."
+              : "Confirm Renewal"}
           </button>
         </div>
       </div>

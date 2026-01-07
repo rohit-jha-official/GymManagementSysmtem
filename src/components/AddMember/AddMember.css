@@ -61,11 +61,11 @@
 }
 
 /* CAMERA */
-.camera-box {
+/*.camera-box {
   width: 100%;
   margin-top: 14px;
 }
-
+*/
 .camera-box video {
   width: 240px;
   border-radius: 12px;

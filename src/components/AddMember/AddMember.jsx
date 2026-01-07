@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./AddMember.css";
 import { FaCamera, FaUserPlus, FaIdCard } from "react-icons/fa";
 import { API_BASE } from "../../config/api";
@@ -10,6 +10,7 @@ const AddMember = () => {
   const [email, setEmail] = useState("");
   const [dob, setDob] = useState("");
   const [dobInput, setDobInput] = useState("");
+  const [dobType, setDobType] = useState("text");
   const [address, setAddress] = useState("");
   const [rfid, setRfid] = useState("");
 
@@ -19,15 +20,10 @@ const AddMember = () => {
   const genderOptions = ["Male", "Female", "Other"];
 
   /* 🔹 MEMBERSHIP */
+  const [plans, setPlans] = useState([]);
   const [planOpen, setPlanOpen] = useState(false);
   const [membershipPlan, setMembershipPlan] = useState("Select a plan");
-  const membershipOptions = [
-  "Monthly",
-  "Quarterly",
-  "Half Yearly",
-  "Yearly",
-];
-
+  const [selectedPlanId, setSelectedPlanId] = useState("");
 
   /* 🔹 PHOTO */
   const fileInputRef = useRef(null);
@@ -37,6 +33,20 @@ const AddMember = () => {
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cameraOn, setCameraOn] = useState(false);
+
+  /* 🔹 FETCH MEMBERSHIP PLANS */
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/plans`);
+        const data = await res.json();
+        setPlans(data);
+      } catch (err) {
+        console.error("Failed to fetch plans", err);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   /* 📷 CAMERA */
   const handleCameraClick = async () => {
@@ -119,17 +129,11 @@ const AddMember = () => {
 
   /* 🚀 SUBMIT */
   const handleSubmit = async () => {
-    if (
-      !fullName ||
-      !phone ||
-      membershipPlan === "Select a plan" ||
-      gender === "Select gender"
-    ) {
+    if (!fullName || !phone || !selectedPlanId || gender === "Select gender") {
       alert("Please fill all required fields");
       return;
     }
 
-    // ✅ EXACTLY 10 DIGITS CHECK
     if (phone.length !== 10) {
       alert("Phone number must be exactly 10 digits");
       return;
@@ -146,7 +150,7 @@ const AddMember = () => {
           gender,
           dob,
           address,
-          plan: membershipPlan,
+          plan: selectedPlanId,
           rfid,
           photo,
         }),
@@ -160,16 +164,17 @@ const AddMember = () => {
 
       alert("Member added successfully ✅");
 
-      /* RESET */
       setFullName("");
       setPhone("");
       setEmail("");
       setDob("");
       setDobInput("");
+      setDobType("text");
       setAddress("");
       setRfid("");
       setGender("Select gender");
       setMembershipPlan("Select a plan");
+      setSelectedPlanId("");
       setPhoto(null);
       setPhotoPreview(null);
     } catch {
@@ -230,17 +235,12 @@ const AddMember = () => {
             onChange={(e) => setFullName(e.target.value)}
           />
 
-          {/* ✅ PHONE NUMBER – EXACTLY 10 DIGITS */}
           <input
             placeholder="Phone Number *"
             value={phone}
             maxLength={10}
             inputMode="numeric"
-            pattern="[0-9]*"
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "");
-              setPhone(value);
-            }}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
           />
 
           <input
@@ -249,7 +249,14 @@ const AddMember = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <input type="date" value={dobInput} onChange={handleDobChange} />
+          <input
+            type={dobType}
+            placeholder="DOB"
+            value={dobInput}
+            onFocus={() => setDobType("date")}
+            onBlur={() => !dobInput && setDobType("text")}
+            onChange={handleDobChange}
+          />
 
           <div className="dropdown">
             <div className="dropdown-header" onClick={() => setGenderOpen(!genderOpen)}>
@@ -298,15 +305,16 @@ const AddMember = () => {
           </div>
           {planOpen && (
             <ul className="dropdown-list">
-              {membershipOptions.map((p) => (
+              {plans.map((p) => (
                 <li
-                  key={p}
+                  key={p._id}
                   onClick={() => {
-                    setMembershipPlan(p);
+                    setMembershipPlan(p.name);
+                    setSelectedPlanId(p._id);
                     setPlanOpen(false);
                   }}
                 >
-                  {p}
+                  {p.name} – ₹{p.price}
                 </li>
               ))}
             </ul>

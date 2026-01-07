@@ -1,8 +1,10 @@
 import Member from "../models/member.js";
-import planDays from "../utils/planDays.js";
+import MembershipPlan from "../models/membershipPlan.js";
 import Activity from "../models/activity.js";
 
-/* ➕ ADD NEW MEMBER */
+/* ================================
+   ➕ ADD NEW MEMBER
+   ================================ */
 export const addMember = async (req, res) => {
   try {
     const {
@@ -18,16 +20,23 @@ export const addMember = async (req, res) => {
     } = req.body;
 
     if (!fullName || !phone || !plan) {
-      return res.status(400).json({ message: "Required fields missing" });
+      return res
+        .status(400)
+        .json({ message: "Required fields missing" });
     }
 
-    if (!planDays[plan]) {
-      return res.status(400).json({ message: "Invalid membership plan" });
+    const planDoc = await MembershipPlan.findById(plan);
+    if (!planDoc || !planDoc.durationDays) {
+      return res
+        .status(400)
+        .json({ message: "Invalid membership plan" });
     }
 
     const startDate = new Date();
     const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + planDays[plan]);
+    expiryDate.setDate(
+      expiryDate.getDate() + planDoc.durationDays
+    );
 
     const member = await Member.create({
       fullName,
@@ -36,12 +45,14 @@ export const addMember = async (req, res) => {
       gender,
       dob,
       address,
-      plan,
+      plan: planDoc._id,
       rfid,
+      photo,
       startDate,
       expiryDate,
-      photo,
+      paidAmount: planDoc.price,
       dueAmount: 0,
+      isRenewed: false,
     });
 
     await Activity.create({
@@ -51,24 +62,32 @@ export const addMember = async (req, res) => {
 
     res.status(201).json(member);
   } catch (error) {
+    console.error("Add member error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-/* 📋 GET ALL MEMBERS */
+/* ================================
+   📋 GET ALL MEMBERS
+   ================================ */
 export const getAllMembers = async (req, res) => {
   try {
     const today = new Date();
-    const members = await Member.find().sort({ createdAt: -1 });
+
+    const members = await Member.find()
+      .populate("plan")
+      .sort({ createdAt: -1 });
 
     const result = members.map((m) => ({
       _id: m._id,
       name: m.fullName,
       phone: m.phone,
       email: m.email,
-      plan: m.plan,
+      plan: m.plan?.name || "-",
       endDate: m.expiryDate,
-      status: m.expiryDate >= today ? "Active" : "Expired",
+      status:
+        m.expiryDate >= today ? "Active" : "Expired",
+      rfid: m.rfid,
     }));
 
     res.json(result);
@@ -77,24 +96,28 @@ export const getAllMembers = async (req, res) => {
   }
 };
 
-/* ❌ GET EXPIRED MEMBERS */
+/* ================================
+   ❌ GET EXPIRED MEMBERS
+   ================================ */
 export const getExpiredMembers = async (req, res) => {
   try {
     const today = new Date();
 
     const members = await Member.find({
       expiryDate: { $lt: today },
-    }).sort({ expiryDate: -1 });
+    })
+      .populate("plan")
+      .sort({ expiryDate: -1 });
 
     const result = members.map((m) => ({
       _id: m._id,
       fullName: m.fullName,
       phone: m.phone,
-      plan: m.plan,
+      plan: m.plan?.name || "-",
       expiryDate: m.expiryDate,
       daysExpired: Math.max(
         Math.floor(
-          (today.getTime() - new Date(m.expiryDate).getTime()) /
+          (today - new Date(m.expiryDate)) /
             (1000 * 60 * 60 * 24)
         ),
         1
@@ -107,7 +130,9 @@ export const getExpiredMembers = async (req, res) => {
   }
 };
 
-/* ⏳ GET EXPIRING SOON */
+/* ================================
+   ⏳ GET EXPIRING SOON
+   ================================ */
 export const getExpiringSoon = async (req, res) => {
   try {
     const today = new Date();
@@ -116,17 +141,19 @@ export const getExpiringSoon = async (req, res) => {
 
     const members = await Member.find({
       expiryDate: { $gte: today, $lte: next7Days },
-    }).sort({ expiryDate: 1 });
+    })
+      .populate("plan")
+      .sort({ expiryDate: 1 });
 
     const result = members.map((m) => ({
       _id: m._id,
       fullName: m.fullName,
       phone: m.phone,
-      plan: m.plan,
+      plan: m.plan?.name || "-",
       expiryDate: m.expiryDate,
       daysLeft: Math.max(
         Math.ceil(
-          (new Date(m.expiryDate).getTime() - today.getTime()) /
+          (new Date(m.expiryDate) - today) /
             (1000 * 60 * 60 * 24)
         ),
         0
@@ -139,34 +166,56 @@ export const getExpiringSoon = async (req, res) => {
   }
 };
 
-/* 🔄 RENEW MEMBERSHIP (WITH PARTIAL PAYMENT SUPPORT) */
+/* ================================
+   🔄 RENEW MEMBERSHIP (FIXED)
+   ================================ */
 export const renewMember = async (req, res) => {
   try {
-    const { plan, paidAmount, totalAmount } = req.body;
+    const planId = req.body.plan || req.body.planId;
+    const { paidAmount } = req.body;
 
-    if (!planDays[plan]) {
-      return res.status(400).json({ message: "Invalid plan" });
+    if (!planId) {
+      return res
+        .status(400)
+        .json({ message: "Plan ID is required" });
     }
 
     const member = await Member.findById(req.params.id);
     if (!member) {
-      return res.status(404).json({ message: "Member not found" });
+      return res
+        .status(404)
+        .json({ message: "Member not found" });
     }
 
-    const startDate = new Date();
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + planDays[plan]);
-
-    member.plan = plan;
-    member.startDate = startDate;
-    member.expiryDate = expiryDate;
-
-    // ✅ DUE LOGIC (matches schema)
-    if (Number(paidAmount) < Number(totalAmount)) {
-      member.dueAmount = Number(totalAmount) - Number(paidAmount);
-    } else {
-      member.dueAmount = 0;
+    const planDoc = await MembershipPlan.findById(planId);
+    if (!planDoc || !planDoc.durationDays) {
+      return res
+        .status(400)
+        .json({ message: "Invalid membership plan" });
     }
+
+    const today = new Date();
+
+    const baseDate =
+      member.expiryDate && member.expiryDate > today
+        ? member.expiryDate
+        : today;
+
+    const newExpiryDate = new Date(baseDate);
+    newExpiryDate.setDate(
+      newExpiryDate.getDate() + planDoc.durationDays
+    );
+
+    const paid = Number(paidAmount) || planDoc.price;
+
+    member.plan = planDoc._id;
+    member.expiryDate = newExpiryDate;
+    member.isRenewed = true;
+    member.paidAmount = paid;
+    member.dueAmount = Math.max(
+      planDoc.price - paid,
+      0
+    );
 
     await member.save();
 
@@ -175,25 +224,34 @@ export const renewMember = async (req, res) => {
       message: `Membership renewed: ${member.fullName}`,
     });
 
-    res.json(member);
+    res.json({
+      message: "Membership renewed successfully",
+      member,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Renew member error:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to renew membership" });
   }
 };
 
-
-/* 💰 GET DUE MEMBERS */
+/* ================================
+   💰 GET DUE MEMBERS
+   ================================ */
 export const getDueMembers = async (req, res) => {
   try {
     const members = await Member.find({
       dueAmount: { $gt: 0 },
-    }).sort({ updatedAt: -1 });
+    })
+      .populate("plan")
+      .sort({ updatedAt: -1 });
 
     const result = members.map((m) => ({
       _id: m._id,
       fullName: m.fullName,
       phone: m.phone,
-      plan: m.plan,
+      plan: m.plan?.name || "-",
       dueAmount: m.dueAmount,
       expiryDate: m.expiryDate,
     }));
@@ -204,12 +262,16 @@ export const getDueMembers = async (req, res) => {
   }
 };
 
-/* ✅ COLLECT DUE PAYMENT */
+/* ================================
+   ✅ COLLECT DUE PAYMENT
+   ================================ */
 export const collectDuePayment = async (req, res) => {
   try {
     const member = await Member.findById(req.params.id);
     if (!member) {
-      return res.status(404).json({ message: "Member not found" });
+      return res
+        .status(404)
+        .json({ message: "Member not found" });
     }
 
     member.dueAmount = 0;
@@ -221,13 +283,17 @@ export const collectDuePayment = async (req, res) => {
       message: `Due payment collected from ${member.fullName}`,
     });
 
-    res.json({ message: "Due payment collected successfully" });
+    res.json({
+      message: "Due payment collected successfully",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-/* 🗑️ DELETE MEMBER */
+/* ================================
+   🗑️ DELETE MEMBER
+   ================================ */
 export const deleteMember = async (req, res) => {
   try {
     await Member.findByIdAndDelete(req.params.id);
@@ -237,13 +303,21 @@ export const deleteMember = async (req, res) => {
   }
 };
 
-/* 👤 GET MEMBER BY ID */
+/* ================================
+   👤 GET MEMBER BY ID
+   ================================ */
 export const getMemberById = async (req, res) => {
   try {
-    const member = await Member.findById(req.params.id);
+    const member = await Member.findById(
+      req.params.id
+    ).populate("plan");
+
     if (!member) {
-      return res.status(404).json({ message: "Member not found" });
+      return res
+        .status(404)
+        .json({ message: "Member not found" });
     }
+
     res.json(member);
   } catch (error) {
     res.status(500).json({ message: error.message });

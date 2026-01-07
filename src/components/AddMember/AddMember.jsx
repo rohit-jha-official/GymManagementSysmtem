@@ -214,7 +214,7 @@ const AddMember = () => {
             <div className="camera-box">
               <video ref={videoRef} autoPlay playsInline />
               <button className="btn-secondary" onClick={capturePhoto}>
-                📸 Capture Photo
+                Capture
               </button>
               <canvas ref={canvasRef} hidden />
             </div>

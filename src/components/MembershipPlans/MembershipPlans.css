@@ -355,3 +355,12 @@
   color: #000000;
   border: 1px solid rgba(245, 158, 11, 0.4);
 }
+
+.clickable {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* .clickable:hover {
+  text-decoration: underline;
+} */

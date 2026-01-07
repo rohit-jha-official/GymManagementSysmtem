@@ -4,7 +4,7 @@ import { FaCamera, FaUserPlus, FaIdCard } from "react-icons/fa";
 import { API_BASE } from "../../config/api";
 
 const AddMember = () => {
-  /* 🔹 FORM STATE */
+  /* ================= FORM STATE ================= */
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -14,18 +14,18 @@ const AddMember = () => {
   const [address, setAddress] = useState("");
   const [rfid, setRfid] = useState("");
 
-  /* 🔹 GENDER */
+  /* ================= GENDER ================= */
   const [gender, setGender] = useState("Select gender");
   const [genderOpen, setGenderOpen] = useState(false);
   const genderOptions = ["Male", "Female", "Other"];
 
-  /* 🔹 MEMBERSHIP */
+  /* ================= MEMBERSHIP ================= */
   const [plans, setPlans] = useState([]);
   const [planOpen, setPlanOpen] = useState(false);
   const [membershipPlan, setMembershipPlan] = useState("Select a plan");
   const [selectedPlanId, setSelectedPlanId] = useState("");
 
-  /* 🔹 PHOTO */
+  /* ================= PHOTO ================= */
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -34,13 +34,13 @@ const AddMember = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cameraOn, setCameraOn] = useState(false);
 
-  /* 🔹 FETCH MEMBERSHIP PLANS */
+  /* ================= FETCH PLANS ================= */
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const res = await fetch(`${API_BASE}/plans`);
+        const res = await fetch(`${API_BASE}/membership-plans`);
         const data = await res.json();
-        setPlans(data);
+        setPlans(data || []);
       } catch (err) {
         console.error("Failed to fetch plans", err);
       }
@@ -48,11 +48,13 @@ const AddMember = () => {
     fetchPlans();
   }, []);
 
-  /* 📷 CAMERA */
+  /* ================= CAMERA ================= */
   const handleCameraClick = async () => {
     try {
       if (videoRef.current?.srcObject) {
-        videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
+        videoRef.current.srcObject
+          .getTracks()
+          .forEach((t) => t.stop());
       }
 
       setCameraOn(true);
@@ -67,7 +69,6 @@ const AddMember = () => {
     }
   };
 
-  /* 📸 CAPTURE PHOTO */
   const capturePhoto = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -86,10 +87,11 @@ const AddMember = () => {
     setCameraOn(false);
   };
 
-  /* 📁 UPLOAD PHOTO */
   const handleUploadClick = () => {
     if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
+      videoRef.current.srcObject
+        .getTracks()
+        .forEach((t) => t.stop());
       setCameraOn(false);
     }
     fileInputRef.current.value = "";
@@ -113,7 +115,7 @@ const AddMember = () => {
     reader.readAsDataURL(file);
   };
 
-  /* 📅 DOB */
+  /* ================= DOB (FIXED) ================= */
   const handleDobChange = (e) => {
     const value = e.target.value;
     setDobInput(value);
@@ -124,12 +126,28 @@ const AddMember = () => {
     }
 
     const [yyyy, mm, dd] = value.split("-");
+
+    // ✅ allow only 4-digit year
+    if (yyyy.length !== 4) return;
+
+    // ✅ block future dates
+    const selectedDate = new Date(value);
+    if (selectedDate > new Date()) {
+      alert("DOB cannot be a future date");
+      return;
+    }
+
     setDob(`${dd}/${mm}/${yyyy}`);
   };
 
-  /* 🚀 SUBMIT */
+  /* ================= SUBMIT ================= */
   const handleSubmit = async () => {
-    if (!fullName || !phone || !selectedPlanId || gender === "Select gender") {
+    if (
+      !fullName ||
+      !phone ||
+      !selectedPlanId ||
+      gender === "Select gender"
+    ) {
       alert("Please fill all required fields");
       return;
     }
@@ -195,7 +213,11 @@ const AddMember = () => {
 
         <div className="photo-section">
           <div className="photo-circle" onClick={handleCameraClick}>
-            {photoPreview ? <img src={photoPreview} alt="Profile" /> : <FaCamera />}
+            {photoPreview ? (
+              <img src={photoPreview} alt="Profile" />
+            ) : (
+              <FaCamera />
+            )}
           </div>
 
           <button className="btn-secondary" onClick={handleUploadClick}>
@@ -240,7 +262,9 @@ const AddMember = () => {
             value={phone}
             maxLength={10}
             inputMode="numeric"
-            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+            onChange={(e) =>
+              setPhone(e.target.value.replace(/\D/g, ""))
+            }
           />
 
           <input
@@ -256,10 +280,14 @@ const AddMember = () => {
             onFocus={() => setDobType("date")}
             onBlur={() => !dobInput && setDobType("text")}
             onChange={handleDobChange}
+            max={new Date().toISOString().split("T")[0]}
           />
 
           <div className="dropdown">
-            <div className="dropdown-header" onClick={() => setGenderOpen(!genderOpen)}>
+            <div
+              className="dropdown-header"
+              onClick={() => setGenderOpen(!genderOpen)}
+            >
               {gender}
             </div>
             {genderOpen && (
@@ -300,23 +328,31 @@ const AddMember = () => {
         </div>
 
         <div className="dropdown">
-          <div className="dropdown-header" onClick={() => setPlanOpen(!planOpen)}>
+          <div
+            className="dropdown-header"
+            onClick={() => setPlanOpen(!planOpen)}
+          >
             {membershipPlan}
           </div>
+
           {planOpen && (
             <ul className="dropdown-list">
-              {plans.map((p) => (
-                <li
-                  key={p._id}
-                  onClick={() => {
-                    setMembershipPlan(p.name);
-                    setSelectedPlanId(p._id);
-                    setPlanOpen(false);
-                  }}
-                >
-                  {p.name} – ₹{p.price}
-                </li>
-              ))}
+              {plans.length === 0 ? (
+                <li className="disabled">No plans available</li>
+              ) : (
+                plans.map((p) => (
+                  <li
+                    key={p._id}
+                    onClick={() => {
+                      setMembershipPlan(p.name);
+                      setSelectedPlanId(p._id);
+                      setPlanOpen(false);
+                    }}
+                  >
+                    {p.name} – ₹{p.price}
+                  </li>
+                ))
+              )}
             </ul>
           )}
         </div>

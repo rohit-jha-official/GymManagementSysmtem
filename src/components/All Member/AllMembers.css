@@ -265,3 +265,70 @@
   top: auto;
   bottom: -36px;
 }
+/* DROPDOWN WRAPPER */
+.filter-dropdown {
+  position: relative;
+  width: 160px;
+  font-size: 14px;
+}
+
+/* SELECTED VALUE */
+.filter-selected {
+  font-size: 20px;
+  background: #0f131a;
+  color: #ffffff;
+  padding: 10px 14px;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* OPTIONS CONTAINER */
+.filter-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #000000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  z-index: 20;
+}
+
+/* OPTION ITEM */
+.filter-option {
+  padding: 10px 14px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* HOVER + ACTIVE (ORANGE LIKE GENDER) */
+.filter-option:hover,
+.filter-option.active {
+  background: #f59e0b;
+  color: #000000;
+}
+/* SELECTED VALUE (flex for icon) */
+.filter-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  padding: 10px 14px;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* DROPDOWN ICON */
+.dropdown-icon {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+  color: #9ca3af;
+}
+
+/* ROTATE WHEN OPEN */
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}

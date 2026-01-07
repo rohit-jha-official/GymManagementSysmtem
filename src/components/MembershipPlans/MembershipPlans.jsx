@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./MembershipPlans.css";
 import {
   FaBolt,
@@ -24,6 +25,8 @@ const MembershipPlans = () => {
   const [editingPlan, setEditingPlan] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
   /* ✅ FETCH PLANS */
   const fetchPlans = async () => {
     try {
@@ -38,8 +41,8 @@ const MembershipPlans = () => {
         price: p.price,
         icon: planIcons[p.name] || <FaBolt />,
         features: p.features || [],
-        members: p.activeMembers || 0,
-        totalMembers: p.totalMembers || 0,
+        members: p.activeMembers || 0,     // Active members
+        totalMembers: p.totalMembers || 0, // Total members
         badge: p.isPremium
           ? "premium"
           : p.isPopular
@@ -119,7 +122,17 @@ const MembershipPlans = () => {
                 ))}
               </ul>
 
-              <div className="members">
+              {/* ✅ ACTIVE MEMBERS → FILTERED TABLE */}
+              <div
+                className="members clickable"
+                onClick={() =>
+                  navigate(
+                    `/members?plan=${encodeURIComponent(
+                      plan.name
+                    )}&type=active`
+                  )
+                }
+              >
                 {plan.members} Active Members
               </div>
 
@@ -144,7 +157,17 @@ const MembershipPlans = () => {
         <div className="stats-grid">
           {plans.map((p) => (
             <div key={p._id}>
-              <span className="counttt">
+              {/* ✅ TOTAL MEMBERS → FILTERED TABLE */}
+              <span
+                className="counttt clickable"
+                onClick={() =>
+                  navigate(
+                    `/members?plan=${encodeURIComponent(
+                      p.name
+                    )}&type=all`
+                  )
+                }
+              >
                 {p.totalMembers}
               </span>
               <span>{p.name} Members</span>

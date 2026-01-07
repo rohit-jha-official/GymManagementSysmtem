@@ -1,9 +1,9 @@
 import "./AllMembers.css";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import {
   FiSearch,
-  FiFilter,
   FiMoreVertical,
   FiDownload,
   FiEye,
@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { API_BASE } from "../../config/api";
 
-/* 🔹 DATE FORMATTER: 14 Jan 2004 */
+/* 🔹 DATE FORMATTER */
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -22,10 +22,19 @@ const formatDate = (date) =>
 
 const AllMembers = () => {
   const [members, setMembers] = useState([]);
+  const [filteredMembers, setFilteredMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [planFilter, setPlanFilter] = useState("all");
   const [openActionIndex, setOpenActionIndex] = useState(null);
 
+  /* 🔹 READ URL PARAMS */
+  const [searchParams] = useSearchParams();
+  const planFromUrl = searchParams.get("plan"); // Monthly
+  const typeFromUrl = searchParams.get("type"); // active | all
+const [planOpen, setPlanOpen] = useState(false);
+
+  /* 🔹 FETCH MEMBERS */
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -43,6 +52,35 @@ const AllMembers = () => {
     fetchMembers();
   }, [search]);
 
+  /* 🔹 SYNC URL PLAN → DROPDOWN */
+  useEffect(() => {
+    if (planFromUrl) {
+      setPlanFilter(planFromUrl);
+    }
+  }, [planFromUrl]);
+
+  /* 🔹 FILTER LOGIC (PLAN + TYPE) */
+  useEffect(() => {
+    let filtered = members;
+
+    // Dropdown / URL plan filter
+    if (planFilter !== "all") {
+      filtered = filtered.filter(
+        (m) => m.plan === planFilter
+      );
+    }
+
+    // Active-only filter (from MembershipPlans)
+    if (typeFromUrl === "active") {
+      filtered = filtered.filter(
+        (m) => m.status === "Active"
+      );
+    }
+
+    setFilteredMembers(filtered);
+  }, [members, planFilter, typeFromUrl]);
+
+  /* 🔹 CLOSE ACTION DROPDOWN */
   useEffect(() => {
     const closeDropdown = () => setOpenActionIndex(null);
     document.addEventListener("click", closeDropdown);
@@ -50,6 +88,7 @@ const AllMembers = () => {
       document.removeEventListener("click", closeDropdown);
   }, []);
 
+  /* 🔹 DELETE MEMBER */
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this member?"
@@ -59,11 +98,9 @@ const AllMembers = () => {
 
     try {
       await axios.delete(`${API_BASE}/members/${id}`);
-
       setMembers((prev) =>
         prev.filter((m) => m._id !== id)
       );
-
       setOpenActionIndex(null);
     } catch (error) {
       console.error(error);
@@ -71,8 +108,9 @@ const AllMembers = () => {
     }
   };
 
+  /* 🔹 EXPORT CSV (FILTERED DATA) */
   const exportToCSV = () => {
-    if (members.length === 0) return;
+    if (filteredMembers.length === 0) return;
 
     const headers = [
       "Name",
@@ -84,13 +122,13 @@ const AllMembers = () => {
       "Status",
     ];
 
-    const rows = members.map((m) => [
+    const rows = filteredMembers.map((m) => [
       m.name,
       m.phone,
       m.email,
       m.plan,
       m.rfid || "",
-      formatDate(m.endDate), // ✅ UPDATED
+      formatDate(m.endDate),
       m.status,
     ]);
 
@@ -114,10 +152,15 @@ const AllMembers = () => {
 
   return (
     <div className="members-page">
+      {/* HEADER */}
       <div className="members-header">
         <div>
           <h1>All Members</h1>
-          <p>Manage and view all gym members</p>
+          <p>
+            {planFilter !== "all"
+              ? `${planFilter} Members`
+              : "Manage and view all gym members"}
+          </p>
         </div>
 
         <button className="export-btn" onClick={exportToCSV}>
@@ -125,7 +168,9 @@ const AllMembers = () => {
         </button>
       </div>
 
+      {/* TOOLBAR */}
       <div className="members-toolbar">
+        {/* SEARCH */}
         <div className="search-box">
           <FiSearch />
           <input
@@ -135,11 +180,49 @@ const AllMembers = () => {
           />
         </div>
 
-        <button className="filter-btn">
-          <FiFilter /> Filters
-        </button>
+        {/* PLAN FILTER */}
+ {/* PLAN FILTER DROPDOWN */}
+<div className="filter-dropdown">
+  <div
+    className="filter-selected"
+    onClick={() => setPlanOpen(!planOpen)}
+  >
+    <span>
+      {planFilter === "all" ? "All Plans" : planFilter}
+    </span>
+
+    {/* DROPDOWN ICON */}
+    <span className={`dropdown-icon ${planOpen ? "open" : ""}`}>
+      ▾
+    </span>
+  </div>
+
+  {planOpen && (
+    <div className="filter-options">
+      {["All Plans", "Monthly", "Quarterly", "Half Yearly", "Yearly"].map(
+        (plan) => (
+          <div
+            key={plan}
+            className={`filter-option ${
+              planFilter === plan ? "active" : ""
+            }`}
+            onClick={() => {
+              setPlanFilter(plan === "All Plans" ? "all" : plan);
+              setPlanOpen(false);
+            }}
+          >
+            {plan}
+          </div>
+        )
+      )}
+    </div>
+  )}
+</div>
+
+
       </div>
 
+      {/* TABLE */}
       <div className="members-table">
         <div className="table-head">
           <span>Member</span>
@@ -153,10 +236,10 @@ const AllMembers = () => {
 
         {loading ? (
           <p className="loading">Loading members...</p>
-        ) : members.length === 0 ? (
+        ) : filteredMembers.length === 0 ? (
           <p className="loading">No members found</p>
         ) : (
-          members.map((m, i) => (
+          filteredMembers.map((m, i) => (
             <div className="table-row" key={m._id}>
               <div className="member">
                 <div className="avatar">
@@ -172,8 +255,6 @@ const AllMembers = () => {
 
               <span>{m.plan}</span>
               <span>{m.rfid || "-"}</span>
-
-              {/* ✅ UPDATED DATE FORMAT */}
               <span>{formatDate(m.endDate)}</span>
 
               <span

@@ -1,68 +1,72 @@
-// src/controllers/membershipPlanController.js
-
 import MembershipPlan from "../models/membershipPlan.js";
 import Member from "../models/member.js";
 
-/* ================================
+/* =====================================
    📋 GET ALL MEMBERSHIP PLANS
-   ================================ */
+   ===================================== */
 export const getPlans = async (req, res) => {
   try {
-    const plans = await MembershipPlan.find().sort({
-      durationDays: 1,
-    });
+    // ✅ Sort plans by duration (short → long)
+    const plans = await MembershipPlan.find()
+      .sort({ durationDays: 1 })
+      .lean(); // 🚀 faster read-only response
 
     const today = new Date();
 
-    const plansWithCounts = await Promise.all(
+    // ✅ Attach member counts to each plan
+    const plansWithStats = await Promise.all(
       plans.map(async (plan) => {
-        const totalMembers = await Member.countDocuments({
-          plan: plan._id,
-        });
-
-        const activeMembers = await Member.countDocuments({
-          plan: plan._id,
-          expiryDate: { $gte: today },
-        });
+        const [totalMembers, activeMembers] = await Promise.all([
+          Member.countDocuments({ plan: plan._id }),
+          Member.countDocuments({
+            plan: plan._id,
+            expiryDate: { $gte: today },
+          }),
+        ]);
 
         return {
-          ...plan.toObject(),
+          ...plan,
           totalMembers,
           activeMembers,
         };
       })
     );
 
-    res.json(plansWithCounts);
+    res.status(200).json(plansWithStats);
   } catch (error) {
-    console.error("Get plans error:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to fetch membership plans" });
+    console.error("❌ Get plans error:", error);
+    res.status(500).json({
+      message: "Failed to fetch membership plans",
+    });
   }
 };
 
-/* ================================
+/* =====================================
    ➕ CREATE MEMBERSHIP PLAN
-   ================================ */
+   ===================================== */
 export const createPlan = async (req, res) => {
   try {
     const {
       name,
       price,
       durationDays,
-      features,
-      isPopular,
-      isPremium,
+      features = [],
+      isPopular = false,
+      isPremium = false,
     } = req.body;
 
+    // ✅ Validation
     if (!name || !price || !durationDays) {
       return res.status(400).json({
         message: "name, price and durationDays are required",
       });
     }
 
-    const exists = await MembershipPlan.findOne({ name });
+    // ✅ Prevent duplicate plans
+    const exists = await MembershipPlan.findOne({
+      name: name.trim(),
+    });
+
     if (exists) {
       return res.status(400).json({
         message: "Membership plan already exists",
@@ -70,54 +74,57 @@ export const createPlan = async (req, res) => {
     }
 
     const plan = await MembershipPlan.create({
-      name,
+      name: name.trim(),
       price,
       durationDays,
-      features: features || [],
-      isPopular: !!isPopular,
-      isPremium: !!isPremium,
+      features,
+      isPopular,
+      isPremium,
     });
 
     res.status(201).json(plan);
   } catch (error) {
-    console.error("Create plan error:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to create plan" });
+    console.error("❌ Create plan error:", error);
+    res.status(500).json({
+      message: "Failed to create membership plan",
+    });
   }
 };
 
-/* ================================
+/* =====================================
    ✏️ UPDATE MEMBERSHIP PLAN
-   ================================ */
+   ===================================== */
 export const updatePlan = async (req, res) => {
   try {
     const { id } = req.params;
-    const { price, features, isPopular, isPremium } = req.body;
+    const updates = req.body;
 
     const plan = await MembershipPlan.findById(id);
 
     if (!plan) {
       return res.status(404).json({
-        message: "Plan not found",
+        message: "Membership plan not found",
       });
     }
 
-    if (price !== undefined) plan.price = price;
-    if (features !== undefined) plan.features = features;
-    if (isPopular !== undefined) plan.isPopular = isPopular;
-    if (isPremium !== undefined) plan.isPremium = isPremium;
+    // ✅ Update only allowed fields
+    if (updates.price !== undefined) plan.price = updates.price;
+    if (updates.features !== undefined) plan.features = updates.features;
+    if (updates.isPopular !== undefined)
+      plan.isPopular = updates.isPopular;
+    if (updates.isPremium !== undefined)
+      plan.isPremium = updates.isPremium;
 
     await plan.save();
 
-    res.json({
+    res.status(200).json({
       message: "Membership plan updated successfully",
       plan,
     });
   } catch (error) {
-    console.error("Update plan error:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to update plan" });
+    console.error("❌ Update plan error:", error);
+    res.status(500).json({
+      message: "Failed to update membership plan",
+    });
   }
 };

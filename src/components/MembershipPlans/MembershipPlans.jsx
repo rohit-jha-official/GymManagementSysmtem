@@ -11,7 +11,7 @@ import axios from "axios";
 import { API_BASE } from "../../config/api";
 import EditPlanModal from "../EditPlanModal/EditPlanModal";
 
-/* 🔥 ICON MAP (UI UNCHANGED) */
+/* ICON MAP */
 const planIcons = {
   Monthly: <FaBolt />,
   Quarterly: <FaStar />,
@@ -22,32 +22,36 @@ const planIcons = {
 const MembershipPlans = () => {
   const [plans, setPlans] = useState([]);
   const [editingPlan, setEditingPlan] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  /* ✅ FETCH PLANS FROM BACKEND */
+  /* ✅ FETCH PLANS */
   const fetchPlans = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/plans`);
+      const res = await axios.get(
+        `${API_BASE}/membership-plans`
+      );
 
       const formattedPlans = res.data.map((p) => ({
-  _id: p._id,
-  name: p.name,
-  duration: `${p.durationMonths} Months`,
-  price: p.price,
-  icon: planIcons[p.name],
-  features: p.features,
-  members: p.activeMembers,       // ✅ Active members (small card)
-  totalMembers: p.totalMembers,   // ✅ ALL members (stats)
-  badge: p.isPremium
-    ? "premium"
-    : p.isPopular
-    ? "popular"
-    : null,
-}));
-
+        _id: p._id,
+        name: p.name,
+        duration: `${p.durationDays} Days`,
+        price: p.price,
+        icon: planIcons[p.name] || <FaBolt />,
+        features: p.features || [],
+        members: p.activeMembers || 0,
+        totalMembers: p.totalMembers || 0,
+        badge: p.isPremium
+          ? "premium"
+          : p.isPopular
+          ? "popular"
+          : null,
+      }));
 
       setPlans(formattedPlans);
     } catch (err) {
       console.error("Failed to load plans", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,23 +59,33 @@ const MembershipPlans = () => {
     fetchPlans();
   }, []);
 
-  /* ✅ SAVE HANDLER (ADMIN EDIT) */
+  /* ✅ UPDATE PLAN */
   const handleSavePlan = async (updatedPlan) => {
     try {
       await axios.put(
-        `${API_BASE}/plans/${updatedPlan._id}`,
+        `${API_BASE}/membership-plans/${updatedPlan._id}`,
         {
           price: updatedPlan.price,
           features: updatedPlan.features,
         }
       );
 
-      fetchPlans(); // refresh real data
+      fetchPlans();
       setEditingPlan(null);
     } catch (error) {
       alert("Failed to update plan");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="membership-page">
+        <p style={{ color: "#9ca3af" }}>
+          Loading membership plans...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="membership-page">
@@ -83,47 +97,41 @@ const MembershipPlans = () => {
 
       {/* PLANS GRID */}
       <div className="plans-grid">
-        {plans.map((plan) => (
-          <div key={plan.name} className="plan-card">
-            {/* 🔥 BADGE */}
-            {/* {plan.badge && (
-              <span className={`badge ${plan.badge}`}>
-                {plan.badge === "popular" && "Popular"}
-                {plan.badge === "premium" && "Premium"}
-              </span>
-            )} */}
+        {plans.length === 0 ? (
+          <p style={{ color: "#9ca3af" }}>
+            No membership plans found
+          </p>
+        ) : (
+          plans.map((plan) => (
+            <div key={plan._id} className="plan-card">
+              <div className="plan-icon">{plan.icon}</div>
 
-            <div className="plan-icon">{plan.icon}</div>
+              <h2>{plan.name}</h2>
+              <p className="duration">{plan.duration}</p>
 
-            <h2>{plan.name}</h2>
-            <p className="duration">{plan.duration}</p>
+              <div className="price">₹{plan.price}</div>
 
-            {/* 💰 PRICE */}
-            <div className="price">₹{plan.price}</div>
+              <ul className="features">
+                {plan.features.map((f, i) => (
+                  <li key={i}>
+                    <FaCheck /> {f}
+                  </li>
+                ))}
+              </ul>
 
-            {/* FEATURES */}
-            <ul className="features">
-              {plan.features.map((f, i) => (
-                <li key={i}>
-                  <FaCheck /> {f}
-                </li>
-              ))}
-            </ul>
+              <div className="members">
+                {plan.members} Active Members
+              </div>
 
-            {/* MEMBERS (REAL DATA) */}
-            <div className="members">
-              {plan.members} Active Members
+              <button
+                className="edit-btn"
+                onClick={() => setEditingPlan(plan)}
+              >
+                Edit Plan
+              </button>
             </div>
-
-            {/* EDIT */}
-            <button
-              className="edit-btn"
-              onClick={() => setEditingPlan(plan)}
-            >
-              Edit Plan
-            </button>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* STATISTICS */}
@@ -135,15 +143,17 @@ const MembershipPlans = () => {
 
         <div className="stats-grid">
           {plans.map((p) => (
-            <div key={p.name}>
-              <span className="counttt">{p.totalMembers}</span>
+            <div key={p._id}>
+              <span className="counttt">
+                {p.totalMembers}
+              </span>
               <span>{p.name} Members</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* EDIT PLAN MODAL */}
+      {/* EDIT MODAL */}
       {editingPlan && (
         <EditPlanModal
           plan={editingPlan}

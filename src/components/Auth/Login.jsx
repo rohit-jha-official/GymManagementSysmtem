@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./auth.css";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import logo from "../../assets/logo.png"
+import logo from "../../assets/logo.png";
 
 const Login = () => {
-  const { role } = useParams(); // admin | user
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -35,7 +34,7 @@ const Login = () => {
     }));
   };
 
-  /* 🔐 BACKEND LOGIN */
+  /* 🔐 ADMIN LOGIN */
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -47,7 +46,7 @@ const Login = () => {
         {
           email: formData.email,
           password: formData.password,
-          role: role,
+          role: "admin", // 🔒 FIXED AS ADMIN
         }
       );
 
@@ -57,7 +56,7 @@ const Login = () => {
       navigate("/dashboard");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Login failed. Please try again."
+        err.response?.data?.message || "Admin login failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -67,33 +66,31 @@ const Login = () => {
   return (
     <div className="auth-page">
       {/* LOGO */}
+      <div className="auth-logo">
+        <div className="logo-text">
+          <h3>
+            THE WELLNESS{" "}
+            <img
+              src={logo}
+              alt="The Wellness Club Gym"
+              className="logo-image"
+            />{" "}
+            CLUB GYM
+          </h3>
 
-<div className="auth-logo">
-  <div className="logo-text">
-    <h3>
-      THE WELLNESS{" "}
-      <img
-        src={logo}
-        alt="The Wellness Club Gym"
-        className="logo-image"
-      />{" "}
-      CLUB GYM
-    </h3>
+          <span className="tag-color-2 tag-rrr">XPRESS</span>
 
-    <span className="tag-color-2 tag-rrr">XPRESS</span>
-
-    <p className="logo-tagline">
-      <span className="tag-color-1">THE LARGEST</span>{" "}
-      <span className="tag-color-2">GYM CHAIN</span>{" "}
-      <span className="tag-color-3">IN INDIA</span>
-    </p>
-  </div>
-</div>
-
+          <p className="logo-tagline">
+            <span className="tag-color-1">THE LARGEST</span>{" "}
+            <span className="tag-color-2">GYM CHAIN</span>{" "}
+            <span className="tag-color-3">IN INDIA</span>
+          </p>
+        </div>
+      </div>
 
       {/* LOGIN CARD */}
       <div className="auth-card">
-        <h2>{role === "admin" ? "Admin Login" : "User Login"}</h2>
+        <h2>Admin Login</h2>
 
         <form onSubmit={handleLogin}>
           {/* EMAIL */}
@@ -102,14 +99,14 @@ const Login = () => {
             <input
               type="email"
               name="email"
-              placeholder="Email"
+              placeholder="Admin Email"
               value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* PASSWORD WITH TOGGLE */}
+          {/* PASSWORD */}
           <div className="input-box password-box">
             <FaLock />
             <input
@@ -154,7 +151,7 @@ const Login = () => {
           </div>
         </form>
 
-        {/* CENTERED FORGOT PASSWORD */}
+        {/* FORGOT PASSWORD */}
         <div style={{ textAlign: "center", marginTop: "16px" }}>
           <Link to="/forgot-password" className="forgot-link">
             Forgot Password?

@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Layout from "./components/Layout/Layout";
@@ -29,19 +30,26 @@ import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 
 function App() {
+
+  useEffect(() => {
+    // 🔴 FORCE LOGIN EVERY TIME APP STARTS (ADMIN ONLY)
+    localStorage.removeItem("token");
+    localStorage.removeItem("admin");
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* 🔓 AUTH ROUTES (NO LAYOUT) */}
-        <Route path="/login/:role" element={<Login />} />
+        {/* 🔓 ADMIN AUTH ROUTES */}
+        <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-        {/* 🔁 DEFAULT → LOGIN */}
-        <Route path="/" element={<Navigate to="/login/admin" replace />} />
+        {/* 🔁 DEFAULT → ADMIN LOGIN */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* 🔐 PROTECTED ROUTES */}
+        {/* 🔐 ADMIN PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
 

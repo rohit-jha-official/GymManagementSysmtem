@@ -43,11 +43,11 @@ export default function ExpiringSoon() {
   }, []);
 
   /* 🔹 BADGE COLOR */
-  const getBadgeClass = (days) => {
-    if (days <= 1) return "danger";
-    if (days <= 3) return "warning";
-    return "safe";
-  };
+const getBadgeClass = (days) => {
+  if (days <= 3) return "danger-text"; // 🔴 red text only
+  return "normal-text";
+};
+
 
   /* 🔹 OPEN RENEW MODAL */
   const handleRenewClick = (member) => {

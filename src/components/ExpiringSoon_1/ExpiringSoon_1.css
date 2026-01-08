@@ -70,7 +70,7 @@
   font-weight: 600;
 }
 
-.d-1,
+/* .d-1,
 .d-2 {
   background: #5a1b1b;
   color: #ff4d4f;
@@ -87,7 +87,23 @@
 .d-7 {
   background: #2e4b2e;
   color: #7dff7d;
+} */
+ .days-badge {
+  font-weight: 600;
 }
+
+/* 🔴 Expiring soon (3 days or less) */
+.days-badge.danger-text {
+  color: #ff4d4f;        /* red text */
+  background: none;     /* remove box */
+  padding: 0;           /* no pill */
+}
+
+/* 🟢 Normal days */
+.days-badge.normal-text {
+  color: #bfbfbf;       /* neutral text */
+}
+
 
 /* Actions */
 .actions {

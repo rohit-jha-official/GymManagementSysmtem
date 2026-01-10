@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Notifications.css";
 import {
   FaBell,
@@ -7,9 +7,48 @@ import {
   FaCheckCircle,
   FaTimesCircle,
 } from "react-icons/fa";
+import axios from "axios";
+import { API_BASE } from "../../config/api";
 
 const Notifications = () => {
-  const [activeTab, setActiveTab] = useState("expiry");
+  const [activeTab] = useState("expiry"); // fixed to expiry
+
+  // 🔹 NEW STATES
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    fetchNotifications();
+    fetchStats();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/notifications/expiry`);
+      setNotifications(res.data);
+    } catch (error) {
+      console.error("Fetch notifications error:", error);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/notifications/stats`);
+      setUnreadCount(res.data.unreadExpiry);
+    } catch (error) {
+      console.error("Fetch stats error:", error);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      await axios.patch(`${API_BASE}/notifications/mark-read`);
+      setUnreadCount(0);
+      fetchNotifications();
+    } catch (error) {
+      console.error("Mark all as read error:", error);
+    }
+  };
 
   return (
     <div className="notifications-page">
@@ -17,15 +56,22 @@ const Notifications = () => {
       <div className="notifications-header">
         <div>
           <h1>Notifications</h1>
+
+          {/* ❌ COMMENTED: View alerts and system logs line */}
+          {/*
           <p>View alerts and system logs</p>
+          */}
         </div>
 
-        <button className="mark-read-btn">
-          <FaBell /> Mark All as Read
+        {/* ✅ KEEP THIS BUTTON */}
+        <button className="mark-read-btn" onClick={markAllAsRead}>
+         <FaBell /> Mark All as Read
         </button>
+
       </div>
 
-      {/* STATS */}
+      {/* ❌ COMMENTED: STATS SECTION */}
+      {/*
       <div className="notification-stats">
         <div className="notif-card">
           <FaBell className="orange" />
@@ -51,8 +97,10 @@ const Notifications = () => {
           </div>
         </div>
       </div>
+      */}
 
-      {/* SEGMENTED TABS */}
+      {/* ❌ COMMENTED: TABS (Expiry Alerts / System Logs toggle) */}
+      {/*
       <div className="notif-tabs">
         <button
           className={`notif-tab ${activeTab === "expiry" ? "active" : ""}`}
@@ -68,46 +116,55 @@ const Notifications = () => {
           System Logs
         </button>
       </div>
+      */}
 
       {/* CONTENT */}
       <div className="notif-content">
         {activeTab === "expiry" && (
           <>
+            {/* ✅ ONLY THIS SECTION WILL SHOW */}
             <h2>Membership Expiry Alerts</h2>
             <h3>Notifications about expiring and expired memberships</h3>
-            <div className="notif-item warning">
-              <FaExclamationTriangle />
-              <div>
-                <strong>Membership Expiring</strong>
-                <p>Rahul Sharma's membership expires in 3 days</p>
-                <span>2 hours ago</span>
-              </div>
-            </div>
 
-            <div className="notif-item warning">
-              <FaExclamationTriangle />
-              <div>
-                <strong>Membership Expiring</strong>
-                <p>Priya Patel's membership expires in 5 days</p>
-                <span>5 hours ago</span>
-              </div>
-            </div>
+            {notifications.length === 0 && (
+              <p style={{ color: "#aaa", marginTop: "12px" }}>
+                No new notifications 🎉
+              </p>
+            )}
 
-            <div className="notif-item danger">
-              <FaTimesCircle />
-              <div>
-                <strong>Membership Expired</strong>
-                <p>Amit Kumar's membership has expired</p>
-                <span>1 day ago</span>
+            {notifications.map((n) => (
+              <div
+                key={n._id}
+                className={`notif-item ${
+                  n.subtype === "expired" ? "danger" : "warning"
+                }`}
+              >
+                {n.subtype === "expired" ? (
+                  <FaTimesCircle />
+                ) : (
+                  <FaExclamationTriangle />
+                )}
+
+                <div>
+                  <strong>
+                    {n.subtype === "expired"
+                      ? "Membership Expired"
+                      : "Membership Expiring"}
+                  </strong>
+                  <p>{n.message}</p>
+                </div>
               </div>
-            </div>
+            ))}
           </>
         )}
 
+        {/* ❌ COMMENTED: SYSTEM LOGS CONTENT */}
+        {/*
         {activeTab === "system" && (
           <>
             <h2>System Logs</h2>
             <h3>Recent system activities and events</h3>
+
             <div className="notif-item success">
               <FaCheckCircle />
               <div>
@@ -145,6 +202,7 @@ const Notifications = () => {
             </div>
           </>
         )}
+        */}
       </div>
     </div>
   );

@@ -392,3 +392,25 @@
     padding: 10px;
   }
 }
+/* =========================================
+   FIX: Make Expiring (yellow) and Expired (red)
+   notifications same size & weight
+========================================= */
+
+.notif-item.warning,
+.notif-item.danger {
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.notif-item.warning strong,
+.notif-item.danger strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.notif-item.warning p,
+.notif-item.danger p {
+  font-size: 14px;
+  margin: 2px 0 0;
+}

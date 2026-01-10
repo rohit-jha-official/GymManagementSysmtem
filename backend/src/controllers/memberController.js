@@ -88,6 +88,7 @@ export const getAllMembers = async (req, res) => {
       status:
         m.expiryDate >= today ? "Active" : "Expired",
       rfid: m.rfid,
+      photo: m.photo, 
     }));
 
     res.json(result);
@@ -113,8 +114,10 @@ export const getExpiredMembers = async (req, res) => {
       _id: m._id,
       fullName: m.fullName,
       phone: m.phone,
+      email: m.email, 
       plan: m.plan?.name || "-",
       expiryDate: m.expiryDate,
+      photo: m.photo,
       daysExpired: Math.max(
         Math.floor(
           (today - new Date(m.expiryDate)) /
@@ -136,8 +139,11 @@ export const getExpiredMembers = async (req, res) => {
 export const getExpiringSoon = async (req, res) => {
   try {
     const today = new Date();
-    const next7Days = new Date();
-    next7Days.setDate(today.getDate() + 7);
+    today.setHours(0, 0, 0, 0);   // ✅ normalize start
+
+    const next7Days = new Date(today);
+    next7Days.setDate(next7Days.getDate() + 7);
+    next7Days.setHours(23, 59, 59, 999); // ✅ normalize end
 
     const members = await Member.find({
       expiryDate: { $gte: today, $lte: next7Days },
@@ -149,8 +155,10 @@ export const getExpiringSoon = async (req, res) => {
       _id: m._id,
       fullName: m.fullName,
       phone: m.phone,
+      email: m.email,          // ✅ ADD (frontend expects this)
       plan: m.plan?.name || "-",
       expiryDate: m.expiryDate,
+      photo: m.photo,          // ✅ ADD (for avatar)
       daysLeft: Math.max(
         Math.ceil(
           (new Date(m.expiryDate) - today) /
@@ -165,6 +173,7 @@ export const getExpiringSoon = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 /* ================================
    🔄 RENEW MEMBERSHIP (FIXED)
@@ -251,6 +260,7 @@ export const getDueMembers = async (req, res) => {
       _id: m._id,
       fullName: m.fullName,
       phone: m.phone,
+      photo: m.photo,
       plan: m.plan?.name || "-",
       dueAmount: m.dueAmount,
       expiryDate: m.expiryDate,
@@ -263,33 +273,42 @@ export const getDueMembers = async (req, res) => {
 };
 
 /* ================================
-   ✅ COLLECT DUE PAYMENT
-   ================================ */
+   ✅ COLLECT DUE PAYMENT (PARTIAL)
+================================ */
 export const collectDuePayment = async (req, res) => {
   try {
+    const { paidAmount } = req.body;
+
     const member = await Member.findById(req.params.id);
     if (!member) {
-      return res
-        .status(404)
-        .json({ message: "Member not found" });
+      return res.status(404).json({ message: "Member not found" });
     }
 
-    member.dueAmount = 0;
+    const paid = Number(paidAmount);
+    if (!paid || paid <= 0) {
+      return res.status(400).json({ message: "Invalid paid amount" });
+    }
+
+    member.dueAmount = Math.max(member.dueAmount - paid, 0);
     member.lastPaymentDate = new Date();
+
     await member.save();
 
     await Activity.create({
       type: "payment",
-      message: `Due payment collected from ${member.fullName}`,
+      message: `Collected ₹${paid} from ${member.fullName}`,
     });
 
     res.json({
-      message: "Due payment collected successfully",
+      message: "Payment collected successfully",
+      remainingDue: member.dueAmount,
     });
   } catch (error) {
+    console.error("Collect due error:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 /* ================================
    🗑️ DELETE MEMBER
@@ -321,5 +340,64 @@ export const getMemberById = async (req, res) => {
     res.json(member);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+/* ================================
+   ✏️ UPDATE MEMBER (ADMIN OVERRIDE)
+================================ */
+export const updateMember = async (req, res) => {
+  try {
+    const {
+      phone,
+      email,
+      gender,
+      address,
+      expiryDate,
+      allowExpiryEdit,
+    } = req.body;
+
+    const update = {};
+
+    if (phone !== undefined) update.phone = phone;
+    if (email !== undefined) update.email = email;
+    if (gender !== undefined) update.gender = gender;
+    if (address !== undefined) update.address = address;
+
+    // 🔐 ADMIN EXPIRY OVERRIDE
+    if (allowExpiryEdit === true && expiryDate) {
+      update.expiryDate = new Date(expiryDate);
+
+      await Activity.create({
+        type: "admin",
+        message: "Admin manually updated expiry date",
+      });
+    }
+
+    // 🚨 PREVENT EMPTY UPDATE
+    if (Object.keys(update).length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Nothing to update" });
+    }
+
+    const member = await Member.findByIdAndUpdate(
+      req.params.id,
+      { $set: update },
+      { new: true, runValidators: true }
+    ).populate("plan");
+
+    if (!member) {
+      return res
+        .status(404)
+        .json({ message: "Member not found" });
+    }
+
+    res.json(member);
+  } catch (error) {
+    console.error("Update member error:", error);
+    res
+      .status(500)
+      .json({ message: error.message });
   }
 };

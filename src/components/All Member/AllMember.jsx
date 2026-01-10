@@ -1,6 +1,7 @@
 import "./AllMembers.css";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { MdOutlineVisibility } from "react-icons/md";
 import axios from "axios";
 import {
   FiSearch,
@@ -11,6 +12,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { API_BASE } from "../../config/api";
+import  ViewMemberDetails from "../ViewMemberDetails/ViewMemberDetails"
 
 /* 🔹 DATE FORMATTER */
 const formatDate = (date) =>
@@ -21,6 +23,10 @@ const formatDate = (date) =>
   });
 
 const AllMembers = () => {
+  const [showView, setShowView] = useState(false);
+const [selectedMember, setSelectedMember] = useState(null);
+
+
   const [members, setMembers] = useState([]);
   const [filteredMembers, setFilteredMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -243,8 +249,13 @@ const [planOpen, setPlanOpen] = useState(false);
             <div className="table-row" key={m._id}>
               <div className="member">
                 <div className="avatar">
-                  {m.name.charAt(0)}
-                </div>
+  {m.photo ? (
+    <img src={m.photo} alt={m.name} />
+  ) : (
+    m.name.charAt(0)
+  )}
+</div>
+
                 <span>{m.name}</span>
               </div>
 
@@ -284,12 +295,22 @@ const [planOpen, setPlanOpen] = useState(false);
 
                 {openActionIndex === i && (
                   <div className="action-dropdown">
-                    <div className="action-item">
-                      <FiEye /> View Details
+                   <div
+                      className="action-item"
+                      onClick={() => {
+                        setSelectedMember(m);
+                        setShowView(true);
+                        setOpenActionIndex(null);
+                      }}
+                    >
+                      <MdOutlineVisibility /> View Details
                     </div>
-                    <div className="action-item">
+
+
+
+                    {/* <div className="action-item">
                       <FiEdit2 /> Edit Member
-                    </div>
+                    </div> */}
                     <div
                       className="action-item delete"
                       onClick={() => handleDelete(m._id)}
@@ -303,6 +324,12 @@ const [planOpen, setPlanOpen] = useState(false);
           ))
         )}
       </div>
+      {showView && (
+  <ViewMemberDetails
+    member={selectedMember}
+    onClose={() => setShowView(false)}
+  />
+)}
     </div>
   );
 };

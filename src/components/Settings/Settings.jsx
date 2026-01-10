@@ -127,7 +127,7 @@ const Settings = () => {
       </div>
 
       {/* TABS */}
-      <div className="settings-tabs">
+      {/* <div className="settings-tabs">
         <button className={activeTab === "admin" ? "active" : ""} onClick={() => setActiveTab("admin")}>
           Admin Account
         </button>
@@ -137,7 +137,7 @@ const Settings = () => {
         <button className={activeTab === "device" ? "active" : ""} onClick={() => setActiveTab("device")}>
           Device Status
         </button>
-      </div>
+      </div> */}
 
       <div className="settings-card">
         {/* ================= ADMIN ACCOUNT ================= */}

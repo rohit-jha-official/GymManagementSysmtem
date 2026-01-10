@@ -73,8 +73,13 @@ const ExpiringSoon = () => {
             <div className="expiring-item" key={m._id}>
               <div className="left">
                 <div className="avatar">
-                  {m.fullName?.charAt(0)}
-                </div>
+  {m.photo ? (
+    <img src={m.photo} alt={m.fullName} />
+  ) : (
+    (m.fullName || "?").charAt(0).toUpperCase()
+  )}
+</div>
+
                 <div>
                   <h4>{m.fullName}</h4>
                   <span>{m.phone}</span>

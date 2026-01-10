@@ -9,6 +9,7 @@ import {
   collectDuePayment,
   getMemberById,
   deleteMember,
+  updateMember,
 } from "../controllers/memberController.js";
 
 const router = express.Router();
@@ -27,8 +28,12 @@ router.put("/renew/:id", renewMember);
 
 router.put("/collect-due/:id", collectDuePayment);
 
+/* ✅ PUT BEFORE GET :id */
+router.put("/:id", updateMember);
+
 router.get("/:id", getMemberById);
 
 router.delete("/:id", deleteMember);
+
 
 export default router;

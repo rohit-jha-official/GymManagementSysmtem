@@ -332,3 +332,27 @@
 .dropdown-icon.open {
   transform: rotate(180deg);
 }
+
+
+.avatar {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50%;
+  background: #1e293b;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  overflow: hidden;
+  font-size: 20px !important;
+}
+
+
+.avatar img {
+  width: 100px !important;
+  height: 100px !important;
+  object-fit: contain;       
+  border-radius: 50%;
+  display: block;
+}

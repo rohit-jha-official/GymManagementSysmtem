@@ -74,10 +74,13 @@ export default function ExpiredMembers() {
                 {/* 👤 MEMBER */}
                 <div className="member-info">
                   <div className="avatar">
-                    {m.fullName
-                      ? m.fullName.charAt(0).toUpperCase()
-                      : "?"}
-                  </div>
+  {m.photo ? (
+    <img src={m.photo} alt={m.fullName} />
+  ) : (
+    (m.fullName || "?").charAt(0).toUpperCase()
+  )}
+</div>
+
                   <div className="member-name">
                     {m.fullName}
                   </div>
@@ -86,7 +89,7 @@ export default function ExpiredMembers() {
                 {/* 📞 CONTACT */}
                 <div>
                   <div>{m.phone}</div>
-                  <small>{m.email}</small>
+                  <small>{m.email || "-"}</small>
                 </div>
 
                 {/* 📄 PLAN */}

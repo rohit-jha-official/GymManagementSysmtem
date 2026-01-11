@@ -11,6 +11,12 @@ const activitySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    branchId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Branch",
+  required: true,
+},
+
   },
   { timestamps: true }
 );

@@ -18,8 +18,12 @@ const adminSchema = new mongoose.Schema({
     type: String,
     default: "admin"
   },
-
-  // 🔐 FORGOT PASSWORD FIELDS
+  branchId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Branch",
+  required: true
+},
+ // 🔐 FORGOT PASSWORD FIELDS
   resetToken: String,
   resetTokenExpiry: Date
 });

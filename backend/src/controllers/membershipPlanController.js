@@ -1,130 +1,85 @@
-import MembershipPlan from "../models/membershipPlan.js";
+import Plan from "../models/plan.js";
+import PlanOverride from "../models/planOverride.js";
 import Member from "../models/member.js";
 
 /* =====================================
-   📋 GET ALL MEMBERSHIP PLANS
-   ===================================== */
+   📋 GET ALL PLANS (BRANCH-WISE)
+===================================== */
 export const getPlans = async (req, res) => {
   try {
-    // ✅ Sort plans by duration (short → long)
-    const plans = await MembershipPlan.find()
-      .sort({ durationDays: 1 })
-      .lean(); // 🚀 faster read-only response
+    const branchId = req.user?.branchId;
+    if (!branchId) {
+      return res.status(401).json({ message: "Branch not found in token" });
+    }
+
+    const overrides = await PlanOverride.find({ branchId })
+      .populate("planId")
+      .lean();
 
     const today = new Date();
 
-    // ✅ Attach member counts to each plan
     const plansWithStats = await Promise.all(
-      plans.map(async (plan) => {
-        const [totalMembers, activeMembers] = await Promise.all([
-          Member.countDocuments({ plan: plan._id }),
-          Member.countDocuments({
-            plan: plan._id,
-            expiryDate: { $gte: today },
-          }),
-        ]);
+      overrides.map(async (o) => {
+        const totalMembers = await Member.countDocuments({
+          branchId,
+          planId: o.planId._id,
+        });
+
+        const activeMembers = await Member.countDocuments({
+          branchId,
+          planId: o.planId._id,
+          expiryDate: { $gte: today },
+        });
 
         return {
-          ...plan,
+          _id: o._id,                 // override id
+          planId: o.planId._id,       // global plan id
+          name: o.planId.name,
+          durationDays: o.planId.durationDays,
+          price: o.price,
+          features: o.planId.features,
+          isPopular: o.isPopular,
+          isPremium: o.isPremium,
           totalMembers,
           activeMembers,
         };
       })
     );
 
-    res.status(200).json(plansWithStats);
-  } catch (error) {
-    console.error("❌ Get plans error:", error);
-    res.status(500).json({
-      message: "Failed to fetch membership plans",
-    });
+    res.json(plansWithStats);
+  } catch (err) {
+    console.error("Get plans error:", err);
+    res.status(500).json({ message: "Failed to fetch plans" });
   }
 };
 
 /* =====================================
-   ➕ CREATE MEMBERSHIP PLAN
-   ===================================== */
-export const createPlan = async (req, res) => {
-  try {
-    const {
-      name,
-      price,
-      durationDays,
-      features = [],
-      isPopular = false,
-      isPremium = false,
-    } = req.body;
-
-    // ✅ Validation
-    if (!name || !price || !durationDays) {
-      return res.status(400).json({
-        message: "name, price and durationDays are required",
-      });
-    }
-
-    // ✅ Prevent duplicate plans
-    const exists = await MembershipPlan.findOne({
-      name: name.trim(),
-    });
-
-    if (exists) {
-      return res.status(400).json({
-        message: "Membership plan already exists",
-      });
-    }
-
-    const plan = await MembershipPlan.create({
-      name: name.trim(),
-      price,
-      durationDays,
-      features,
-      isPopular,
-      isPremium,
-    });
-
-    res.status(201).json(plan);
-  } catch (error) {
-    console.error("❌ Create plan error:", error);
-    res.status(500).json({
-      message: "Failed to create membership plan",
-    });
-  }
-};
-
-/* =====================================
-   ✏️ UPDATE MEMBERSHIP PLAN
-   ===================================== */
+   ✏️ UPDATE BRANCH PRICE
+===================================== */
 export const updatePlan = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updates = req.body;
+    const branchId = req.user.branchId;
+    const { id } = req.params; // override id
+    const { price, isPopular, isPremium } = req.body;
 
-    const plan = await MembershipPlan.findById(id);
+    const override = await PlanOverride.findOne({
+      _id: id,
+      branchId,
+    });
 
-    if (!plan) {
-      return res.status(404).json({
-        message: "Membership plan not found",
-      });
+    if (!override) {
+      return res.status(404).json({ message: "Plan not found" });
     }
 
-    // ✅ Update only allowed fields
-    if (updates.price !== undefined) plan.price = updates.price;
-    if (updates.features !== undefined) plan.features = updates.features;
-    if (updates.isPopular !== undefined)
-      plan.isPopular = updates.isPopular;
-    if (updates.isPremium !== undefined)
-      plan.isPremium = updates.isPremium;
+    if (price !== undefined) override.price = price;
+    if (isPopular !== undefined) override.isPopular = isPopular;
+    if (isPremium !== undefined) override.isPremium = isPremium;
 
-    await plan.save();
+    await override.save();
 
-    res.status(200).json({
-      message: "Membership plan updated successfully",
-      plan,
-    });
-  } catch (error) {
-    console.error("❌ Update plan error:", error);
-    res.status(500).json({
-      message: "Failed to update membership plan",
-    });
+    res.json({ message: "Plan updated" });
+  } catch (err) {
+    console.error("Update plan error:", err);
+    res.status(500).json({ message: "Update failed" });
   }
 };

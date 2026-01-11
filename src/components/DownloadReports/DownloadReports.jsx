@@ -1,16 +1,11 @@
 import "./DownloadReports.css";
-import React, { useState } from "react";
-import {
-  FaFileExcel,
-  FaFilePdf,
-  FaDownload,
-} from "react-icons/fa";
+import { useState } from "react";
+import { FaFileExcel, FaFilePdf, FaDownload } from "react-icons/fa";
 
 const DownloadReports = () => {
   const [open, setOpen] = useState(false);
   const [reportType, setReportType] = useState("Select type");
 
-  // 🔹 OPTIONS LIST
   const options = [
     "Daily Summary",
     "Weekly Summary",
@@ -18,7 +13,7 @@ const DownloadReports = () => {
     "Detailed Report",
   ];
 
-  // 🔹 TEMP DOWNLOAD (NO BACKEND)
+  /* 🔹 TEMP DOWNLOAD (NO BACKEND) */
   const downloadExcel = () => {
     const blob = new Blob(
       ["Placeholder Excel report.\nBackend not integrated yet."],
@@ -78,7 +73,7 @@ const DownloadReports = () => {
 
             <div
               className={`dropdown-header ${open ? "active" : ""}`}
-              onClick={() => setOpen(!open)}
+              onClick={() => setOpen((prev) => !prev)}
             >
               {reportType}
               <span className="arrow">▾</span>

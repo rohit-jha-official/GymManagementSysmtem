@@ -15,9 +15,9 @@ const memberSchema = new mongoose.Schema(
     dob: String,
     address: String,
 
-    plan: {
+    planId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "MembershipPlan",
+      ref: "Plan",
       required: true,
     },
 
@@ -37,6 +37,12 @@ const memberSchema = new mongoose.Schema(
     expiryDate: { type: Date, required: true },
 
     photo: String,
+  
+  branchId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Branch",
+  required: true,
+},
   },
   { timestamps: true }
 );

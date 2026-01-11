@@ -1,8 +1,7 @@
 import "./DuePayments.css";
 import { FaSearch, FaWallet, FaCheckCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_BASE } from "../../config/api";
+import axiosInstance from "../../utils/axiosInstance";
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-GB", {
@@ -16,15 +15,23 @@ const DuePayments = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  /* MODAL STATE */
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const [paidAmount, setPaidAmount] = useState("");
 
+  /* FETCH DUE PAYMENTS (JWT + Branch Safe) */
   const fetchDuePayments = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/members/due`);
-      setDues(res.data);
+      setLoading(true);
+
+      const res = await axiosInstance.get("/members/due");
+      setDues(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error(
+        "Failed to load dues:",
+        error?.response?.data || error.message
+      );
+      setDues([]);
     } finally {
       setLoading(false);
     }
@@ -48,26 +55,31 @@ const DuePayments = () => {
     }
 
     try {
-      await axios.put(
-        `${API_BASE}/members/collect-due/${selected._id}`,
-        { paidAmount }
+      await axiosInstance.put(
+        `/members/collect-due/${selected._id}`,
+        {
+          paidAmount: Number(paidAmount),
+        }
       );
 
       setShowModal(false);
       fetchDuePayments();
-    } catch {
-      alert("Payment failed");
+    } catch (error) {
+      alert(
+        error?.response?.data?.message ||
+          "Payment failed"
+      );
     }
   };
 
   const filteredDues = dues.filter(
     (d) =>
-      d.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      d.phone.includes(search)
+      d.fullName?.toLowerCase().includes(search.toLowerCase()) ||
+      d.phone?.includes(search)
   );
 
   const totalDue = filteredDues.reduce(
-    (sum, d) => sum + d.dueAmount,
+    (sum, d) => sum + (d.dueAmount || 0),
     0
   );
 
@@ -84,7 +96,7 @@ const DuePayments = () => {
           <FaWallet />
           <div>
             <span>Total Due</span>
-            <strong>Rs. {totalDue}</strong>
+            <strong>₹ {totalDue}</strong>
           </div>
         </div>
       </div>
@@ -121,23 +133,29 @@ const DuePayments = () => {
             <div className="table-row-1" key={item._id}>
               <div className="member-cell">
                 <div className="avatar-circle">
-  {item.photo ? (
-    <img src={item.photo} alt={item.fullName} />
-  ) : (
-    item.fullName?.charAt(0)
-  )}
-</div>
-
+                  {item.photo ? (
+                    <img
+                      src={item.photo}
+                      alt={item.fullName}
+                    />
+                  ) : (
+                    item.fullName?.charAt(0)
+                  )}
+                </div>
                 <span>{item.fullName}</span>
               </div>
 
-              <span>{item.plan}</span>
-              <span>Rs. {item.dueAmount}</span>
-              <span>{formatDate(item.expiryDate)}</span>
+              <span>{item.planName}</span>
+              <span>₹ {item.dueAmount}</span>
+              <span>
+                {formatDate(item.expiryDate)}
+              </span>
 
               <button
                 className="collect-btn"
-                onClick={() => openCollectModal(item)}
+                onClick={() =>
+                  openCollectModal(item)
+                }
               >
                 Collect
               </button>
@@ -152,21 +170,41 @@ const DuePayments = () => {
           <div className="modal-box">
             <h3>Collect Payment</h3>
 
-            <p><strong>Name:</strong> {selected.fullName}</p>
-            <p><strong>Plan:</strong> {selected.plan}</p>
-            <p><strong>Due:</strong> Rs. {selected.dueAmount}</p>
-            <p><strong>Expiry:</strong> {formatDate(selected.expiryDate)}</p>
+            <p>
+              <strong>Name:</strong>{" "}
+              {selected.fullName}
+            </p>
+            <p>
+              <strong>Plan:</strong>{" "}
+              {selected.planName}
+            </p>
+            <p>
+              <strong>Due:</strong> ₹{" "}
+              {selected.dueAmount}
+            </p>
+            <p>
+              <strong>Expiry:</strong>{" "}
+              {formatDate(selected.expiryDate)}
+            </p>
 
             <input
               type="number"
               placeholder="Enter paid amount"
               value={paidAmount}
-              onChange={(e) => setPaidAmount(e.target.value)}
+              onChange={(e) =>
+                setPaidAmount(e.target.value)
+              }
             />
 
             <div className="modal-actions">
-              <button onClick={handleSubmit}>Submit</button>
-              <button onClick={() => setShowModal(false)}>
+              <button onClick={handleSubmit}>
+                Submit
+              </button>
+              <button
+                onClick={() =>
+                  setShowModal(false)
+                }
+              >
                 Cancel
               </button>
             </div>

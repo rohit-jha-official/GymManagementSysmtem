@@ -20,17 +20,22 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { adminId: admin._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+  {
+    adminId: admin._id,
+    branchId: admin.branchId, // 🔥 ADD THIS
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: "1d" }
+  );
+
 
     res.json({
       message: "Login successful",
       token,
       admin: {
         id: admin._id,
-        email: admin.email
+        email: admin.email,
+        branchId: admin.branchId 
       }
     });
   } catch (error) {

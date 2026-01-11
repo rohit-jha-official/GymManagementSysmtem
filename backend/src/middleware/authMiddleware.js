@@ -10,9 +10,15 @@ export const protect = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.admin = decoded;
-    next();
+   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+req.user = {
+  id: decoded.adminId,
+  branchId: decoded.branchId, // 🔥 ADD THIS
+};
+
+next();
+
   } catch (error) {
     res.status(401).json({ message: "Not authorized, token failed" });
   }

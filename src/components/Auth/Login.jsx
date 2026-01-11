@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import "./auth.css";
 import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import logo from "../../assets/logo.png";
+import axiosInstance from "../../utils/axiosInstance";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,16 +18,15 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* 🔁 REDIRECT IF ALREADY LOGGED IN */
+  /* 🔁 AUTO REDIRECT IF LOGGED IN */
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/dashboard");
-    }
+    if (token) navigate("/dashboard");
   }, [navigate]);
 
+  /* 🔄 INPUT */
   const handleChange = (e) => {
-    const { name, value, checked, type } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -37,26 +36,26 @@ const Login = () => {
   /* 🔐 ADMIN LOGIN */
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
-      const res = await axios.post(
-        "http://localhost:5001/api/auth/login",
-        {
-          email: formData.email,
-          password: formData.password,
-          role: "admin", // 🔒 FIXED AS ADMIN
-        }
-      );
+      const res = await axiosInstance.post("/auth/login", {
+        email: formData.email,
+        password: formData.password,
+        role: "admin",
+      });
 
+      /* ✅ STORE AUTH */
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
+      localStorage.setItem("branchId", res.data.admin.branchId);
 
       navigate("/dashboard");
     } catch (err) {
       setError(
-        err.response?.data?.message || "Admin login failed. Please try again."
+        err?.response?.data?.message ||
+          "Invalid login credentials. Please try again."
       );
     } finally {
       setLoading(false);
@@ -65,7 +64,7 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      {/* LOGO */}
+      {/* LEFT BRAND */}
       <div className="auth-logo">
         <div className="logo-text">
           <h3>
@@ -78,12 +77,20 @@ const Login = () => {
             CLUB GYM
           </h3>
 
-          <span className="tag-color-2 tag-rrr">XPRESS</span>
+          <span className="tag-color-2 tag-rrr">
+            XPRESS
+          </span>
 
           <p className="logo-tagline">
-            <span className="tag-color-1">THE LARGEST</span>{" "}
-            <span className="tag-color-2">GYM CHAIN</span>{" "}
-            <span className="tag-color-3">IN INDIA</span>
+            <span className="tag-color-1">
+              THE LARGEST
+            </span>{" "}
+            <span className="tag-color-2">
+              GYM CHAIN
+            </span>{" "}
+            <span className="tag-color-3">
+              IN INDIA
+            </span>
           </p>
         </div>
       </div>
@@ -120,23 +127,35 @@ const Login = () => {
 
             <span
               className="password-toggle"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() =>
+                setShowPassword(!showPassword)
+              }
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              {showPassword ? (
+                <FaEyeSlash />
+              ) : (
+                <FaEye />
+              )}
             </span>
           </div>
 
           {/* ERROR */}
-          {error && <p className="error-text">{error}</p>}
+          {error && (
+            <p className="error-text">
+              {error}
+            </p>
+          )}
 
-          {/* ACTION ROW */}
+          {/* ACTION */}
           <div className="login-row">
             <button
               type="submit"
               className="primary-btn"
               disabled={loading}
             >
-              {loading ? "Logging in..." : "LOGIN"}
+              {loading
+                ? "Logging in..."
+                : "LOGIN"}
             </button>
 
             <label className="checkbox">
@@ -151,9 +170,16 @@ const Login = () => {
           </div>
         </form>
 
-        {/* FORGOT PASSWORD */}
-        <div style={{ textAlign: "center", marginTop: "16px" }}>
-          <Link to="/forgot-password" className="forgot-link">
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "16px",
+          }}
+        >
+          <Link
+            to="/forgot-password"
+            className="forgot-link"
+          >
             Forgot Password?
           </Link>
         </div>

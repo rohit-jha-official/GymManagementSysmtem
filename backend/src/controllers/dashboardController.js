@@ -1,41 +1,43 @@
 import Member from "../models/member.js";
 
-
 /* ================================
-   📊 DASHBOARD STATS
+   📊 DASHBOARD STATS (BRANCH-WISE)
 ================================ */
 export const getDashboardStats = async (req, res) => {
   try {
     const now = new Date();
-    const startOfMonth = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      1
-    );
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     /* 👥 TOTAL MEMBERS */
-    const totalMembers = await Member.countDocuments();
+    const totalMembers = await Member.countDocuments({
+      branchId: req.branchId,
+    });
 
     /* 🆕 NEW MEMBERS THIS MONTH */
     const newRegistrations = await Member.countDocuments({
+      branchId: req.branchId,
       createdAt: { $gte: startOfMonth },
     });
 
     /* 💰 MONTHLY REVENUE (NEW + RENEWALS) */
     const revenueMembers = await Member.find({
+      branchId: req.branchId,
       $or: [
         { createdAt: { $gte: startOfMonth } },
         { isRenewed: true, updatedAt: { $gte: startOfMonth } },
       ],
-    }).populate("plan");
+    }).populate("planId");
 
     let totalRevenue = 0;
-    revenueMembers.forEach(m => {
-      if (m.plan?.price) totalRevenue += m.plan.price;
+    revenueMembers.forEach((m) => {
+      if (m.planId?.price) {
+        totalRevenue += m.planId.price;
+      }
     });
 
     /* 🔁 RENEWAL RATE */
     const renewedMembers = await Member.countDocuments({
+      branchId: req.branchId,
       isRenewed: true,
     });
 
@@ -66,6 +68,7 @@ export const getMemberGrowth = async (req, res) => {
     const growth = await Member.aggregate([
       {
         $match: {
+          branchId: req.branchId,
           createdAt: {
             $gte: new Date(`${year}-01-01`),
             $lte: new Date(`${year}-12-31`),
@@ -82,7 +85,7 @@ export const getMemberGrowth = async (req, res) => {
     ]);
 
     const monthlyData = Array(12).fill(0);
-    growth.forEach(item => {
+    growth.forEach((item) => {
       monthlyData[item._id - 1] = item.count;
     });
 
@@ -100,25 +103,14 @@ export const getMonthlyGrowth = async (req, res) => {
   try {
     const now = new Date();
 
-    const startOfMonth = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      1
-    );
-
-    const endOfMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      0
-    );
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
     const data = await Member.aggregate([
       {
         $match: {
-          createdAt: {
-            $gte: startOfMonth,
-            $lte: endOfMonth,
-          },
+          branchId: req.branchId,
+          createdAt: { $gte: startOfMonth, $lte: endOfMonth },
         },
       },
       {
@@ -146,7 +138,7 @@ export const getMonthlyGrowth = async (req, res) => {
       { week: "W4", members: 0 },
     ];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       if (item._id >= 1 && item._id <= 4) {
         weeklyData[item._id - 1].members = item.count;
       }

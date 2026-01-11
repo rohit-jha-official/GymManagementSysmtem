@@ -1,12 +1,11 @@
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 import RecentActivity from "../RecentActivity/Recentactivity";
 import MemberGrowth from "../MemberGrowth/MemberGrowth";
 import ExpiringSoon from "../Expiring Soon/ExpiringSoon";
-// import TodaysAttendance from "../Todays Attendance/TodaysAttendance";
 
 import {
   FaUsers,
@@ -18,12 +17,9 @@ import {
   FaRedoAlt,
 } from "react-icons/fa";
 
-import { API_BASE } from "../../config/api";
-
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  /* 🔹 DASHBOARD STATS */
   const [stats, setStats] = useState({
     totalMembers: 0,
     newRegistrations: 0,
@@ -31,60 +27,78 @@ const Dashboard = () => {
     renewalRate: 0,
   });
 
-  /* 🔹 EXPIRING COUNT (OPTION 1) */
   const [expiringCount, setExpiringCount] = useState(0);
 
-  /* 🔹 FETCH DASHBOARD STATS */
+  /* ======================
+     DASHBOARD STATS
+  ======================= */
+  const fetchStats = async () => {
+    try {
+      const res = await axiosInstance.get("/dashboard/stats");
+
+      const data = res.data || {};
+
+      setStats({
+        totalMembers: data.totalMembers || 0,
+        newRegistrations: data.newRegistrations || 0,
+        totalRevenue: data.totalRevenue || 0,
+        renewalRate: data.renewalRate || 0,
+      });
+    } catch (error) {
+      console.error(
+        "Dashboard stats error:",
+        error?.response?.data || error.message
+      );
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/dashboard/stats`);
-        const data = res.data;
-
-        setStats({
-          totalMembers: data.totalMembers ?? 0,
-          newRegistrations: data.newRegistrations ?? 0,
-          totalRevenue: data.totalRevenue ?? 0,
-          renewalRate: data.renewalRate ?? 0,
-        });
-      } catch (error) {
-        console.error("Dashboard stats error:", error);
-      }
-    };
-
     fetchStats();
     const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  /* 🔹 FETCH EXPIRING MEMBERS COUNT (SAME LOGIC AS ExpiringSoon_1) */
+  /* ======================
+     EXPIRING COUNT
+  ======================= */
+  const fetchExpiringCount = async () => {
+    try {
+      const res = await axiosInstance.get("/members/expiring");
+
+      const list = Array.isArray(res.data)
+        ? res.data
+        : res.data?.members || [];
+
+      const filtered = list.filter(
+        (m) => m.daysLeft <= 5 && m.daysLeft >= 0
+      );
+
+      setExpiringCount(filtered.length);
+    } catch (error) {
+      console.error(
+        "Expiring count error:",
+        error?.response?.data || error.message
+      );
+      setExpiringCount(0);
+    }
+  };
+
   useEffect(() => {
-    const fetchExpiringCount = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/members/expiring`);
-
-        const filtered = res.data.filter(
-          (m) => m.daysLeft <= 7 && m.daysLeft >= 0
-        );
-
-        setExpiringCount(filtered.length);
-      } catch (error) {
-        console.error("Failed to fetch expiring members count", error);
-      }
-    };
-
     fetchExpiringCount();
+    const interval = setInterval(fetchExpiringCount, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <>
-      {/* HEADER */}
       <div className="dashboard-header">
         <h1>Dashboard</h1>
-        <p>Welcome back! Here's what's happening at your gym.</p>
+        <p>
+          Welcome back! Here's what's happening at
+          your gym.
+        </p>
       </div>
 
-      {/* TOP STATS */}
       <div className="stats-grid top-stats">
         <div className="stat-card">
           <div>
@@ -100,38 +114,40 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <h4>Today's Check-ins</h4>
+            <span className="coming-soon">
+              Coming soon
+            </span>
           </div>
-          <FaUserCheck
-            className="icon green clickable"
-            onClick={() => navigate("/attendance/total-checkins")}
-          />
+          <FaUserCheck className="icon green" />
         </div>
 
         <div className="stat-card">
           <div>
             <h4>Active RFID Cards</h4>
+            <span className="coming-soon">
+              Coming soon
+            </span>
           </div>
-          <FaIdCard
-            className="icon orange clickable"
-            onClick={() => navigate("/rfid")}
-          />
+          <FaIdCard className="icon orange" />
         </div>
 
-        {/* ✅ FIXED EXPIRING SOON CARD */}
         <div className="stat-card">
           <div>
             <h4>Expiring Soon</h4>
             <h2>{expiringCount}</h2>
-            <span className="danger">Next 5 days</span>
+            <span className="danger">
+              Next 5 days
+            </span>
           </div>
           <FaExclamationTriangle
             className="icon yellow clickable"
-            onClick={() => navigate("/members/expiring")}
+            onClick={() =>
+              navigate("/members/expiring")
+            }
           />
         </div>
       </div>
 
-      {/* BOTTOM STATS */}
       <div className="stats-grid bottom-stats">
         <div className="stat-card">
           <div>
@@ -159,16 +175,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* GROWTH + RECENT ACTIVITY */}
       <div className="dashboard-row">
         <MemberGrowth />
         <RecentActivity />
       </div>
 
-      {/* EXPIRING + ATTENDANCE */}
       <div className="dashboard-row">
         <ExpiringSoon />
-        {/* <TodaysAttendance /> */}
       </div>
     </>
   );

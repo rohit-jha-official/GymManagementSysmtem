@@ -1,10 +1,10 @@
 import "./ExpiringSoon.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_BASE } from "../../config/api";
+import axiosInstance from "../../utils/axiosInstance";
 import RenewMembership from "../RenewMembership/RenewMembership";
 
+/* 🔹 COLOR BASED ON DAYS LEFT */
 const getColor = (days) => {
   if (days <= 1) return "danger";
   if (days <= 3) return "warning";
@@ -13,20 +13,27 @@ const getColor = (days) => {
 
 const ExpiringSoon = () => {
   const navigate = useNavigate();
+
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRenew, setShowRenew] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
+  /* 🔹 FETCH EXPIRING MEMBERS (JWT + Branch safe) */
   const fetchExpiringSoon = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE}/members/expiring`
-      );
+      setLoading(true);
 
-      setMembers(res.data);
+      const res = await axiosInstance.get("/members/expiring");
+
+      const list = Array.isArray(res.data) ? res.data : [];
+      setMembers(list);
     } catch (error) {
-      console.error("Failed to load expiring members", error);
+      console.error(
+        "Failed to load expiring members:",
+        error?.response?.data || error.message
+      );
+      setMembers([]);
     } finally {
       setLoading(false);
     }
@@ -36,13 +43,9 @@ const ExpiringSoon = () => {
     fetchExpiringSoon();
   }, []);
 
+  /* 🔹 OPEN RENEW MODAL */
   const handleRenewClick = (member) => {
-    setSelectedMember({
-      _id: member._id,
-      fullName: member.fullName,
-      phone: member.phone,
-      plan: member.plan,
-    });
+    setSelectedMember(member);
     setShowRenew(true);
   };
 
@@ -53,6 +56,7 @@ const ExpiringSoon = () => {
           <h3>Expiring Soon</h3>
           <p>Next 7 days</p>
         </div>
+
         <span
           className="view-all"
           onClick={() => navigate("/members/expiring")}
@@ -73,12 +77,12 @@ const ExpiringSoon = () => {
             <div className="expiring-item" key={m._id}>
               <div className="left">
                 <div className="avatar">
-  {m.photo ? (
-    <img src={m.photo} alt={m.fullName} />
-  ) : (
-    (m.fullName || "?").charAt(0).toUpperCase()
-  )}
-</div>
+                  {m.photo ? (
+                    <img src={m.photo} alt={m.fullName} />
+                  ) : (
+                    (m.fullName || "?").charAt(0).toUpperCase()
+                  )}
+                </div>
 
                 <div>
                   <h4>{m.fullName}</h4>
@@ -87,9 +91,12 @@ const ExpiringSoon = () => {
               </div>
 
               <div className="right">
-                <div className="plan">{m.plan}</div>
+                <div className="plan">
+                  {m.plan?.name || m.plan || "-"}
+                </div>
+
                 <div className={`days ${getColor(m.daysLeft)}`}>
-                  {m.daysLeft} day{m.daysLeft > 1 && "s"}
+                  {m.daysLeft} day{m.daysLeft !== 1 ? "s" : ""}
                 </div>
 
                 <button
@@ -103,12 +110,13 @@ const ExpiringSoon = () => {
           ))}
       </div>
 
-      {showRenew && (
+      {/* 🔁 RENEW MODAL */}
+      {showRenew && selectedMember && (
         <RenewMembership
           member={selectedMember}
           onClose={() => {
             setShowRenew(false);
-            fetchExpiringSoon();
+            fetchExpiringSoon(); // 🔄 refresh after renewal
           }}
         />
       )}

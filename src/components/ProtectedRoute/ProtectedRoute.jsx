@@ -4,12 +4,12 @@ const ProtectedRoute = () => {
   const token = localStorage.getItem("token");
 
   // 🔐 If admin is logged in → allow access
-  if (token) {
+  if (token && token !== "undefined" && token !== "null") {
     return <Outlet />;
   }
 
   // 🔒 If not logged in → redirect to admin login
-  return <Navigate to="/login" replace />;
+  return <Navigate to="/login/admin" replace />;
 };
 
 export default ProtectedRoute;

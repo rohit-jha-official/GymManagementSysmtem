@@ -1,42 +1,35 @@
 import Member from "../models/member.js";
-import MembershipPlan from "../models/membershipPlan.js";
+import Plan from "../models/plan.js";
+import PlanOverride from "../models/planOverride.js";
 import Activity from "../models/activity.js";
 
-/* ================================
+/* ======================================
    ➕ ADD NEW MEMBER
-   ================================ */
+====================================== */
 export const addMember = async (req, res) => {
   try {
-    const {
-      fullName,
-      phone,
-      email,
-      gender,
-      dob,
-      address,
-      plan,
-      rfid,
-      photo,
-    } = req.body;
+    const { fullName, phone, email, gender, dob, address, planId, rfid, photo } =
+      req.body;
 
-    if (!fullName || !phone || !plan) {
-      return res
-        .status(400)
-        .json({ message: "Required fields missing" });
+    if (!fullName || !phone || !planId) {
+      return res.status(400).json({ message: "Required fields missing" });
     }
 
-    const planDoc = await MembershipPlan.findById(plan);
-    if (!planDoc || !planDoc.durationDays) {
-      return res
-        .status(400)
-        .json({ message: "Invalid membership plan" });
+    const plan = await Plan.findById(planId);
+    if (!plan) return res.status(400).json({ message: "Invalid plan" });
+
+    const override = await PlanOverride.findOne({
+      planId: plan._id,
+      branchId: req.branchId,
+    });
+
+    if (!override) {
+      return res.status(400).json({ message: "Plan not available in this branch" });
     }
 
     const startDate = new Date();
     const expiryDate = new Date();
-    expiryDate.setDate(
-      expiryDate.getDate() + planDoc.durationDays
-    );
+    expiryDate.setDate(expiryDate.getDate() + plan.durationDays);
 
     const member = await Member.create({
       fullName,
@@ -45,12 +38,13 @@ export const addMember = async (req, res) => {
       gender,
       dob,
       address,
-      plan: planDoc._id,
+      planId: plan._id,
+      branchId: req.user.branchId,
       rfid,
       photo,
       startDate,
       expiryDate,
-      paidAmount: planDoc.price,
+      paidAmount: override.price,
       dueAmount: 0,
       isRenewed: false,
     });
@@ -58,346 +52,270 @@ export const addMember = async (req, res) => {
     await Activity.create({
       type: "member",
       message: `New member registered: ${fullName}`,
+      branchId: req.branchId,
     });
 
     res.status(201).json(member);
-  } catch (error) {
-    console.error("Add member error:", error);
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    console.error("Add member error:", err);
+    res.status(500).json({ message: "Failed to add member" });
   }
 };
 
-/* ================================
+/* ======================================
    📋 GET ALL MEMBERS
-   ================================ */
+====================================== */
 export const getAllMembers = async (req, res) => {
   try {
     const today = new Date();
 
-    const members = await Member.find()
-      .populate("plan")
+    const members = await Member.find({ branchId: req.user.branchId })
+      .populate("planId")
       .sort({ createdAt: -1 });
 
-    const result = members.map((m) => ({
-      _id: m._id,
-      name: m.fullName,
-      phone: m.phone,
-      email: m.email,
-      plan: m.plan?.name || "-",
-      endDate: m.expiryDate,
-      status:
-        m.expiryDate >= today ? "Active" : "Expired",
-      rfid: m.rfid,
-      photo: m.photo, 
-    }));
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(
+      members.map((m) => ({
+        _id: m._id,
+        fullName: m.fullName,
+        phone: m.phone,
+        email: m.email,
+        plan: m.planId?.name || "-",
+        expiryDate: m.expiryDate,
+        status: m.expiryDate >= today ? "Active" : "Expired",
+        rfid: m.rfid,
+        photo: m.photo,
+      }))
+    );
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-/* ================================
-   ❌ GET EXPIRED MEMBERS
-   ================================ */
+/* ======================================
+   ❌ EXPIRED MEMBERS
+====================================== */
 export const getExpiredMembers = async (req, res) => {
   try {
     const today = new Date();
 
     const members = await Member.find({
+      branchId: req.user.branchId,
       expiryDate: { $lt: today },
-    })
-      .populate("plan")
-      .sort({ expiryDate: -1 });
+    }).populate("planId");
 
-    const result = members.map((m) => ({
-      _id: m._id,
-      fullName: m.fullName,
-      phone: m.phone,
-      email: m.email, 
-      plan: m.plan?.name || "-",
-      expiryDate: m.expiryDate,
-      photo: m.photo,
-      daysExpired: Math.max(
-        Math.floor(
-          (today - new Date(m.expiryDate)) /
-            (1000 * 60 * 60 * 24)
-        ),
-        1
-      ),
-    }));
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(
+      members.map((m) => ({
+        _id: m._id,
+        fullName: m.fullName,
+        phone: m.phone,
+        plan: m.planId?.name || "-",
+        expiryDate: m.expiryDate,
+      }))
+    );
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-/* ================================
-   ⏳ GET EXPIRING SOON
-   ================================ */
+/* ======================================
+   ⏳ EXPIRING SOON
+====================================== */
 export const getExpiringSoon = async (req, res) => {
   try {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);   // ✅ normalize start
-
-    const next7Days = new Date(today);
-    next7Days.setDate(next7Days.getDate() + 7);
-    next7Days.setHours(23, 59, 59, 999); // ✅ normalize end
+    const next7 = new Date();
+    next7.setDate(today.getDate() + 7);
 
     const members = await Member.find({
-      expiryDate: { $gte: today, $lte: next7Days },
-    })
-      .populate("plan")
-      .sort({ expiryDate: 1 });
+      branchId: req.user.branchId,
+      expiryDate: { $gte: today, $lte: next7 },
+    }).populate("planId");
 
-    const result = members.map((m) => ({
-      _id: m._id,
-      fullName: m.fullName,
-      phone: m.phone,
-      email: m.email,          // ✅ ADD (frontend expects this)
-      plan: m.plan?.name || "-",
-      expiryDate: m.expiryDate,
-      photo: m.photo,          // ✅ ADD (for avatar)
-      daysLeft: Math.max(
-        Math.ceil(
-          (new Date(m.expiryDate) - today) /
-            (1000 * 60 * 60 * 24)
-        ),
-        0
-      ),
-    }));
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(
+      members.map((m) => ({
+        _id: m._id,
+        fullName: m.fullName,
+        phone: m.phone,
+        plan: m.planId?.name || "-",
+        expiryDate: m.expiryDate,
+        daysLeft: Math.ceil((m.expiryDate - today) / 86400000),
+      }))
+    );
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-
-/* ================================
-   🔄 RENEW MEMBERSHIP (FIXED)
-   ================================ */
+/* ======================================
+   🔄 RENEW MEMBERSHIP
+====================================== */
 export const renewMember = async (req, res) => {
   try {
-    const planId = req.body.plan || req.body.planId;
-    const { paidAmount } = req.body;
+    const { planId, paidAmount } = req.body;
 
-    if (!planId) {
-      return res
-        .status(400)
-        .json({ message: "Plan ID is required" });
-    }
+    const member = await Member.findOne({
+      _id: req.params.id,
+      branchId: req.user.branchId,
+    });
 
-    const member = await Member.findById(req.params.id);
-    if (!member) {
-      return res
-        .status(404)
-        .json({ message: "Member not found" });
-    }
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
-    const planDoc = await MembershipPlan.findById(planId);
-    if (!planDoc || !planDoc.durationDays) {
-      return res
-        .status(400)
-        .json({ message: "Invalid membership plan" });
-    }
+    const plan = await Plan.findById(planId);
+    const override = await PlanOverride.findOne({
+      planId,
+      branchId: req.user.branchId,
+    });
 
-    const today = new Date();
+    if (!plan || !override)
+      return res.status(400).json({ message: "Invalid plan" });
 
     const baseDate =
-      member.expiryDate && member.expiryDate > today
-        ? member.expiryDate
-        : today;
+      member.expiryDate > new Date() ? member.expiryDate : new Date();
 
-    const newExpiryDate = new Date(baseDate);
-    newExpiryDate.setDate(
-      newExpiryDate.getDate() + planDoc.durationDays
-    );
+    const newExpiry = new Date(baseDate);
+    newExpiry.setDate(newExpiry.getDate() + plan.durationDays);
 
-    const paid = Number(paidAmount) || planDoc.price;
+    const paid = Number(paidAmount) || override.price;
 
-    member.plan = planDoc._id;
-    member.expiryDate = newExpiryDate;
+    member.planId = plan._id;
+    member.expiryDate = newExpiry;
     member.isRenewed = true;
     member.paidAmount = paid;
-    member.dueAmount = Math.max(
-      planDoc.price - paid,
-      0
-    );
+    member.dueAmount = Math.max(override.price - paid, 0);
 
     await member.save();
 
     await Activity.create({
       type: "payment",
       message: `Membership renewed: ${member.fullName}`,
+      branchId: req.user.branchId,
     });
 
-    res.json({
-      message: "Membership renewed successfully",
-      member,
-    });
-  } catch (error) {
-    console.error("Renew member error:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to renew membership" });
+    res.json({ message: "Renewed successfully", member });
+  } catch (err) {
+    res.status(500).json({ message: "Renewal failed" });
   }
 };
 
-/* ================================
-   💰 GET DUE MEMBERS
-   ================================ */
+/* ======================================
+   💰 DUE MEMBERS
+====================================== */
 export const getDueMembers = async (req, res) => {
   try {
     const members = await Member.find({
+      branchId: req.user.branchId,
       dueAmount: { $gt: 0 },
-    })
-      .populate("plan")
-      .sort({ updatedAt: -1 });
+    }).populate("planId");
 
-    const result = members.map((m) => ({
-      _id: m._id,
-      fullName: m.fullName,
-      phone: m.phone,
-      photo: m.photo,
-      plan: m.plan?.name || "-",
-      dueAmount: m.dueAmount,
-      expiryDate: m.expiryDate,
-    }));
-
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(
+      members.map((m) => ({
+        _id: m._id,
+        fullName: m.fullName,
+        phone: m.phone,
+        plan: m.planId?.name || "-",
+        dueAmount: m.dueAmount,
+      }))
+    );
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-/* ================================
-   ✅ COLLECT DUE PAYMENT (PARTIAL)
-================================ */
+/* ======================================
+   💰 COLLECT DUE PAYMENT
+====================================== */
 export const collectDuePayment = async (req, res) => {
   try {
     const { paidAmount } = req.body;
 
-    const member = await Member.findById(req.params.id);
-    if (!member) {
-      return res.status(404).json({ message: "Member not found" });
-    }
+    const member = await Member.findOne({
+      _id: req.params.id,
+      branchId: req.user.branchId,
+    });
+
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
     const paid = Number(paidAmount);
-    if (!paid || paid <= 0) {
-      return res.status(400).json({ message: "Invalid paid amount" });
-    }
+    if (!paid || paid <= 0)
+      return res.status(400).json({ message: "Invalid amount" });
 
     member.dueAmount = Math.max(member.dueAmount - paid, 0);
     member.lastPaymentDate = new Date();
-
     await member.save();
 
     await Activity.create({
       type: "payment",
-      message: `Collected ₹${paid} from ${member.fullName}`,
+      message: `Due payment collected from ${member.fullName}`,
+      branchId: req.branchId,
     });
 
-    res.json({
-      message: "Payment collected successfully",
-      remainingDue: member.dueAmount,
-    });
-  } catch (error) {
-    console.error("Collect due error:", error);
-    res.status(500).json({ message: error.message });
+    res.json({ message: "Payment collected successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-
-/* ================================
-   🗑️ DELETE MEMBER
-   ================================ */
+/* ======================================
+   🗑 DELETE MEMBER
+====================================== */
 export const deleteMember = async (req, res) => {
   try {
-    await Member.findByIdAndDelete(req.params.id);
+    const member = await Member.findOneAndDelete({
+      _id: req.params.id,
+      branchId: req.user.branchId,
+    });
+
+    if (!member) return res.status(404).json({ message: "Member not found" });
+
     res.json({ message: "Member deleted" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-/* ================================
+/* ======================================
    👤 GET MEMBER BY ID
-   ================================ */
+====================================== */
 export const getMemberById = async (req, res) => {
   try {
-    const member = await Member.findById(
-      req.params.id
-    ).populate("plan");
+    const member = await Member.findOne({
+      _id: req.params.id,
+      branchId: req.user.branchId,
+    }).populate("planId");
 
-    if (!member) {
-      return res
-        .status(404)
-        .json({ message: "Member not found" });
-    }
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
     res.json(member);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-/* ================================
-   ✏️ UPDATE MEMBER (ADMIN OVERRIDE)
-================================ */
+/* ======================================
+   ✏ UPDATE MEMBER
+====================================== */
 export const updateMember = async (req, res) => {
   try {
-    const {
-      phone,
-      email,
-      gender,
-      address,
-      expiryDate,
-      allowExpiryEdit,
-    } = req.body;
+    const { phone, email, gender, address, expiryDate, allowExpiryEdit } =
+      req.body;
 
     const update = {};
-
     if (phone !== undefined) update.phone = phone;
     if (email !== undefined) update.email = email;
     if (gender !== undefined) update.gender = gender;
     if (address !== undefined) update.address = address;
+    if (allowExpiryEdit && expiryDate) update.expiryDate = new Date(expiryDate);
 
-    // 🔐 ADMIN EXPIRY OVERRIDE
-    if (allowExpiryEdit === true && expiryDate) {
-      update.expiryDate = new Date(expiryDate);
-
-      await Activity.create({
-        type: "admin",
-        message: "Admin manually updated expiry date",
-      });
-    }
-
-    // 🚨 PREVENT EMPTY UPDATE
-    if (Object.keys(update).length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Nothing to update" });
-    }
-
-    const member = await Member.findByIdAndUpdate(
-      req.params.id,
+    const member = await Member.findOneAndUpdate(
+      { _id: req.params.id, branchId: req.user.branchId },
       { $set: update },
-      { new: true, runValidators: true }
-    ).populate("plan");
+      { new: true }
+    );
 
-    if (!member) {
-      return res
-        .status(404)
-        .json({ message: "Member not found" });
-    }
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
     res.json(member);
-  } catch (error) {
-    console.error("Update member error:", error);
-    res
-      .status(500)
-      .json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

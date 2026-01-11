@@ -1,8 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
-import { API_BASE } from "../../config/api";
 import logo from "../../assets/logo.png";
 import "./auth.css";
+import axiosInstance from "../../utils/axiosInstance";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -15,13 +14,20 @@ export default function ForgotPassword() {
     setMessage("");
 
     try {
-      const res = await axios.post(
-        `${API_BASE}/auth/forgot-password`,
+      const res = await axiosInstance.post(
+        "/auth/forgot-password",
         { email }
       );
-      setMessage(res.data.message);
+
+      setMessage(
+        res.data?.message ||
+          "Reset link sent to your email."
+      );
     } catch (error) {
-      setMessage("Something went wrong. Try again.");
+      setMessage(
+        error?.response?.data?.message ||
+          "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -29,36 +35,43 @@ export default function ForgotPassword() {
 
   return (
     <div className="auth-page">
-      {/* LOGO (same as login) */}
+      {/* LOGO */}
+      <div className="auth-logo">
+        <div className="logo-text">
+          <h3>
+            THE WELLNESS{" "}
+            <img
+              src={logo}
+              alt="The Wellness Club Gym"
+              className="logo-image"
+            />{" "}
+            CLUB GYM
+          </h3>
 
-<div className="auth-logo">
-  <div className="logo-text">
-    <h3>
-      THE WELLNESS{" "}
-      <img
-        src={logo}
-        alt="The Wellness Club Gym"
-        className="logo-image"
-      />{" "}
-      CLUB GYM
-    </h3>
+          <span className="tag-color-2 tag-rrr">
+            XPRESS
+          </span>
 
-    <span className="tag-color-2 tag-rrr">XPRESS</span>
-
-    <p className="logo-tagline">
-      <span className="tag-color-1">THE LARGEST</span>{" "}
-      <span className="tag-color-2">GYM CHAIN</span>{" "}
-      <span className="tag-color-3">IN INDIA</span>
-    </p>
-  </div>
-</div>
-
+          <p className="logo-tagline">
+            <span className="tag-color-1">
+              THE LARGEST
+            </span>{" "}
+            <span className="tag-color-2">
+              GYM CHAIN
+            </span>{" "}
+            <span className="tag-color-3">
+              IN INDIA
+            </span>
+          </p>
+        </div>
+      </div>
 
       {/* CARD */}
       <div className="auth-card">
         <h2>Forgot Password</h2>
         <p className="auth-subtext">
-          Enter your admin email to receive a reset link
+          Enter your admin email to receive a
+          reset link
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -67,7 +80,9 @@ export default function ForgotPassword() {
               type="email"
               placeholder="Admin email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
               required
             />
           </div>
@@ -77,12 +92,16 @@ export default function ForgotPassword() {
             className="primary-btn"
             disabled={loading}
           >
-            {loading ? "Sending..." : "Send Reset Link"}
+            {loading
+              ? "Sending..."
+              : "Send Reset Link"}
           </button>
         </form>
 
         {message && (
-          <p className="auth-message">{message}</p>
+          <p className="auth-message">
+            {message}
+          </p>
         )}
       </div>
     </div>

@@ -11,14 +11,14 @@ import {
   deleteMember,
   updateMember,
 } from "../controllers/memberController.js";
-
+import { protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
-
+router.use(protect);
 router.post("/", addMember);
 
-router.get("/", getAllMembers);
+router.get("/",getAllMembers);
 
-router.get("/due", getDueMembers);
+router.get("/due",getDueMembers);
 
 router.get("/expired", getExpiredMembers);
 
@@ -33,7 +33,7 @@ router.put("/:id", updateMember);
 
 router.get("/:id", getMemberById);
 
-router.delete("/:id", deleteMember);
+router.delete("/:id",deleteMember);
 
 
 export default router;

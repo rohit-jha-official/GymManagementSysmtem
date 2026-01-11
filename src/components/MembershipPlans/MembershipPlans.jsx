@@ -8,8 +8,7 @@ import {
   FaGem,
   FaCheck,
 } from "react-icons/fa";
-import axios from "axios";
-import { API_BASE } from "../../config/api";
+import axiosInstance from "../../utils/axiosInstance";
 import EditPlanModal from "../EditPlanModal/EditPlanModal";
 
 /* ICON MAP */
@@ -30,8 +29,8 @@ const MembershipPlans = () => {
   /* ✅ FETCH PLANS */
   const fetchPlans = async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE}/membership-plans`
+      const res = await axiosInstance.get(
+        "/membership-plans"
       );
 
       const formattedPlans = res.data.map((p) => ({
@@ -41,8 +40,8 @@ const MembershipPlans = () => {
         price: p.price,
         icon: planIcons[p.name] || <FaBolt />,
         features: p.features || [],
-        members: p.activeMembers || 0,     // Active members
-        totalMembers: p.totalMembers || 0, // Total members
+        members: p.activeMembers || 0,
+        totalMembers: p.totalMembers || 0,
         badge: p.isPremium
           ? "premium"
           : p.isPopular
@@ -65,18 +64,22 @@ const MembershipPlans = () => {
   /* ✅ UPDATE PLAN */
   const handleSavePlan = async (updatedPlan) => {
     try {
-      await axios.put(
-        `${API_BASE}/membership-plans/${updatedPlan._id}`,
+      await axiosInstance.put(
+        `/membership-plans/${updatedPlan._id}`,
         {
           price: updatedPlan.price,
-          features: updatedPlan.features,
+          isPopular: updatedPlan.isPopular,
+          isPremium: updatedPlan.isPremium,
         }
       );
 
       fetchPlans();
       setEditingPlan(null);
     } catch (error) {
-      alert("Failed to update plan");
+      alert(
+        error?.response?.data?.message ||
+          "Failed to update plan"
+      );
     }
   };
 
@@ -95,7 +98,10 @@ const MembershipPlans = () => {
       {/* HEADER */}
       <div className="page-header">
         <h1>Membership Plans</h1>
-        <p>Manage gym membership plans and pricing</p>
+        <p>
+          Manage gym membership plans and
+          pricing
+        </p>
       </div>
 
       {/* PLANS GRID */}
@@ -106,13 +112,22 @@ const MembershipPlans = () => {
           </p>
         ) : (
           plans.map((plan) => (
-            <div key={plan._id} className="plan-card">
-              <div className="plan-icon">{plan.icon}</div>
+            <div
+              key={plan._id}
+              className="plan-card"
+            >
+              <div className="plan-icon">
+                {plan.icon}
+              </div>
 
               <h2>{plan.name}</h2>
-              <p className="duration">{plan.duration}</p>
+              <p className="duration">
+                {plan.duration}
+              </p>
 
-              <div className="price">₹{plan.price}</div>
+              <div className="price">
+                ₹{plan.price}
+              </div>
 
               <ul className="features">
                 {plan.features.map((f, i) => (
@@ -122,7 +137,7 @@ const MembershipPlans = () => {
                 ))}
               </ul>
 
-              {/* ✅ ACTIVE MEMBERS → FILTERED TABLE */}
+              {/* ACTIVE MEMBERS */}
               <div
                 className="members clickable"
                 onClick={() =>
@@ -138,7 +153,9 @@ const MembershipPlans = () => {
 
               <button
                 className="edit-btn"
-                onClick={() => setEditingPlan(plan)}
+                onClick={() =>
+                  setEditingPlan(plan)
+                }
               >
                 Edit Plan
               </button>
@@ -157,7 +174,6 @@ const MembershipPlans = () => {
         <div className="stats-grid">
           {plans.map((p) => (
             <div key={p._id}>
-              {/* ✅ TOTAL MEMBERS → FILTERED TABLE */}
               <span
                 className="counttt clickable"
                 onClick={() =>
@@ -180,7 +196,9 @@ const MembershipPlans = () => {
       {editingPlan && (
         <EditPlanModal
           plan={editingPlan}
-          onClose={() => setEditingPlan(null)}
+          onClose={() =>
+            setEditingPlan(null)
+          }
           onSave={handleSavePlan}
         />
       )}

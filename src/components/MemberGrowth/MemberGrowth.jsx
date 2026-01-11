@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import {
   AreaChart,
   Area,
@@ -10,9 +10,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "./MemberGrowth.css";
-import { API_BASE } from "../../config/api";
 
-/* LABELS */
+/* MONTH LABELS */
 const months = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -23,15 +22,17 @@ const MemberGrowth = () => {
   const [yearData, setYearData] = useState([]);
   const [monthData, setMonthData] = useState([]);
 
-  /* 📊 FETCH YEARLY GROWTH (JAN–DEC) */
+  /* 📊 YEARLY GROWTH */
   useEffect(() => {
     const fetchYearGrowth = async () => {
       try {
-        const res = await axios.get(
-          `${API_BASE}/dashboard/member-growth`
-        );
+        const res = await API.get("/dashboard/member-growth");
 
-        const formatted = res.data.map((count, index) => ({
+        const raw = Array.isArray(res.data)
+          ? res.data
+          : res.data.data || [];
+
+        const formatted = raw.map((count, index) => ({
           month: months[index],
           members: count,
         }));
@@ -39,28 +40,31 @@ const MemberGrowth = () => {
         setYearData(formatted);
       } catch (err) {
         console.error("Year growth fetch failed", err);
+        setYearData([]);
       }
     };
 
     fetchYearGrowth();
   }, []);
 
-  /* 📆 FETCH MONTHLY GROWTH (W1–W4) */
+  /* 📆 MONTHLY GROWTH */
   useEffect(() => {
-    if (view === "month") {
-      const fetchMonthGrowth = async () => {
-        try {
-          const res = await axios.get(
-            `${API_BASE}/dashboard/member-growth/month`
-          );
-          setMonthData(res.data);
-        } catch (err) {
-          console.error("Month growth fetch failed", err);
-        }
-      };
+    if (view !== "month") return;
 
-      fetchMonthGrowth();
-    }
+    const fetchMonthGrowth = async () => {
+      try {
+        const res = await API.get("/dashboard/member-growth/month");
+
+        const list = Array.isArray(res.data) ? res.data : [];
+
+        setMonthData(list);
+      } catch (err) {
+        console.error("Month growth fetch failed", err);
+        setMonthData([]);
+      }
+    };
+
+    fetchMonthGrowth();
   }, [view]);
 
   return (
@@ -89,7 +93,7 @@ const MemberGrowth = () => {
       </div>
 
       {/* CHART */}
-      <div className="chart-wrapper">
+      <div className="chart-wrapper" style={{ width: "100%", height: 300 }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={view === "year" ? yearData : monthData}
@@ -102,33 +106,14 @@ const MemberGrowth = () => {
               </linearGradient>
             </defs>
 
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="rgba(255,255,255,0.05)"
-            />
-
+            <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey={view === "year" ? "month" : "week"}
-              stroke="#9ca3af"
               tickLine={false}
               axisLine={false}
             />
-
-            <YAxis
-              stroke="#9ca3af"
-              tickLine={false}
-              axisLine={false}
-              allowDecimals={false}
-            />
-
-            <Tooltip
-              contentStyle={{
-                background: "#11151c",
-                border: "none",
-                borderRadius: "8px",
-                color: "#fff",
-              }}
-            />
+            <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
+            <Tooltip />
 
             <Area
               type="monotone"

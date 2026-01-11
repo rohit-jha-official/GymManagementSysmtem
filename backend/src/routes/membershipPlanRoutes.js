@@ -1,17 +1,15 @@
 import express from "express";
 import {
   getPlans,
-  createPlan,
   updatePlan,
 } from "../controllers/membershipPlanController.js";
-
+import{protect} from "../middleware/authMiddleware.js"
 const router = express.Router();
-
+router.use(protect);
 /* ✅ GET ALL MEMBERSHIP PLANS */
 router.get("/", getPlans);
 
-/* ➕ CREATE PLAN */
-router.post("/", createPlan);
+
 
 /* ✏️ UPDATE PLAN */
 router.put("/:id", updatePlan);

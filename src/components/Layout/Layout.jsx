@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import SideNavBar from "../SideNavbar/SideNav";
 import Topbar from "../TopBar/topbar";
-import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,10 +14,10 @@ const Layout = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <div className="dashboard-main">
         <Topbar
-          toggleSidebar={() => setSidebarOpen(prev => !prev)}
+          toggleSidebar={() => setSidebarOpen((prev) => !prev)}
           sidebarOpen={sidebarOpen}
         />
 

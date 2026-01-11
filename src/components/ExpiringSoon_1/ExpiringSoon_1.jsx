@@ -1,11 +1,10 @@
 import "./ExpiringSoon_1.css";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import { FaPhoneAlt } from "react-icons/fa";
-import { API_BASE } from "../../config/api";
 import RenewMembership from "../RenewMembership/RenewMembership";
 
-/* 🔹 DATE FORMATTER: 14 Jan 2004 */
+/* 🔹 DATE FORMATTER */
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -16,38 +15,44 @@ const formatDate = (date) =>
 export default function ExpiringSoon() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [showRenew, setShowRenew] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  /* 🔹 FETCH EXPIRING MEMBERS */
+  /* 🔹 FETCH EXPIRING MEMBERS (JWT + Branch safe) */
+  const fetchExpiringMembers = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axiosInstance.get("/members/expiring");
+
+      const list = Array.isArray(res.data) ? res.data : [];
+
+      // show only members expiring in next 5 days
+      const filtered = list.filter(
+        (m) => m.daysLeft <= 5 && m.daysLeft >= 0
+      );
+
+      setMembers(filtered);
+    } catch (error) {
+      console.error(
+        "Failed to fetch expiring members:",
+        error?.response?.data || error.message
+      );
+      setMembers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchExpiringMembers = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/members/expiring`);
-
-        // show only members expiring in next 5 days
-        const filtered = res.data.filter(
-          (m) => m.daysLeft <= 5 && m.daysLeft >= 0
-        );
-
-        setMembers(filtered);
-      } catch (error) {
-        console.error("Failed to fetch expiring members", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchExpiringMembers();
   }, []);
 
   /* 🔹 BADGE COLOR */
-const getBadgeClass = (days) => {
-  if (days <= 3) return "danger-text"; // 🔴 red text only
-  return "normal-text";
-};
-
+  const getBadgeClass = (days) => {
+    if (days <= 3) return "danger-text";
+    return "normal-text";
+  };
 
   /* 🔹 OPEN RENEW MODAL */
   const handleRenewClick = (member) => {
@@ -64,9 +69,7 @@ const getBadgeClass = (days) => {
           <p>{members.length} memberships expiring in next 5 days</p>
         </div>
 
-        <button className="reminder-btn">
-          Send Reminders
-        </button>
+        <button className="reminder-btn">Send Reminders</button>
       </div>
 
       {/* TABLE */}
@@ -91,41 +94,32 @@ const getBadgeClass = (days) => {
                 {/* 👤 MEMBER */}
                 <div className="member-info">
                   <div className="avatar">
-  {m.photo ? (
-    <img src={m.photo} alt={m.fullName} />
-  ) : (
-    (m.fullName || "?").charAt(0).toUpperCase()
-  )}
-</div>
-
-                  <div className="member-name">
-                    {m.fullName}
+                    {m.photo ? (
+                      <img src={m.photo} alt={m.fullName} />
+                    ) : (
+                      (m.fullName || "?").charAt(0).toUpperCase()
+                    )}
                   </div>
+                  <div className="member-name">{m.fullName}</div>
                 </div>
 
                 {/* 📞 PHONE */}
                 <span>{m.phone}</span>
-                
 
                 {/* 📄 PLAN */}
-                <span>{m.plan}</span>
+                <span>{m.plan?.name || m.plan || "-"}</span>
 
-                {/* 📅 EXPIRY DATE */}
+                {/* 📅 EXPIRY */}
                 <span>{formatDate(m.expiryDate)}</span>
 
                 {/* ⏳ DAYS LEFT */}
-                <span
-                  className={`days-badge ${getBadgeClass(m.daysLeft)}`}
-                >
-                  {m.daysLeft} day{m.daysLeft > 1 ? "s" : ""}
+                <span className={`days-badge ${getBadgeClass(m.daysLeft)}`}>
+                  {m.daysLeft} day{m.daysLeft !== 1 ? "s" : ""}
                 </span>
 
                 {/* ⚙️ ACTIONS */}
                 <div className="actions">
-                  <a
-                    href={`tel:${m.phone}`}
-                    className="call-btn"
-                  >
+                  <a href={`tel:${m.phone}`} className="call-btn">
                     <FaPhoneAlt size={13} /> Call
                   </a>
 
@@ -143,10 +137,13 @@ const getBadgeClass = (days) => {
       </div>
 
       {/* 🔁 RENEW MODAL */}
-      {showRenew && (
+      {showRenew && selectedMember && (
         <RenewMembership
           member={selectedMember}
-          onClose={() => setShowRenew(false)}
+          onClose={() => {
+            setShowRenew(false);
+            fetchExpiringMembers(); // refresh after renewal
+          }}
         />
       )}
     </div>

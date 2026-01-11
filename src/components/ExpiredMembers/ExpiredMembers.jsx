@@ -1,11 +1,10 @@
 import "./ExpiredMembers.css";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { FaPhoneAlt } from "react-icons/fa";
-import { API_BASE } from "../../config/api";
+import axiosInstance from "../../utils/axiosInstance";
 import RenewMembership from "../RenewMembership/RenewMembership";
 
-/* 🔹 DATE FORMATTER: 14 Jan 2004 */
+/* 🔹 DATE FORMATTER */
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -16,23 +15,30 @@ const formatDate = (date) =>
 export default function ExpiredMembers() {
   const [expiredMembers, setExpiredMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [showRenew, setShowRenew] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  /* 🔹 FETCH EXPIRED MEMBERS */
-  useEffect(() => {
-    const fetchExpiredMembers = async () => {
-      try {
-        const res = await axios.get(`${API_BASE}/members/expired`);
-        setExpiredMembers(res.data);
-      } catch (error) {
-        console.error("Failed to load expired members", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  /* 🔹 FETCH EXPIRED MEMBERS (JWT + Branch safe) */
+  const fetchExpiredMembers = async () => {
+    try {
+      setLoading(true);
 
+      const res = await axiosInstance.get("/members/expired");
+
+      const list = Array.isArray(res.data) ? res.data : [];
+      setExpiredMembers(list);
+    } catch (error) {
+      console.error(
+        "Failed to load expired members:",
+        error?.response?.data || error.message
+      );
+      setExpiredMembers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchExpiredMembers();
   }, []);
 
@@ -47,9 +53,7 @@ export default function ExpiredMembers() {
       {/* HEADER */}
       <div className="expired-header">
         <h2>Expired Members</h2>
-        <p>
-          {expiredMembers.length} members with expired memberships
-        </p>
+        <p>{expiredMembers.length} members with expired memberships</p>
       </div>
 
       {/* TABLE */}
@@ -74,16 +78,13 @@ export default function ExpiredMembers() {
                 {/* 👤 MEMBER */}
                 <div className="member-info">
                   <div className="avatar">
-  {m.photo ? (
-    <img src={m.photo} alt={m.fullName} />
-  ) : (
-    (m.fullName || "?").charAt(0).toUpperCase()
-  )}
-</div>
-
-                  <div className="member-name">
-                    {m.fullName}
+                    {m.photo ? (
+                      <img src={m.photo} alt={m.fullName} />
+                    ) : (
+                      (m.fullName || "?").charAt(0).toUpperCase()
+                    )}
                   </div>
+                  <div className="member-name">{m.fullName}</div>
                 </div>
 
                 {/* 📞 CONTACT */}
@@ -93,23 +94,19 @@ export default function ExpiredMembers() {
                 </div>
 
                 {/* 📄 PLAN */}
-                <div>{m.plan}</div>
+                <div>{m.plan?.name || m.plan || "-"}</div>
 
                 {/* 📅 EXPIRED DATE */}
                 <div>{formatDate(m.expiryDate)}</div>
 
                 {/* ⏱️ DAYS EXPIRED */}
                 <div className="days-expired">
-                  {m.daysExpired} day
-                  {m.daysExpired > 1 ? "s" : ""}
+                  {m.daysExpired} day{m.daysExpired !== 1 ? "s" : ""}
                 </div>
 
                 {/* ⚙️ ACTIONS */}
                 <div className="actions">
-                  <a
-                    href={`tel:${m.phone}`}
-                    className="call-btn"
-                  >
+                  <a href={`tel:${m.phone}`} className="call-btn">
                     <FaPhoneAlt size={13} /> Call
                   </a>
 
@@ -127,10 +124,13 @@ export default function ExpiredMembers() {
       </div>
 
       {/* 🔁 RENEW MODAL */}
-      {showRenew && (
+      {showRenew && selectedMember && (
         <RenewMembership
           member={selectedMember}
-          onClose={() => setShowRenew(false)}
+          onClose={() => {
+            setShowRenew(false);
+            fetchExpiredMembers(); // 🔄 refresh after renewal
+          }}
         />
       )}
     </div>

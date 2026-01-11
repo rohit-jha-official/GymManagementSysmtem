@@ -1,13 +1,15 @@
 import Notification from "../models/notification.js";
-import Member from "../models/member.js";
 
-/**
- * 🔔 GET ALL EXPIRY NOTIFICATIONS
- */
+/* ================================
+   🔔 GET EXPIRY NOTIFICATIONS
+================================ */
 export const getExpiryNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find({ type: "expiry" })
-      .populate("memberId", "fullName plan phone expiryDate")
+    const notifications = await Notification.find({
+      branchId: req.user.branchId,
+      type: "expiry",
+    })
+      .populate("memberId", "fullName phone")
       .sort({ createdAt: -1 });
 
     res.status(200).json(notifications);
@@ -17,19 +19,22 @@ export const getExpiryNotifications = async (req, res) => {
   }
 };
 
-/**
- * 📊 GET NOTIFICATION STATS (for bell count)
- */
+/* ================================
+   📊 GET NOTIFICATION STATS
+================================ */
 export const getNotificationStats = async (req, res) => {
   try {
     const unreadExpiry = await Notification.countDocuments({
+      branchId: req.user.branchId,
       type: "expiry",
       isRead: false,
     });
 
     const expiringSoonCount = await Notification.countDocuments({
+      branchId: req.user.branchId,
       type: "expiry",
       subtype: "expiring",
+      isRead: false,
     });
 
     res.status(200).json({
@@ -42,13 +47,17 @@ export const getNotificationStats = async (req, res) => {
   }
 };
 
-/**
- * ✅ MARK ALL AS READ
- */
+/* ================================
+   ✅ MARK ALL AS READ
+================================ */
 export const markAllAsRead = async (req, res) => {
   try {
     await Notification.updateMany(
-      { type: "expiry", isRead: false },
+      {
+        branchId: req.user.branchId,
+        type: "expiry",
+        isRead: false,
+      },
       { $set: { isRead: true } }
     );
 
@@ -59,12 +68,16 @@ export const markAllAsRead = async (req, res) => {
   }
 };
 
-/**
- * ❌ DELETE NOTIFICATION
- */
+/* ================================
+   ❌ DELETE NOTIFICATION
+================================ */
 export const deleteNotification = async (req, res) => {
   try {
-    await Notification.findByIdAndDelete(req.params.id);
+    await Notification.findOneAndDelete({
+      _id: req.params.id,
+      branchId: req.user.branchId,
+    });
+
     res.status(200).json({ message: "Notification deleted" });
   } catch (error) {
     console.error("Delete notification error:", error);

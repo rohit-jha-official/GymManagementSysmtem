@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 
+import Branch from "./models/branch.js";
+
 import authRoutes from "./routes/authRoutes.js";
 import memberRoutes from "./routes/memberRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";

@@ -30,13 +30,13 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
   const token = localStorage.getItem("token");
   const isLoggedIn = Boolean(token);
 
-  /* ⏰ CLOCK */
+  /* ⏰ LIVE CLOCK */
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  /* 🔔 NOTIFICATIONS (JWT SAFE) */
+  /* 🔔 NOTIFICATIONS */
   useEffect(() => {
     if (!token) {
       setNotifCount(0);
@@ -57,7 +57,7 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     return () => clearInterval(interval);
   }, [token]);
 
-  /* ❌ CLICK OUTSIDE */
+  /* ❌ CLOSE DROPDOWNS ON OUTSIDE CLICK */
   useEffect(() => {
     const handleClick = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -72,12 +72,14 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const time = now.toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
+  const time = now
+    .toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    })
+    .toUpperCase();
 
   const date = now.toLocaleDateString("en-IN", {
     weekday: "long",
@@ -86,13 +88,15 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     year: "numeric",
   });
 
-  /* LOGOUT */
+  /* 🚪 LOGOUT (FIXED) */
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login/admin");
+    localStorage.removeItem("token");
+    localStorage.removeItem("admin");
+
+    navigate("/login", { replace: true });
   };
 
-  /* SEARCH */
+  /* 🔍 LIVE SEARCH */
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -104,8 +108,11 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     }
 
     const q = value.toLowerCase();
-    const matches = searchRoutes.filter((r) =>
-      r.keywords.some((k) => k.toLowerCase().includes(q))
+
+    const matches = searchRoutes.filter((route) =>
+      route.keywords.some(
+        (k) => k.toLowerCase().includes(q) || q.includes(k.toLowerCase())
+      )
     );
 
     setSuggestions(matches);
@@ -121,11 +128,13 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
 
   return (
     <div className="topbar">
+      {/* LEFT */}
       <div className="topbar-left">
         <div className="mobile-menu-btn" onClick={toggleSidebar}>
           {sidebarOpen ? <FaTimes /> : <FaBars />}
         </div>
 
+        {/* SEARCH */}
         <div className="topbar-search" ref={searchRef}>
           <FaSearch className="search-icon" />
           <input
@@ -151,6 +160,7 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
         </div>
       </div>
 
+      {/* RIGHT */}
       <div className="topbar-right">
         <div className="topbar-time">
           <span className="time">{time}</span>
@@ -162,24 +172,27 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
             className="notification"
             onClick={() => navigate("/notifications")}
           >
-            <FaBell />
+            <FaBell className="bell-icon" />
             {notifCount > 0 && <span className="badge">{notifCount}</span>}
           </div>
         )}
 
         {isLoggedIn ? (
           <>
+            {/* PROFILE */}
             <div className="user-wrapper" ref={profileRef}>
               <div
                 className="user-info clickable"
                 onClick={() => setOpenProfile(!openProfile)}
               >
-                <FaUserCircle />
+                <FaUserCircle className="user-icon" />
                 <div className="user-text">
                   <div className="user-name">Admin</div>
                   <div className="user-role">Branch Admin</div>
                 </div>
-                <FaChevronDown />
+                <FaChevronDown
+                  className={`dropdown-arrow ${openProfile ? "rotate" : ""}`}
+                />
               </div>
 
               {openProfile && (
@@ -191,16 +204,19 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
               )}
             </div>
 
+            {/* LOGOUT */}
             <div className="login-switch clickable" onClick={handleLogout}>
-              <FaSignOutAlt /> Logout
+              <FaSignOutAlt />
+              <span className="login-text">Logout</span>
             </div>
           </>
         ) : (
           <div
             className="login-switch clickable"
-            onClick={() => navigate("/login/admin")}
+            onClick={() => navigate("/login")}
           >
-            <FaSignInAlt /> Login
+            <FaSignInAlt />
+            <span className="login-text">Login</span>
           </div>
         )}
       </div>

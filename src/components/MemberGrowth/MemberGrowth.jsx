@@ -26,11 +26,11 @@ const MemberGrowth = () => {
   useEffect(() => {
     const fetchYearGrowth = async () => {
       try {
-        const res = await API.get("/dashboard/member-growth");
+        const res = await axiosInstance.get("/dashboard/member-growth");
 
         const raw = Array.isArray(res.data)
           ? res.data
-          : res.data.data || [];
+          : res.data?.data || [];
 
         const formatted = raw.map((count, index) => ({
           month: months[index],
@@ -53,10 +53,11 @@ const MemberGrowth = () => {
 
     const fetchMonthGrowth = async () => {
       try {
-        const res = await API.get("/dashboard/member-growth/month");
+        const res = await axiosInstance.get(
+          "/dashboard/member-growth/month"
+        );
 
         const list = Array.isArray(res.data) ? res.data : [];
-
         setMonthData(list);
       } catch (err) {
         console.error("Month growth fetch failed", err);
@@ -93,8 +94,8 @@ const MemberGrowth = () => {
       </div>
 
       {/* CHART */}
-      <div className="chart-wrapper" style={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="chart-wrapper">
+        <ResponsiveContainer width="100%" height={300}>
           <AreaChart
             data={view === "year" ? yearData : monthData}
             margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
@@ -106,14 +107,33 @@ const MemberGrowth = () => {
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.05)"
+            />
+
             <XAxis
               dataKey={view === "year" ? "month" : "week"}
+              stroke="#9ca3af"
               tickLine={false}
               axisLine={false}
             />
-            <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-            <Tooltip />
+
+            <YAxis
+              stroke="#9ca3af"
+              tickLine={false}
+              axisLine={false}
+              allowDecimals={false}
+            />
+
+            <Tooltip
+              contentStyle={{
+                background: "#11151c",
+                border: "none",
+                borderRadius: "8px",
+                color: "#fff",
+              }}
+            />
 
             <Area
               type="monotone"

@@ -4,16 +4,21 @@ const axiosInstance = axios.create({
   baseURL: "http://localhost:5001/api",
 });
 
-/* 🔐 AUTO ATTACH JWT TOKEN */
+/* 🔐 AUTO ATTACH JWT TOKEN (SAFE) */
 axiosInstance.interceptors.request.use(
-  (req) => {
-    const token = localStorage.getItem("token");
+  (config) => {
+    // Try all common token keys (prevents silent bugs)
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("adminToken");
 
     if (token) {
-      req.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
-    return req;
+    return config;
   },
   (error) => Promise.reject(error)
 );

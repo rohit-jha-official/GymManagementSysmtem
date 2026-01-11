@@ -23,7 +23,7 @@ const memberSchema = new mongoose.Schema(
 
     paidAmount: { type: Number, default: 0 },
     dueAmount: { type: Number, default: 0 },
-
+    lastPaymentDate: { type: Date },
     isRenewed: { type: Boolean, default: false },
 
     rfid: {

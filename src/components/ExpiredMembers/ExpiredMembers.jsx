@@ -18,14 +18,14 @@ export default function ExpiredMembers() {
   const [showRenew, setShowRenew] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  /* 🔹 FETCH EXPIRED MEMBERS (JWT + Branch safe) */
+  /* 🔹 FETCH EXPIRED MEMBERS (JWT + Branch Safe) */
   const fetchExpiredMembers = async () => {
     try {
       setLoading(true);
 
       const res = await axiosInstance.get("/members/expired");
-
       const list = Array.isArray(res.data) ? res.data : [];
+
       setExpiredMembers(list);
     } catch (error) {
       console.error(
@@ -75,7 +75,7 @@ export default function ExpiredMembers() {
           ) : (
             expiredMembers.map((m) => (
               <div className="table-row" key={m._id}>
-                {/* 👤 MEMBER */}
+                {/* MEMBER */}
                 <div className="member-info">
                   <div className="avatar">
                     {m.photo ? (
@@ -87,24 +87,24 @@ export default function ExpiredMembers() {
                   <div className="member-name">{m.fullName}</div>
                 </div>
 
-                {/* 📞 CONTACT */}
+                {/* CONTACT */}
                 <div>
                   <div>{m.phone}</div>
                   <small>{m.email || "-"}</small>
                 </div>
 
-                {/* 📄 PLAN */}
+                {/* PLAN */}
                 <div>{m.plan?.name || m.plan || "-"}</div>
 
-                {/* 📅 EXPIRED DATE */}
+                {/* EXPIRED DATE */}
                 <div>{formatDate(m.expiryDate)}</div>
 
-                {/* ⏱️ DAYS EXPIRED */}
+                {/* DAYS EXPIRED */}
                 <div className="days-expired">
                   {m.daysExpired} day{m.daysExpired !== 1 ? "s" : ""}
                 </div>
 
-                {/* ⚙️ ACTIONS */}
+                {/* ACTIONS */}
                 <div className="actions">
                   <a href={`tel:${m.phone}`} className="call-btn">
                     <FaPhoneAlt size={13} /> Call

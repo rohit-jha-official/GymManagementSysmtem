@@ -1,8 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../utils/axiosInstance";   // 🔥 use JWT client
+import axiosInstance from "../../utils/axiosInstance";
 import "./Settings.css";
-import { FaUser } from "react-icons/fa";
+
+import {
+  FaUser,
+  FaKey,
+  FaWifi,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
+import { MdWifiOff } from "react-icons/md";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -10,10 +18,11 @@ const Settings = () => {
   /* ================= AUTH PROTECTION ================= */
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login/admin");
-    }
+    if (!token) navigate("/login/admin");
   }, [navigate]);
+
+  /* ================= TABS ================= */
+  const [activeTab, setActiveTab] = useState("admin");
 
   /* ================= ADMIN DATA ================= */
   const [adminData, setAdminData] = useState({
@@ -54,7 +63,6 @@ const Settings = () => {
   const handleSaveProfile = async () => {
     try {
       const res = await axiosInstance.put("/admin/update", adminData);
-
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
       alert("Profile updated successfully");
     } catch (error) {
@@ -66,7 +74,6 @@ const Settings = () => {
   const handleChangePassword = async () => {
     try {
       await axiosInstance.put("/admin/change-password", passwordData);
-
       alert("Password changed successfully");
       setPasswordData({ currentPassword: "", newPassword: "" });
     } catch (error) {
@@ -74,73 +81,148 @@ const Settings = () => {
     }
   };
 
+  /* ================= DEVICE STATE ================= */
+  const [devices, setDevices] = useState([
+    { name: "Entry Gate", desc: "Main entrance RFID scanner", online: true },
+    { name: "Exit Gate", desc: "Exit door RFID scanner", online: true },
+    { name: "Backup Scanner", desc: "Secondary RFID device", online: false },
+    { name: "Attendance Terminal", desc: "Reception check-in device", online: true },
+  ]);
+
+  const toggleDevice = (index) => {
+    const updated = [...devices];
+    updated[index].online = !updated[index].online;
+    setDevices(updated);
+  };
+
   return (
     <div className="settings-page">
+      {/* HEADER */}
       <div className="settings-header">
         <h1>Settings</h1>
         <p>Manage your account and system settings</p>
       </div>
 
-      <div className="settings-card">
-        <h2>
+      {/* TABS */}
+      {/* <div className="settings-tabs">
+        <button
+          className={activeTab === "admin" ? "active" : ""}
+          onClick={() => setActiveTab("admin")}
+        >
           <FaUser /> Admin Account
-        </h2>
-        <p className="sub-text">Update your admin account details</p>
+        </button>
 
-        <div className="form-grid">
-          <div>
-            <label>Full Name</label>
-            <input name="name" value={adminData.name} onChange={handleAdminChange} />
-          </div>
+        <button
+          className={activeTab === "api" ? "active" : ""}
+          onClick={() => setActiveTab("api")}
+        >
+          <FaKey /> API Keys
+        </button>
 
-          <div>
-            <label>Email Address</label>
-            <input value={adminData.email} disabled />
-          </div>
+        <button
+          className={activeTab === "device" ? "active" : ""}
+          onClick={() => setActiveTab("device")}
+        >
+          <FaWifi /> Devices
+        </button>
+      </div> */}
 
-          <div>
-            <label>Phone Number</label>
-            <input name="phone" value={adminData.phone} onChange={handleAdminChange} />
-          </div>
+      <div className="settings-card">
+        {/* ================= ADMIN ACCOUNT ================= */}
+        {activeTab === "admin" && (
+          <>
+            <h2><FaUser /> Admin Account</h2>
+            <p className="sub-text">Update your admin account details</p>
 
-          <div>
-            <label>Gym Name</label>
-            <input name="gymName" value={adminData.gymName} onChange={handleAdminChange} />
-          </div>
-        </div>
+            <div className="form-grid">
+              <div>
+                <label>Full Name</label>
+                <input name="name" value={adminData.name} onChange={handleAdminChange} />
+              </div>
 
-        <h3>Change Password</h3>
-        <div className="form-grid">
-          <div>
-            <label>Current Password</label>
-            <input
-              type="password"
-              name="currentPassword"
-              value={passwordData.currentPassword}
-              onChange={handlePasswordChange}
-            />
-          </div>
+              <div>
+                <label>Email Address</label>
+                <input value={adminData.email} disabled />
+              </div>
 
-          <div>
-            <label>New Password</label>
-            <input
-              type="password"
-              name="newPassword"
-              value={passwordData.newPassword}
-              onChange={handlePasswordChange}
-            />
-          </div>
-        </div>
+              <div>
+                <label>Phone Number</label>
+                <input name="phone" value={adminData.phone} onChange={handleAdminChange} />
+              </div>
 
-        <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
-          <button className="primary-btn" onClick={handleSaveProfile}>
-            Save Changes
-          </button>
+              <div>
+                <label>Gym Name</label>
+                <input name="gymName" value={adminData.gymName} onChange={handleAdminChange} />
+              </div>
+            </div>
 
-          <button className="primary-btn" onClick={handleChangePassword}>
-            Update Password
-          </button>
-        </div>
+            <h3>Change Password</h3>
+            <div className="form-grid">
+              <div>
+                <label>Current Password</label>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+                />
+              </div>
+
+              <div>
+                <label>New Password</label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
+              <button className="primary-btn" onClick={handleSaveProfile}>
+                Save Changes
+              </button>
+              <button className="primary-btn" onClick={handleChangePassword}>
+                Update Password
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ================= API TAB ================= */}
+        {activeTab === "api" && (
+          <>
+            <h2><FaKey /> API Access</h2>
+            <p className="sub-text">API keys will be available here (coming soon)</p>
+          </>
+        )}
+
+        {/* ================= DEVICE TAB ================= */}
+        {activeTab === "device" && (
+          <>
+            <h2><FaWifi /> Device Status</h2>
+
+            <div className="device-list">
+              {devices.map((d, i) => (
+                <div className="device-card" key={i}>
+                  <div>
+                    <h4>{d.name}</h4>
+                    <p>{d.desc}</p>
+                  </div>
+
+                  <button
+                    className={d.online ? "online" : "offline"}
+                    onClick={() => toggleDevice(i)}
+                  >
+                    {d.online ? <FaWifi /> : <MdWifiOff />}
+                    {d.online ? "Online" : "Offline"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -26,12 +26,12 @@ const MembershipPlans = () => {
 
   const navigate = useNavigate();
 
-  /* ✅ FETCH PLANS */
+  /* =========================
+     FETCH PLANS
+     ========================= */
   const fetchPlans = async () => {
     try {
-      const res = await axiosInstance.get(
-        "/membership-plans"
-      );
+      const res = await axiosInstance.get("/membership-plans");
 
       const formattedPlans = res.data.map((p) => ({
         _id: p._id,
@@ -61,19 +61,40 @@ const MembershipPlans = () => {
     fetchPlans();
   }, []);
 
-  /* ✅ UPDATE PLAN */
+  /* =========================
+     SAVE EDITED PLAN (INSTANT UI UPDATE)
+     ========================= */
   const handleSavePlan = async (updatedPlan) => {
     try {
+      // 🔹 Backend update
       await axiosInstance.put(
         `/membership-plans/${updatedPlan._id}`,
         {
           price: updatedPlan.price,
+          features: updatedPlan.features,
           isPopular: updatedPlan.isPopular,
           isPremium: updatedPlan.isPremium,
         }
       );
 
-      fetchPlans();
+      // 🔹 Update UI instantly
+      setPlans((prevPlans) =>
+        prevPlans.map((p) =>
+          p._id === updatedPlan._id
+            ? {
+                ...p,
+                price: updatedPlan.price,
+                features: updatedPlan.features,
+                badge: updatedPlan.isPremium
+                  ? "premium"
+                  : updatedPlan.isPopular
+                  ? "popular"
+                  : null,
+              }
+            : p
+        )
+      );
+
       setEditingPlan(null);
     } catch (error) {
       alert(
@@ -98,10 +119,7 @@ const MembershipPlans = () => {
       {/* HEADER */}
       <div className="page-header">
         <h1>Membership Plans</h1>
-        <p>
-          Manage gym membership plans and
-          pricing
-        </p>
+        <p>Manage gym membership plans and pricing</p>
       </div>
 
       {/* PLANS GRID */}
@@ -112,22 +130,13 @@ const MembershipPlans = () => {
           </p>
         ) : (
           plans.map((plan) => (
-            <div
-              key={plan._id}
-              className="plan-card"
-            >
-              <div className="plan-icon">
-                {plan.icon}
-              </div>
+            <div key={plan._id} className="plan-card">
+              <div className="plan-icon">{plan.icon}</div>
 
               <h2>{plan.name}</h2>
-              <p className="duration">
-                {plan.duration}
-              </p>
+              <p className="duration">{plan.duration}</p>
 
-              <div className="price">
-                ₹{plan.price}
-              </div>
+              <div className="price">₹{plan.price}</div>
 
               <ul className="features">
                 {plan.features.map((f, i) => (
@@ -153,9 +162,7 @@ const MembershipPlans = () => {
 
               <button
                 className="edit-btn"
-                onClick={() =>
-                  setEditingPlan(plan)
-                }
+                onClick={() => setEditingPlan(plan)}
               >
                 Edit Plan
               </button>
@@ -196,9 +203,7 @@ const MembershipPlans = () => {
       {editingPlan && (
         <EditPlanModal
           plan={editingPlan}
-          onClose={() =>
-            setEditingPlan(null)
-          }
+          onClose={() => setEditingPlan(null)}
           onSave={handleSavePlan}
         />
       )}

@@ -33,8 +33,7 @@ export default function ResetPassword() {
       );
 
       setMessage(
-        res.data?.message ||
-          "Password reset successful"
+        res.data?.message || "Password reset successful"
       );
 
       setTimeout(() => {
@@ -91,11 +90,7 @@ export default function ResetPassword() {
         {/* NEW PASSWORD */}
         <div className="password-field">
           <input
-            type={
-              showNewPassword
-                ? "text"
-                : "password"
-            }
+            type={showNewPassword ? "text" : "password"}
             placeholder="New password"
             value={newPassword}
             onChange={(e) =>
@@ -120,26 +115,18 @@ export default function ResetPassword() {
         {/* CONFIRM PASSWORD */}
         <div className="password-field">
           <input
-            type={
-              showConfirmPassword
-                ? "text"
-                : "password"
-            }
+            type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm new password"
             value={confirmPassword}
             onChange={(e) =>
-              setConfirmPassword(
-                e.target.value
-              )
+              setConfirmPassword(e.target.value)
             }
             required
           />
           <span
             className="eye-icon"
             onClick={() =>
-              setShowConfirmPassword(
-                (prev) => !prev
-              )
+              setShowConfirmPassword((prev) => !prev)
             }
           >
             {showConfirmPassword ? (
@@ -151,16 +138,12 @@ export default function ResetPassword() {
         </div>
 
         <button type="submit" disabled={loading}>
-          {loading
-            ? "Resetting..."
-            : "Reset Password"}
+          {loading ? "Resetting..." : "Reset Password"}
         </button>
       </form>
 
       {message && (
-        <p className="auth-message">
-          {message}
-        </p>
+        <p className="auth-message">{message}</p>
       )}
     </div>
   );

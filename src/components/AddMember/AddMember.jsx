@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const AddMember = () => {
   const navigate = useNavigate();
 
-  /* ================= BASIC STATE ================= */
+  /* ================= FORM STATE ================= */
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ const AddMember = () => {
   const [genderOpen, setGenderOpen] = useState(false);
   const genderOptions = ["Male", "Female", "Other"];
 
-  /* ================= MEMBERSHIP PLANS ================= */
+  /* ================= MEMBERSHIP ================= */
   const [plans, setPlans] = useState([]);
   const [planOpen, setPlanOpen] = useState(false);
   const [membershipPlan, setMembershipPlan] = useState("Select a plan");
@@ -37,7 +37,7 @@ const AddMember = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cameraOn, setCameraOn] = useState(false);
 
-  /* ================= FETCH PLANS (AUTH BASED) ================= */
+  /* ================= FETCH PLANS (JWT SAFE) ================= */
   useEffect(() => {
     const fetchPlans = async () => {
       try {
@@ -48,7 +48,6 @@ const AddMember = () => {
         setPlans([]);
       }
     };
-
     fetchPlans();
   }, []);
 
@@ -60,7 +59,11 @@ const AddMember = () => {
       }
 
       setCameraOn(true);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
+
       videoRef.current.srcObject = stream;
     } catch {
       alert("Camera permission denied");
@@ -111,7 +114,7 @@ const AddMember = () => {
     reader.readAsDataURL(file);
   };
 
-  /* ================= DOB ================= */
+  /* ================= DOB (FIXED) ================= */
   const handleDobChange = (e) => {
     const value = e.target.value;
     setDobInput(value);
@@ -121,13 +124,15 @@ const AddMember = () => {
       return;
     }
 
+    const [yyyy, mm, dd] = value.split("-");
+    if (yyyy.length !== 4) return;
+
     const selectedDate = new Date(value);
     if (selectedDate > new Date()) {
       alert("DOB cannot be a future date");
       return;
     }
 
-    const [yyyy, mm, dd] = value.split("-");
     setDob(`${dd}/${mm}/${yyyy}`);
   };
 
@@ -176,7 +181,7 @@ const AddMember = () => {
 
         <div className="photo-section">
           <div className="photo-circle" onClick={handleCameraClick}>
-            {photoPreview ? <img src={photoPreview} alt="profile" /> : <FaCamera />}
+            {photoPreview ? <img src={photoPreview} alt="Profile" /> : <FaCamera />}
           </div>
 
           <button className="btn-secondary" onClick={handleUploadClick}>
@@ -193,7 +198,7 @@ const AddMember = () => {
 
           {cameraOn && (
             <div className="camera-box">
-              <video ref={videoRef} autoPlay />
+              <video ref={videoRef} autoPlay playsInline />
               <button className="btn-secondary" onClick={capturePhoto}>
                 Capture
               </button>
@@ -211,9 +216,18 @@ const AddMember = () => {
 
         <div className="form-grid">
           <input placeholder="Full Name *" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-          <input placeholder="Phone Number *" value={phone} maxLength={10} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} />
+          <input placeholder="Phone Number *" value={phone} maxLength={10} inputMode="numeric" onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} />
           <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input type={dobType} placeholder="DOB" value={dobInput} onFocus={() => setDobType("date")} onBlur={() => !dobInput && setDobType("text")} onChange={handleDobChange} />
+
+          <input
+            type={dobType}
+            placeholder="DOB"
+            value={dobInput}
+            onFocus={() => setDobType("date")}
+            onBlur={() => !dobInput && setDobType("text")}
+            onChange={handleDobChange}
+            max={new Date().toISOString().split("T")[0]}
+          />
 
           <div className="dropdown">
             <div className="dropdown-header" onClick={() => setGenderOpen(!genderOpen)}>
@@ -252,7 +266,7 @@ const AddMember = () => {
                 <li className="disabled">No plans available</li>
               ) : (
                 plans.map((p) => (
-                  <li key={p._id} onClick={() => { setMembershipPlan(p.name); setSelectedPlanId(p._id); setPlanOpen(false); }}>
+                  <li key={p._id} onClick={() => { setMembershipPlan(p.name); setSelectedPlanId(p.planId); setPlanOpen(false); }}>
                     {p.name} – ₹{p.price}
                   </li>
                 ))

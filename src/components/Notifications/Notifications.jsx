@@ -3,15 +3,12 @@ import "./Notifications.css";
 import {
   FaBell,
   FaExclamationTriangle,
-  FaInfoCircle,
-  FaCheckCircle,
   FaTimesCircle,
 } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 
 const Notifications = () => {
   const [activeTab] = useState("expiry"); // fixed to expiry
-
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -20,6 +17,7 @@ const Notifications = () => {
     fetchStats();
   }, []);
 
+  /* 🔹 FETCH EXPIRY NOTIFICATIONS */
   const fetchNotifications = async () => {
     try {
       const res = await axiosInstance.get("/notifications/expiry");
@@ -33,6 +31,7 @@ const Notifications = () => {
     }
   };
 
+  /* 🔹 FETCH UNREAD COUNT */
   const fetchStats = async () => {
     try {
       const res = await axiosInstance.get("/notifications/stats");
@@ -46,6 +45,7 @@ const Notifications = () => {
     }
   };
 
+  /* 🔹 MARK ALL AS READ */
   const markAllAsRead = async () => {
     try {
       await axiosInstance.patch("/notifications/mark-read");
@@ -81,18 +81,12 @@ const Notifications = () => {
           <>
             <h2>Membership Expiry Alerts</h2>
             <h3>
-              Notifications about expiring and expired
-              memberships
+              Notifications about expiring and expired memberships
             </h3>
 
             {notifications.length === 0 && (
-              <p
-                style={{
-                  color: "#aaa",
-                  marginTop: "12px",
-                }}
-              >
-                No new notifications 🎉
+              <p style={{ color: "#aaa", marginTop: "12px" }}>
+                No new notifications 
               </p>
             )}
 

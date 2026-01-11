@@ -9,7 +9,7 @@ const ProtectedRoute = () => {
   }
 
   // 🔒 If not logged in → redirect to admin login
-  return <Navigate to="/login/admin" replace />;
+  return <Navigate to="/login/" replace />;
 };
 
 export default ProtectedRoute;

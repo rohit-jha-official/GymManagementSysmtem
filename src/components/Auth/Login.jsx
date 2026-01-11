@@ -24,7 +24,7 @@ const Login = () => {
     if (token) navigate("/dashboard");
   }, [navigate]);
 
-  /* 🔄 INPUT */
+  /* 🔄 INPUT HANDLER */
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -49,13 +49,17 @@ const Login = () => {
       /* ✅ STORE AUTH */
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("admin", JSON.stringify(res.data.admin));
-      localStorage.setItem("branchId", res.data.admin.branchId);
+
+      // preserve branch isolation
+      if (res.data.admin?.branchId) {
+        localStorage.setItem("branchId", res.data.admin.branchId);
+      }
 
       navigate("/dashboard");
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-          "Invalid login credentials. Please try again."
+          "Admin login failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -64,7 +68,7 @@ const Login = () => {
 
   return (
     <div className="auth-page">
-      {/* LEFT BRAND */}
+      {/* BRAND */}
       <div className="auth-logo">
         <div className="logo-text">
           <h3>
@@ -77,20 +81,12 @@ const Login = () => {
             CLUB GYM
           </h3>
 
-          <span className="tag-color-2 tag-rrr">
-            XPRESS
-          </span>
+          <span className="tag-color-2 tag-rrr">XPRESS</span>
 
           <p className="logo-tagline">
-            <span className="tag-color-1">
-              THE LARGEST
-            </span>{" "}
-            <span className="tag-color-2">
-              GYM CHAIN
-            </span>{" "}
-            <span className="tag-color-3">
-              IN INDIA
-            </span>
+            <span className="tag-color-1">THE LARGEST</span>{" "}
+            <span className="tag-color-2">GYM CHAIN</span>{" "}
+            <span className="tag-color-3">IN INDIA</span>
           </p>
         </div>
       </div>
@@ -127,35 +123,23 @@ const Login = () => {
 
             <span
               className="password-toggle"
-              onClick={() =>
-                setShowPassword(!showPassword)
-              }
+              onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? (
-                <FaEyeSlash />
-              ) : (
-                <FaEye />
-              )}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
 
           {/* ERROR */}
-          {error && (
-            <p className="error-text">
-              {error}
-            </p>
-          )}
+          {error && <p className="error-text">{error}</p>}
 
-          {/* ACTION */}
+          {/* ACTION ROW */}
           <div className="login-row">
             <button
               type="submit"
               className="primary-btn"
               disabled={loading}
             >
-              {loading
-                ? "Logging in..."
-                : "LOGIN"}
+              {loading ? "Logging in..." : "LOGIN"}
             </button>
 
             <label className="checkbox">
@@ -170,16 +154,9 @@ const Login = () => {
           </div>
         </form>
 
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "16px",
-          }}
-        >
-          <Link
-            to="/forgot-password"
-            className="forgot-link"
-          >
+        {/* FORGOT PASSWORD */}
+        <div style={{ textAlign: "center", marginTop: "16px" }}>
+          <Link to="/forgot-password" className="forgot-link">
             Forgot Password?
           </Link>
         </div>

@@ -1,7 +1,12 @@
 import "./AllMembers.css";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FiSearch, FiMoreVertical, FiDownload, FiTrash2 } from "react-icons/fi";
+import {
+  FiSearch,
+  FiMoreVertical,
+  FiDownload,
+  FiTrash2,
+} from "react-icons/fi";
 import { MdOutlineVisibility } from "react-icons/md";
 import axiosInstance from "../../utils/axiosInstance";
 import ViewMemberDetails from "../ViewMemberDetails/ViewMemberDetails";
@@ -23,21 +28,24 @@ const AllMembers = () => {
 
   const [search, setSearch] = useState("");
   const [planFilter, setPlanFilter] = useState("all");
-  const [openActionIndex, setOpenActionIndex] = useState(null);
   const [planOpen, setPlanOpen] = useState(false);
+  const [openActionIndex, setOpenActionIndex] = useState(null);
 
   const [showView, setShowView] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
+  /* 🔹 READ URL PARAMS */
   const [searchParams] = useSearchParams();
   const planFromUrl = searchParams.get("plan");
   const typeFromUrl = searchParams.get("type");
 
-  /* 🔹 FETCH MEMBERS */
+  /* 🔹 FETCH MEMBERS (JWT SAFE) */
   const fetchMembers = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get("/members");
+      const res = await axiosInstance.get(
+        `/members?search=${search}`
+      );
       setMembers(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Fetch members failed:", error);
@@ -49,26 +57,16 @@ const AllMembers = () => {
 
   useEffect(() => {
     fetchMembers();
-  }, []);
+  }, [search]);
 
   /* 🔹 URL PLAN SYNC */
   useEffect(() => {
     if (planFromUrl) setPlanFilter(planFromUrl);
   }, [planFromUrl]);
 
-  /* 🔹 FILTER */
+  /* 🔹 FILTER LOGIC */
   useEffect(() => {
     let data = [...members];
-
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      data = data.filter(
-        (m) =>
-          m.fullName?.toLowerCase().includes(q) ||
-          m.phone?.includes(q) ||
-          m.rfid?.includes(q)
-      );
-    }
 
     if (planFilter !== "all") {
       data = data.filter(
@@ -85,9 +83,9 @@ const AllMembers = () => {
     }
 
     setFilteredMembers(data);
-  }, [members, search, planFilter, typeFromUrl]);
+  }, [members, planFilter, typeFromUrl]);
 
-  /* 🔹 CLOSE MENU */
+  /* 🔹 CLOSE ACTION DROPDOWN */
   useEffect(() => {
     const close = () => setOpenActionIndex(null);
     document.addEventListener("click", close);
@@ -95,10 +93,9 @@ const AllMembers = () => {
       document.removeEventListener("click", close);
   }, []);
 
-  /* 🔹 DELETE */
+  /* 🔹 DELETE MEMBER */
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this member?"))
-      return;
+    if (!window.confirm("Delete this member?")) return;
 
     try {
       await axiosInstance.delete(`/members/${id}`);
@@ -113,7 +110,7 @@ const AllMembers = () => {
     }
   };
 
-  /* 🔹 CSV EXPORT */
+  /* 🔹 EXPORT CSV */
   const exportToCSV = () => {
     if (!filteredMembers.length) return;
 
@@ -128,12 +125,12 @@ const AllMembers = () => {
     ];
 
     const rows = filteredMembers.map((m) => [
-      m.fullName || "",
+      m.fullName || m.name || "",
       m.phone || "",
       m.email || "",
       m.plan?.name || m.plan || "",
       m.rfid || "",
-      formatDate(m.expiryDate),
+      formatDate(m.expiryDate || m.endDate),
       m.status || "",
     ]);
 
@@ -145,8 +142,8 @@ const AllMembers = () => {
     const blob = new Blob([csv], {
       type: "text/csv;charset=utf-8;",
     });
-    const url = URL.createObjectURL(blob);
 
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "members.csv";
@@ -156,6 +153,7 @@ const AllMembers = () => {
 
   return (
     <div className="members-page">
+      {/* HEADER */}
       <div className="members-header">
         <div>
           <h1>All Members</h1>
@@ -174,6 +172,7 @@ const AllMembers = () => {
         </button>
       </div>
 
+      {/* TOOLBAR */}
       <div className="members-toolbar">
         <div className="search-box">
           <FiSearch />
@@ -186,17 +185,22 @@ const AllMembers = () => {
           />
         </div>
 
+        {/* PLAN FILTER */}
         <div className="filter-dropdown">
           <div
             className="filter-selected"
-            onClick={() =>
-              setPlanOpen(!planOpen)
-            }
+            onClick={() => setPlanOpen(!planOpen)}
           >
             {planFilter === "all"
               ? "All Plans"
-              : planFilter}{" "}
-            ▾
+              : planFilter}
+            <span
+              className={`dropdown-icon ${
+                planOpen ? "open" : ""
+              }`}
+            >
+              ▾
+            </span>
           </div>
 
           {planOpen && (
@@ -210,11 +214,12 @@ const AllMembers = () => {
               ].map((p) => (
                 <div
                   key={p}
+                  className={`filter-option ${
+                    planFilter === p ? "active" : ""
+                  }`}
                   onClick={() => {
                     setPlanFilter(
-                      p === "All Plans"
-                        ? "all"
-                        : p
+                      p === "All Plans" ? "all" : p
                     );
                     setPlanOpen(false);
                   }}
@@ -227,6 +232,7 @@ const AllMembers = () => {
         </div>
       </div>
 
+      {/* TABLE */}
       <div className="members-table">
         <div className="table-head">
           <span>Member</span>
@@ -241,27 +247,19 @@ const AllMembers = () => {
         {loading ? (
           <p className="loading">Loading...</p>
         ) : filteredMembers.length === 0 ? (
-          <p className="loading">
-            No members found
-          </p>
+          <p className="loading">No members found</p>
         ) : (
           filteredMembers.map((m, i) => (
-            <div
-              className="table-row"
-              key={m._id}
-            >
+            <div className="table-row" key={m._id}>
               <div className="member">
                 <div className="avatar">
                   {m.photo ? (
-                    <img
-                      src={m.photo}
-                      alt=""
-                    />
+                    <img src={m.photo} alt="" />
                   ) : (
-                    m.fullName?.charAt(0)
+                    (m.fullName || m.name)?.charAt(0)
                   )}
                 </div>
-                <span>{m.fullName}</span>
+                <span>{m.fullName || m.name}</span>
               </div>
 
               <div className="contact">
@@ -271,9 +269,8 @@ const AllMembers = () => {
 
               <span>{m.plan?.name || m.plan}</span>
               <span>{m.rfid || "-"}</span>
-              <span>
-                {formatDate(m.expiryDate)}
-              </span>
+              <span>{formatDate(m.expiryDate || m.endDate)}</span>
+
               <span
                 className={`status ${m.status?.toLowerCase()}`}
               >
@@ -282,13 +279,13 @@ const AllMembers = () => {
 
               <div
                 className="action-wrapper"
-                onClick={(e) =>
-                  e.stopPropagation()
-                }
+                onClick={(e) => e.stopPropagation()}
               >
                 <FiMoreVertical
                   onClick={() =>
-                    setOpenActionIndex(i)
+                    setOpenActionIndex(
+                      openActionIndex === i ? null : i
+                    )
                   }
                 />
 
@@ -302,15 +299,12 @@ const AllMembers = () => {
                         setOpenActionIndex(null);
                       }}
                     >
-                      <MdOutlineVisibility /> View
-                      Details
+                      <MdOutlineVisibility /> View Details
                     </div>
 
                     <div
                       className="action-item delete"
-                      onClick={() =>
-                        handleDelete(m._id)
-                      }
+                      onClick={() => handleDelete(m._id)}
                     >
                       <FiTrash2 /> Delete
                     </div>

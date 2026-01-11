@@ -6,6 +6,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import RecentActivity from "../RecentActivity/Recentactivity";
 import MemberGrowth from "../MemberGrowth/MemberGrowth";
 import ExpiringSoon from "../Expiring Soon/ExpiringSoon";
+// import TodaysAttendance from "../Todays Attendance/TodaysAttendance";
 
 import {
   FaUsers,
@@ -20,6 +21,7 @@ import {
 const Dashboard = () => {
   const navigate = useNavigate();
 
+  /* 🔹 DASHBOARD STATS */
   const [stats, setStats] = useState({
     totalMembers: 0,
     newRegistrations: 0,
@@ -27,6 +29,7 @@ const Dashboard = () => {
     renewalRate: 0,
   });
 
+  /* 🔹 EXPIRING COUNT */
   const [expiringCount, setExpiringCount] = useState(0);
 
   /* ======================
@@ -35,14 +38,13 @@ const Dashboard = () => {
   const fetchStats = async () => {
     try {
       const res = await axiosInstance.get("/dashboard/stats");
-
       const data = res.data || {};
 
       setStats({
-        totalMembers: data.totalMembers || 0,
-        newRegistrations: data.newRegistrations || 0,
-        totalRevenue: data.totalRevenue || 0,
-        renewalRate: data.renewalRate || 0,
+        totalMembers: data.totalMembers ?? 0,
+        newRegistrations: data.newRegistrations ?? 0,
+        totalRevenue: data.totalRevenue ?? 0,
+        renewalRate: data.renewalRate ?? 0,
       });
     } catch (error) {
       console.error(
@@ -59,7 +61,7 @@ const Dashboard = () => {
   }, []);
 
   /* ======================
-     EXPIRING COUNT
+     EXPIRING MEMBERS COUNT
   ======================= */
   const fetchExpiringCount = async () => {
     try {
@@ -91,14 +93,13 @@ const Dashboard = () => {
 
   return (
     <>
+      {/* HEADER */}
       <div className="dashboard-header">
         <h1>Dashboard</h1>
-        <p>
-          Welcome back! Here's what's happening at
-          your gym.
-        </p>
+        <p>Welcome back! Here's what's happening at your gym.</p>
       </div>
 
+      {/* TOP STATS */}
       <div className="stats-grid top-stats">
         <div className="stat-card">
           <div>
@@ -114,40 +115,39 @@ const Dashboard = () => {
         <div className="stat-card">
           <div>
             <h4>Today's Check-ins</h4>
-            <span className="coming-soon">
-              Coming soon
-            </span>
+            <span className="coming-soon">Coming soon</span>
           </div>
-          <FaUserCheck className="icon green" />
+          <FaUserCheck
+            className="icon green clickable"
+            onClick={() => navigate("/attendance/total-checkins")}
+          />
         </div>
 
         <div className="stat-card">
           <div>
             <h4>Active RFID Cards</h4>
-            <span className="coming-soon">
-              Coming soon
-            </span>
+            <span className="coming-soon">Coming soon</span>
           </div>
-          <FaIdCard className="icon orange" />
+          <FaIdCard
+            className="icon orange clickable"
+            onClick={() => navigate("/rfid")}
+          />
         </div>
 
         <div className="stat-card">
           <div>
             <h4>Expiring Soon</h4>
             <h2>{expiringCount}</h2>
-            <span className="danger">
-              Next 5 days
-            </span>
+            <span className="danger">Next 5 days</span>
           </div>
           <FaExclamationTriangle
             className="icon yellow clickable"
-            onClick={() =>
-              navigate("/members/expiring")
-            }
+            onClick={() => navigate("/members/expiring")}
           />
         </div>
       </div>
 
+      {/* BOTTOM STATS */}
       <div className="stats-grid bottom-stats">
         <div className="stat-card">
           <div>
@@ -175,13 +175,16 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* GROWTH + RECENT ACTIVITY */}
       <div className="dashboard-row">
         <MemberGrowth />
         <RecentActivity />
       </div>
 
+      {/* EXPIRING + ATTENDANCE */}
       <div className="dashboard-row">
         <ExpiringSoon />
+        {/* <TodaysAttendance /> */}
       </div>
     </>
   );

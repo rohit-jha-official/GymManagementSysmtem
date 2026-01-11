@@ -30,13 +30,6 @@ import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 
 function App() {
-
-  useEffect(() => {
-    // 🔴 FORCE LOGIN EVERY TIME APP STARTS (ADMIN ONLY)
-    localStorage.removeItem("token");
-    localStorage.removeItem("admin");
-  }, []);
-
   return (
     <BrowserRouter>
       <Routes>
@@ -86,5 +79,6 @@ function App() {
     </BrowserRouter>
   );
 }
+
 
 export default App;

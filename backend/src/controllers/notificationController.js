@@ -1,10 +1,15 @@
 import Notification from "../models/notification.js";
+import mongoose from "mongoose";
 
 /* ================================
    🔔 GET EXPIRY NOTIFICATIONS
 ================================ */
 export const getExpiryNotifications = async (req, res) => {
   try {
+    if (!req.user?.branchId) {
+      return res.status(400).json({ message: "Branch context missing" });
+    }
+
     const notifications = await Notification.find({
       branchId: req.user.branchId,
       type: "expiry",
@@ -24,6 +29,10 @@ export const getExpiryNotifications = async (req, res) => {
 ================================ */
 export const getNotificationStats = async (req, res) => {
   try {
+    if (!req.user?.branchId) {
+      return res.status(400).json({ message: "Branch context missing" });
+    }
+
     const unreadExpiry = await Notification.countDocuments({
       branchId: req.user.branchId,
       type: "expiry",
@@ -52,6 +61,10 @@ export const getNotificationStats = async (req, res) => {
 ================================ */
 export const markAllAsRead = async (req, res) => {
   try {
+    if (!req.user?.branchId) {
+      return res.status(400).json({ message: "Branch context missing" });
+    }
+
     await Notification.updateMany(
       {
         branchId: req.user.branchId,
@@ -61,7 +74,9 @@ export const markAllAsRead = async (req, res) => {
       { $set: { isRead: true } }
     );
 
-    res.status(200).json({ message: "All notifications marked as read" });
+    res.status(200).json({
+      message: "All notifications marked as read",
+    });
   } catch (error) {
     console.error("Mark read error:", error);
     res.status(500).json({ message: error.message });
@@ -73,12 +88,34 @@ export const markAllAsRead = async (req, res) => {
 ================================ */
 export const deleteNotification = async (req, res) => {
   try {
-    await Notification.findOneAndDelete({
-      _id: req.params.id,
+    const { id } = req.params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid notification ID",
+      });
+    }
+
+    if (!req.user?.branchId) {
+      return res.status(400).json({
+        message: "Branch context missing",
+      });
+    }
+
+    const notification = await Notification.findOneAndDelete({
+      _id: id,
       branchId: req.user.branchId,
     });
 
-    res.status(200).json({ message: "Notification deleted" });
+    if (!notification) {
+      return res.status(404).json({
+        message: "Notification not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Notification deleted",
+    });
   } catch (error) {
     console.error("Delete notification error:", error);
     res.status(500).json({ message: error.message });

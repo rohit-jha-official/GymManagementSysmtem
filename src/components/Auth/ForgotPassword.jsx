@@ -26,7 +26,7 @@ export default function ForgotPassword() {
     } catch (error) {
       setMessage(
         error?.response?.data?.message ||
-          "Something went wrong. Please try again."
+          "Something went wrong. Try again."
       );
     } finally {
       setLoading(false);

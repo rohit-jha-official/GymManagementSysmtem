@@ -43,7 +43,7 @@ const getTypeClass = (type) => {
 const RecentActivity = () => {
   const [activities, setActivities] = useState([]);
 
-  /* 🔹 LOAD ACTIVITIES (JWT based) */
+  /* 🔹 LOAD ACTIVITIES (JWT SAFE) */
   useEffect(() => {
     const fetchRecentActivity = async () => {
       try {
@@ -60,7 +60,8 @@ const RecentActivity = () => {
 
   /* 🔹 DELETE ACTIVITY */
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this activity?")) return;
+    const confirmDelete = window.confirm("Delete this activity?");
+    if (!confirmDelete) return;
 
     try {
       await axiosInstance.delete(`/activity/${id}`);

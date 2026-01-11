@@ -15,11 +15,12 @@ import {
   FaCog,
   FaChevronDown,
 } from "react-icons/fa";
-import axiosInstance from "../../utils/axiosInstance"; // 🔥 USE JWT CLIENT
+import axiosInstance from "../../utils/axiosInstance";
 
 const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
 
+  /* COUNTS */
   const [expiringCount, setExpiringCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
 
@@ -29,7 +30,7 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
     rfid: false,
   });
 
-  /* 🔔 FETCH COUNTS (JWT BASED) */
+  /* FETCH COUNTS */
   useEffect(() => {
     const fetchCounts = async () => {
       try {
@@ -59,16 +60,21 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const toggleMenu = (menu) => {
-    setOpenMenu((prev) => ({ ...prev, [menu]: !prev[menu] }));
-  };
-
-  /* AUTO OPEN MEMBERS MENU */
+  /* AUTO OPEN SUBMENUS */
   useEffect(() => {
     if (location.pathname.startsWith("/members")) {
-      setOpenMenu((prev) => ({ ...prev, members: true }));
+      setOpenMenu((p) => ({ ...p, members: true }));
+    }
+    if (location.pathname.startsWith("/attendance")) {
+      setOpenMenu((p) => ({ ...p, attendance: true }));
+    }
+    if (location.pathname.startsWith("/rfid")) {
+      setOpenMenu((p) => ({ ...p, rfid: true }));
     }
   }, [location.pathname]);
+
+  const toggleMenu = (menu) =>
+    setOpenMenu((p) => ({ ...p, [menu]: !p[menu] }));
 
   const handleNavClick = () => setSidebarOpen(false);
 
@@ -79,16 +85,28 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
       )}
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+
         {/* LOGO */}
         <div className="logo">
-          <h3>
-            THE WELLNESS <img src={logo} alt="Gym" className="logo-image" /> CLUB
-          </h3>
-          <p className="logo-tagline">THE LARGEST GYM CHAIN IN INDIA</p>
+          <div className="logo-text">
+            <h3>
+              THE WELLNESS{" "}
+              <img src={logo} alt="Gym" className="logo-image" /> CLUB
+            </h3>
+            <span className="tag-color-2 tag-xx">XPRESS</span>
+            <p className="logo-tagline">
+              <span className="tag-color-1">THE LARGEST</span>{" "}
+              <span className="tag-color-2">GYM CHAIN</span>{" "}
+              <span className="tag-color-3">IN INDIA</span>
+            </p>
+          </div>
         </div>
 
-        <NavLink to="/dashboard" onClick={handleNavClick} className="nav-item">
-          <FaHome /> <span>Dashboard</span>
+        {/* DASHBOARD */}
+        <NavLink to="/dashboard" onClick={handleNavClick}
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+          <FaHome />
+          <span>Dashboard</span>
         </NavLink>
 
         {/* MEMBERS */}
@@ -100,41 +118,69 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
 
         {openMenu.members && (
           <div className="submenu">
-            <NavLink to="/members" onClick={handleNavClick} className="submenu-item">
+            <NavLink to="/members" end onClick={handleNavClick}
+              className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaUsers /> All Members
             </NavLink>
 
-            <NavLink to="/members/add" onClick={handleNavClick} className="submenu-item">
+            <NavLink to="/members/add" onClick={handleNavClick}
+              className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaUserPlus /> Add New Member
             </NavLink>
 
-            <NavLink to="/members/expired" onClick={handleNavClick} className="submenu-item">
+            <NavLink to="/members/expired" onClick={handleNavClick}
+              className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaUserTimes /> Expired
             </NavLink>
 
-            <NavLink to="/members/expiring" onClick={handleNavClick} className="submenu-item">
+            <NavLink to="/members/expiring" onClick={handleNavClick}
+              className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaClock /> Expiring Soon
               {expiringCount > 0 && <span className="count">{expiringCount}</span>}
             </NavLink>
           </div>
         )}
 
-        <NavLink to="/plan" onClick={handleNavClick} className="nav-item">
-          <FaIdCard /> <span>Membership Plans</span>
+        {/* ATTENDANCE (COMING SOON) */}
+        <div className="nav-item">
+          <FaCalendarCheck />
+          <span>Attendance (coming soon)</span>
+        </div>
+
+        {/* MEMBERSHIP */}
+        <NavLink to="/plan" onClick={handleNavClick}
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+          <FaIdCard />
+          <span>Membership Plans</span>
         </NavLink>
 
-        <NavLink to="/due" onClick={handleNavClick} className="nav-item">
-          <FaCreditCard /> <span>Due Payments</span>
+        <NavLink to="/due" onClick={handleNavClick}
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+          <FaCreditCard />
+          <span>Due Payments</span>
         </NavLink>
 
+        {/* RFID (COMING SOON) */}
+        <div className="nav-item">
+          <FaIdCard />
+          <span>RFID Cards (coming soon)</span>
+        </div>
+
+        {/* FOOTER */}
         <div className="nav-footer">
-          <NavLink to="/notifications" onClick={handleNavClick} className="nav-item">
-            <FaBell /> <span>Notifications</span>
-            {notificationCount > 0 && <span className="count">{notificationCount}</span>}
+          <NavLink to="/notifications" onClick={handleNavClick}
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+            <FaBell />
+            <span>Notifications</span>
+            {notificationCount > 0 && (
+              <span className="count">{notificationCount}</span>
+            )}
           </NavLink>
 
-          <NavLink to="/settings" onClick={handleNavClick} className="nav-item">
-            <FaCog /> <span>Settings</span>
+          <NavLink to="/settings" onClick={handleNavClick}
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+            <FaCog />
+            <span>Settings</span>
           </NavLink>
         </div>
       </aside>

@@ -3,6 +3,7 @@ import { FaSearch, FaWallet, FaCheckCircle } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 
+/* 🔹 DATE FORMATTER */
 const formatDate = (date) =>
   new Date(date).toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -15,11 +16,12 @@ const DuePayments = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
+  /* 🔹 MODAL STATE */
   const [showModal, setShowModal] = useState(false);
   const [selected, setSelected] = useState(null);
   const [paidAmount, setPaidAmount] = useState("");
 
-  /* FETCH DUE PAYMENTS (JWT + Branch Safe) */
+  /* 🔹 FETCH DUE PAYMENTS (JWT + BRANCH SAFE) */
   const fetchDuePayments = async () => {
     try {
       setLoading(true);
@@ -41,14 +43,14 @@ const DuePayments = () => {
     fetchDuePayments();
   }, []);
 
-  /* OPEN MODAL */
+  /* 🔹 OPEN MODAL */
   const openCollectModal = (item) => {
     setSelected(item);
     setPaidAmount("");
     setShowModal(true);
   };
 
-  /* SUBMIT PAYMENT */
+  /* 🔹 SUBMIT PAYMENT */
   const handleSubmit = async () => {
     if (!paidAmount || Number(paidAmount) <= 0) {
       return alert("Enter valid amount");
@@ -57,9 +59,7 @@ const DuePayments = () => {
     try {
       await axiosInstance.put(
         `/members/collect-due/${selected._id}`,
-        {
-          paidAmount: Number(paidAmount),
-        }
+        { paidAmount: Number(paidAmount) }
       );
 
       setShowModal(false);
@@ -72,12 +72,14 @@ const DuePayments = () => {
     }
   };
 
+  /* 🔹 FILTER */
   const filteredDues = dues.filter(
     (d) =>
       d.fullName?.toLowerCase().includes(search.toLowerCase()) ||
       d.phone?.includes(search)
   );
 
+  /* 🔹 TOTAL */
   const totalDue = filteredDues.reduce(
     (sum, d) => sum + (d.dueAmount || 0),
     0
@@ -145,17 +147,13 @@ const DuePayments = () => {
                 <span>{item.fullName}</span>
               </div>
 
-              <span>{item.planName}</span>
+              <span>{item.planName || item.plan}</span>
               <span>₹ {item.dueAmount}</span>
-              <span>
-                {formatDate(item.expiryDate)}
-              </span>
+              <span>{formatDate(item.expiryDate)}</span>
 
               <button
                 className="collect-btn"
-                onClick={() =>
-                  openCollectModal(item)
-                }
+                onClick={() => openCollectModal(item)}
               >
                 Collect
               </button>
@@ -164,23 +162,21 @@ const DuePayments = () => {
         )}
       </div>
 
-      {/* COLLECT MODAL */}
+      {/* 🔁 COLLECT MODAL */}
       {showModal && selected && (
         <div className="modal-overlay">
           <div className="modal-box">
             <h3>Collect Payment</h3>
 
             <p>
-              <strong>Name:</strong>{" "}
-              {selected.fullName}
+              <strong>Name:</strong> {selected.fullName}
             </p>
             <p>
               <strong>Plan:</strong>{" "}
-              {selected.planName}
+              {selected.planName || selected.plan}
             </p>
             <p>
-              <strong>Due:</strong> ₹{" "}
-              {selected.dueAmount}
+              <strong>Due:</strong> ₹ {selected.dueAmount}
             </p>
             <p>
               <strong>Expiry:</strong>{" "}
@@ -201,9 +197,7 @@ const DuePayments = () => {
                 Submit
               </button>
               <button
-                onClick={() =>
-                  setShowModal(false)
-                }
+                onClick={() => setShowModal(false)}
               >
                 Cancel
               </button>

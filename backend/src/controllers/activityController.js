@@ -20,8 +20,7 @@ export const getRecentActivity = async (req, res) => {
       .lean();
 
     /* 🔹 DYNAMIC EXPIRY ACTIVITIES (ONLY THIS BRANCH) */
-    const expiringMembers = await Member.find({
-      branchId: req.branchId,
+    const expiringMembers = await Member.find({branchId: req.user.branchId,
       expiryDate: { $gte: today, $lte: next3Days },
     }).lean();
 
@@ -55,7 +54,7 @@ export const deleteActivity = async (req, res) => {
 
     const activity = await Activity.findOneAndDelete({
       _id: id,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     if (!activity) {

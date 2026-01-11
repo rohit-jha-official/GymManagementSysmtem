@@ -10,18 +10,18 @@ export const getDashboardStats = async (req, res) => {
 
     /* 👥 TOTAL MEMBERS */
     const totalMembers = await Member.countDocuments({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     /* 🆕 NEW MEMBERS THIS MONTH */
     const newRegistrations = await Member.countDocuments({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       createdAt: { $gte: startOfMonth },
     });
 
     /* 💰 MONTHLY REVENUE (NEW + RENEWALS) */
     const revenueMembers = await Member.find({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       $or: [
         { createdAt: { $gte: startOfMonth } },
         { isRenewed: true, updatedAt: { $gte: startOfMonth } },
@@ -37,7 +37,7 @@ export const getDashboardStats = async (req, res) => {
 
     /* 🔁 RENEWAL RATE */
     const renewedMembers = await Member.countDocuments({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       isRenewed: true,
     });
 
@@ -68,7 +68,7 @@ export const getMemberGrowth = async (req, res) => {
     const growth = await Member.aggregate([
       {
         $match: {
-          branchId: req.branchId,
+          branchId: req.user.branchId,
           createdAt: {
             $gte: new Date(`${year}-01-01`),
             $lte: new Date(`${year}-12-31`),
@@ -109,7 +109,7 @@ export const getMonthlyGrowth = async (req, res) => {
     const data = await Member.aggregate([
       {
         $match: {
-          branchId: req.branchId,
+          branchId: req.user.branchId,
           createdAt: { $gte: startOfMonth, $lte: endOfMonth },
         },
       },

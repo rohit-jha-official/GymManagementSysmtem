@@ -6,7 +6,7 @@ import Notification from "../models/notification.js";
 export const getExpiryNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       type: "expiry",
     })
       .populate("memberId", "fullName phone")
@@ -25,13 +25,13 @@ export const getExpiryNotifications = async (req, res) => {
 export const getNotificationStats = async (req, res) => {
   try {
     const unreadExpiry = await Notification.countDocuments({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       type: "expiry",
       isRead: false,
     });
 
     const expiringSoonCount = await Notification.countDocuments({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       type: "expiry",
       subtype: "expiring",
       isRead: false,
@@ -54,7 +54,7 @@ export const markAllAsRead = async (req, res) => {
   try {
     await Notification.updateMany(
       {
-        branchId: req.branchId,
+        branchId: req.user.branchId,
         type: "expiry",
         isRead: false,
       },
@@ -75,7 +75,7 @@ export const deleteNotification = async (req, res) => {
   try {
     await Notification.findOneAndDelete({
       _id: req.params.id,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     res.status(200).json({ message: "Notification deleted" });

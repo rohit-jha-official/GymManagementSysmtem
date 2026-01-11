@@ -39,7 +39,7 @@ export const addMember = async (req, res) => {
       dob,
       address,
       planId: plan._id,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       rfid,
       photo,
       startDate,
@@ -69,7 +69,7 @@ export const getAllMembers = async (req, res) => {
   try {
     const today = new Date();
 
-    const members = await Member.find({ branchId: req.branchId })
+    const members = await Member.find({ branchId: req.user.branchId })
       .populate("planId")
       .sort({ createdAt: -1 });
 
@@ -99,7 +99,7 @@ export const getExpiredMembers = async (req, res) => {
     const today = new Date();
 
     const members = await Member.find({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       expiryDate: { $lt: today },
     }).populate("planId");
 
@@ -127,7 +127,7 @@ export const getExpiringSoon = async (req, res) => {
     next7.setDate(today.getDate() + 7);
 
     const members = await Member.find({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       expiryDate: { $gte: today, $lte: next7 },
     }).populate("planId");
 
@@ -155,7 +155,7 @@ export const renewMember = async (req, res) => {
 
     const member = await Member.findOne({
       _id: req.params.id,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     if (!member) return res.status(404).json({ message: "Member not found" });
@@ -163,7 +163,7 @@ export const renewMember = async (req, res) => {
     const plan = await Plan.findById(planId);
     const override = await PlanOverride.findOne({
       planId,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     if (!plan || !override)
@@ -188,7 +188,7 @@ export const renewMember = async (req, res) => {
     await Activity.create({
       type: "payment",
       message: `Membership renewed: ${member.fullName}`,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     res.json({ message: "Renewed successfully", member });
@@ -203,7 +203,7 @@ export const renewMember = async (req, res) => {
 export const getDueMembers = async (req, res) => {
   try {
     const members = await Member.find({
-      branchId: req.branchId,
+      branchId: req.user.branchId,
       dueAmount: { $gt: 0 },
     }).populate("planId");
 
@@ -230,7 +230,7 @@ export const collectDuePayment = async (req, res) => {
 
     const member = await Member.findOne({
       _id: req.params.id,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     if (!member) return res.status(404).json({ message: "Member not found" });
@@ -262,7 +262,7 @@ export const deleteMember = async (req, res) => {
   try {
     const member = await Member.findOneAndDelete({
       _id: req.params.id,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     });
 
     if (!member) return res.status(404).json({ message: "Member not found" });
@@ -280,7 +280,7 @@ export const getMemberById = async (req, res) => {
   try {
     const member = await Member.findOne({
       _id: req.params.id,
-      branchId: req.branchId,
+      branchId: req.user.branchId,
     }).populate("planId");
 
     if (!member) return res.status(404).json({ message: "Member not found" });
@@ -307,7 +307,7 @@ export const updateMember = async (req, res) => {
     if (allowExpiryEdit && expiryDate) update.expiryDate = new Date(expiryDate);
 
     const member = await Member.findOneAndUpdate(
-      { _id: req.params.id, branchId: req.branchId },
+      { _id: req.params.id, branchId: req.user.branchId },
       { $set: update },
       { new: true }
     );

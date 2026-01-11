@@ -1,0 +1,185 @@
+.expiring-page {
+  padding: 25px;
+  color: #fff;
+}
+
+/* Header */
+.expiring-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.expiring-header h2 {
+  margin-bottom: 4px;
+}
+
+.expiring-header p {
+  color: #aaa;
+}
+
+.reminder-btn {
+  background: #ff8c00;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Table */
+.expiring-table {
+  background: #151922;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.2fr 1fr 1.2fr 1fr 1.5fr;
+  padding: 14px 18px;
+  align-items: center;
+}
+
+.table-head {
+  background: #1c2230;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.table-row {
+  border-top: 1px solid #222;
+}
+
+.table-row:hover {
+  background: #1b2030;
+}
+
+.member-name {
+  font-weight: 600;
+}
+
+/* Days Left Badges */
+.days-left {
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* .d-1,
+.d-2 {
+  background: #5a1b1b;
+  color: #ff4d4f;
+}
+
+.d-3,
+.d-4 {
+  background: #5c4a1b;
+  color: #ffcc00;
+}
+
+.d-5,
+.d-6,
+.d-7 {
+  background: #2e4b2e;
+  color: #7dff7d;
+} */
+ .days-badge {
+  font-weight: 600;
+}
+
+/* 🔴 Expiring soon (3 days or less) */
+.days-badge.danger-text {
+  color: #ff4d4f;        /* red text */
+  background: none;     /* remove box */
+  padding: 0;           /* no pill */
+}
+
+/* 🟢 Normal days */
+.days-badge.normal-text {
+  color: #bfbfbf;       /* neutral text */
+}
+
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.call-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.renew-btn {
+  background: #ff8c00;
+  color: #000;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+/* TABLE SCROLL WRAPPER */
+.expiring-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* KEEP TABLE WIDTH FIXED */
+.expiring-table {
+  min-width: 950px; /* 🔥 key line */
+  background: #151922;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media (max-width: 1000px) {
+  .expiring-page {
+    padding: 18px;
+  }
+
+  .expiring-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .reminder-btn {
+    align-self: flex-end;
+  }
+}
+
+.avatar {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50%;
+  background: #1e293b;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  overflow: hidden;
+  font-size: 20px !important;
+}
+
+/* Photo inside avatar */
+.avatar img {
+  width: 100px !important;
+  height: 100px !important;
+  object-fit: contain;        /* 🔥 fills circle perfectly */
+  border-radius: 50%;
+  display: block;
+}

@@ -1,0 +1,355 @@
+/* PAGE */
+.auth-page {
+  min-height: 100vh;
+  position: relative;
+  background: linear-gradient(145deg, #0b0f14, #141922);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  overflow: hidden;
+}
+
+/* BACKGROUND SHAPES */
+.auth-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.02) 25%,
+      transparent 60%
+    ),
+    linear-gradient(
+      300deg,
+      rgba(34, 197, 94, 0.12),
+      transparent 55%
+    );
+  pointer-events: none;
+}
+
+.auth-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.65)
+  );
+  pointer-events: none;
+}
+
+/* LOGO */
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 40px 0 80px;
+  z-index: 1;
+}
+
+.logo-icon {
+  font-size: 22px;
+}
+
+.auth-logo h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.auth-logo p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* CARD */
+.auth-card {
+  width: 420px;
+  padding: 42px 36px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 1;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+/* SUBTITLE */
+.auth-subtext {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* INPUT */
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input-box svg {
+  opacity: 0.6;
+}
+
+.input-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+}
+
+/* PASSWORD TOGGLE */
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.password-toggle:hover {
+  color: #fff;
+}
+
+/* ACTION ROW */
+.login-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+/* CHECKBOX */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 15px;
+  height: 15px;
+  accent-color: #f59e0b;
+}
+
+/* BUTTON */
+.primary-btn {
+  width: 100%;
+  padding: 12px 30px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.primary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* FORGOT PASSWORD LINK */
+.forgot-link {
+  display: inline-block;
+  margin-top: 18px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fa8a00;
+  text-decoration: none;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.forgot-link:hover {
+  color: #ff9f1a;
+  transform: translateY(-1px);
+}
+
+/* MESSAGE */
+.auth-message {
+  margin-top: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #fa8a00;
+}
+/**************************************************/
+
+
+.tag-rrr{
+  position: relative !important;
+  right: -227px !important;
+  font-size: 15px !important;
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* COLORS */
+.tag-color-1 {
+  color: #f7941d !important; /* Orange */
+}
+
+.tag-color-2 {
+  color: #ffffff !important; /* White */
+}
+
+.tag-color-3 {
+  color: #1aa84b !important; /* Green */
+}
+/* .auth-logo{
+  font-size: 10px;
+} */
+
+/* ================= AUTH PAGE LAYOUT ================= */
+
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f1115, #141824);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  padding: 20px;
+}
+
+/* ================= CARD ================= */
+
+.auth-form {
+  width: 100%;
+  max-width: 380px;
+  background: #0f1115;
+  padding: 30px 26px;
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ================= TITLE ================= */
+
+.auth-page h2 {
+  margin-bottom: 20px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* ================= INPUTS ================= */
+
+.auth-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  background: #131820;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.auth-form input::placeholder {
+  color: #9ca3af;
+}
+
+.auth-form input:focus {
+  border-color: #ff8a00;
+  box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.2);
+}
+
+/* ================= BUTTON ================= */
+
+.auth-form button {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ff8a00, #ff6a00);
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(255, 138, 0, 0.35);
+}
+
+.auth-form button:active {
+  transform: translateY(0);
+}
+
+/* ================= MESSAGE ================= */
+
+.auth-message {
+  margin-top: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #ff8a00;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 480px) {
+  .auth-form {
+    padding: 24px 20px;
+  }
+
+  .auth-page h2 {
+    font-size: 22px;
+  }
+}
+/* PASSWORD FIELD WITH EYE ICON */
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 44px; /* space for eye icon */
+}
+
+.eye-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.eye-icon:hover {
+  color: #ff8a00;
+}

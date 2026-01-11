@@ -1,0 +1,495 @@
+/* PAGE */
+.due-page {
+  padding: 28px;
+  color: #fff;
+}
+
+/* HEADER */
+.due-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.due-header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.due-header p {
+  margin: 6px 0 0;
+  color: #9ca3af;
+}
+
+/* TOTAL DUE CARD */
+.total-due-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2a0e0e, #1a0b0b);
+  border: 1px solid rgba(255, 0, 0, 0.25);
+}
+
+.total-due-card svg {
+  font-size: 26px;
+  color: #ff3b3b;
+}
+
+.total-due-card span {
+  font-size: 13px;
+  color: #fca5a5;
+}
+
+.total-due-card strong {
+  display: block;
+  font-size: 20px;
+  color: #ff3b3b;
+}
+
+/* SEARCH */
+.due-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0f131a;
+  border: 1px solid #1f2937;
+  border-radius: 14px;
+  padding: 12px 16px;
+  width: 90%;
+  margin-bottom: 22px;
+}
+
+.due-search svg {
+  color: #9ca3af;
+}
+
+.due-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: hsl(0, 0%, 100%);
+  width: 100% ;
+  font-size: 14px;
+}
+
+/* TABLE */
+.due-table {
+  background: linear-gradient(180deg, #0f1115, #0b0e13);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #1f2937;
+  width: 90%;
+}
+
+/* TABLE HEAD */
+.table-head-1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  padding: 14px 18px;
+  background: #131720;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* ROW */
+.table-row-1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  padding: 14px 18px;
+  align-items: center;
+  border-top: 1px solid #1f2937;
+}
+
+.due-amount {
+  color: #ff8a00;
+  font-weight: 600;
+}
+
+.collect-btn {
+  background: #ff8a00;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.empty-state svg {
+  font-size: 42px;
+  color: #22c55e;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 16px;
+}
+.collect-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.table-head {
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr 1fr 1.5fr 1fr;
+  padding: 14px 22px;
+  background: #131720;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr 1fr 1.5fr 1fr;
+  padding: 16px 22px;
+  align-items: center;
+  border-top: 1px solid #1f2937;
+}
+.member-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* AVATAR CIRCLE */
+.avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff8a00, #ff6a00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000;
+  font-size: 14px;
+}
+
+.member-name {
+  font-weight: 600;
+  color: #f9fafb;
+}
+/* ===============================
+   OVERLAY
+================================ */
+.collect-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300000;
+}
+
+/* ===============================
+   MODAL CONTAINER
+================================ */
+.collect-modal {
+  width: 420px;
+  background: linear-gradient(180deg, #0e1218, #020617);
+  border-radius: 18px;
+  padding: 24px;
+  color: #fff;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===============================
+   HEADER
+================================ */
+.collect-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collect-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.collect-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.collect-close:hover {
+  color: #f48a00;
+}
+
+/* ===============================
+   INFO CARD
+================================ */
+.collect-info {
+  background: #111827;
+  border-radius: 14px;
+  padding: 14px;
+  margin: 18px 0;
+}
+
+.collect-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.collect-row span:first-child {
+  color: #9ca3af;
+}
+
+.collect-row strong {
+  color: #fff;
+}
+
+.collect-row:last-child strong {
+  color: #f48a00;
+}
+
+/* ===============================
+   INPUT
+================================ */
+.collect-input {
+  margin-top: 14px;
+}
+
+.collect-input label {
+  font-size: 13px;
+  color: #9ca3af;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.collect-input input {
+  width: 100%;
+  background: #020617;
+  border: 1px solid rgba(244, 138, 0, 0.4);
+  border-radius: 12px;
+  padding: 12px;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+}
+
+.collect-input input:focus {
+  border-color: #f48a00;
+  box-shadow: 0 0 0 2px rgba(244, 138, 0, 0.2);
+}
+
+/* ===============================
+   FOOTER BUTTONS
+================================ */
+.collect-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.collect-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* CANCEL */
+.collect-btn.cancel {
+  background: #111827;
+  color: #fff;
+}
+
+.collect-btn.cancel:hover {
+  background: #1f2937;
+}
+
+/* CONFIRM */
+.collect-btn.confirm {
+  background: #f48a00;
+  color: #000;
+}
+
+.collect-btn.confirm:hover {
+  background: #ff9f1c;
+  transform: translateY(-1px);
+}
+
+/* ===============================
+   ERROR / WARNING
+================================ */
+.collect-warning {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ef4444;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 480px) {
+  .collect-modal {
+    width: 92%;
+  }
+}
+/* ===============================
+   COLLECT PAYMENT MODAL OVERLAY
+================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999; /* 🔥 ABOVE EVERYTHING */
+}
+
+/* ===============================
+   MODAL BOX
+================================ */
+.modal-box {
+  width: 420px;
+  background: linear-gradient(180deg, #0e1218, #020617);
+  border-radius: 18px;
+  padding: 22px;
+  color: #fff;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+  animation: modalPop 0.25s ease;
+}
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===============================
+   MODAL CONTENT
+================================ */
+.modal-box h3 {
+  margin-top: 0;
+  color: #fbbf24;
+}
+
+.modal-box p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #e5e7eb;
+}
+
+.modal-box p strong {
+  color: #9ca3af;
+}
+
+/* INPUT */
+.modal-box input {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #020617;
+  border: 1px solid rgba(244, 138, 0, 0.4);
+  color: #fff;
+  outline: none;
+  font-size: 15px;
+}
+
+.modal-box input:focus {
+  border-color: #f48a00;
+  box-shadow: 0 0 0 2px rgba(244, 138, 0, 0.2);
+}
+
+/* ACTION BUTTONS */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+/* SUBMIT */
+.modal-actions button:first-child {
+  background: #f48a00;
+  color: #000;
+}
+
+.modal-actions button:first-child:hover {
+  background: #ff9f1c;
+}
+
+/* CANCEL */
+.modal-actions button:last-child {
+  background: #111827;
+  color: #fff;
+}
+
+.modal-actions button:last-child:hover {
+  background: #1f2937;
+}
+
+.avatar-circle {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b45309, #92400e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  overflow: hidden;
+  font-size: 20px !important;
+}
+
+
+.avatar-circle img {
+  width: 100px !important;
+  height: 100px !important;
+  object-fit: contain;       
+  border-radius: 50%;
+  display: block;
+}

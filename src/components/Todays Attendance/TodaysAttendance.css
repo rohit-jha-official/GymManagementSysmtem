@@ -55,7 +55,7 @@
 .attendance-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 25px;
 }
 
 /* ROW */

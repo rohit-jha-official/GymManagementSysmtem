@@ -1,21 +1,24 @@
+/* TOPBAR */
 .topbar {
+  width: 100%;
   height: 70px;
   background: linear-gradient(to bottom, #0b0f14, #0e1218);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 25px;
+  padding: 0 56px 0px 25px;
+  box-sizing: border-box;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* SEARCH */
+/* SEARCH (RESTORED) */
 .topbar-search {
   display: flex;
   align-items: center;
   background: #131820;
   border-radius: 12px;
-  padding: 10px 14px;
-  width: 420px;
+  padding: 10px 14px;     /* original padding */
+  width: 420px;           /* 🔥 original width */
 }
 
 .topbar-search input {
@@ -24,6 +27,7 @@
   outline: none;
   color: #fff;
   width: 100%;
+  height: 20px;
   margin-left: 10px;
   font-size: 14px;
 }
@@ -77,6 +81,10 @@
 }
 
 /* USER */
+.user-wrapper {
+  position: relative;
+}
+
 .user-info {
   display: flex;
   align-items: center;
@@ -100,14 +108,426 @@
   color: #8b949e;
 }
 
+/* USER DROPDOWN */
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);   /* spacing preserved */
+  right: 0;
+  width: 180px;
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  overflow: hidden;
+}
 
+.dropdown-item {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #1f2937;
+}
+
+.notification,
+.user-info {
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.notification:hover,
+.user-info:hover {
+  background: rgba(210, 141, 31, 0.462);
+}
+/* LOGIN SWITCH ICON */
+.login-switch {
+  position: relative;
+  margin-left: 10px;
+  margin-right: 6px;
+}
+
+.login-icon {
+  font-size: 16px;
+  color: #ffffff; /* yellow like UI */
+  cursor: pointer;
+}
+
+/* LOGIN DROPDOWN */
+.login-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 140px;
+  background: #111827;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 2000;
+}
+
+.login-dropdown .dropdown-item {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-dropdown .dropdown-item:hover {
+  background: #fbbf24;
+  color: #000;
+}
+/*---------------------------------------------------------------------------------------------*/
+/* ===============================
+   TOPBAR BASE
+================================ */
 .topbar {
   width: 100%;
   height: 70px;
-  background: #0b0f14;
+  background: linear-gradient(to bottom, #0b0f14, #0e1218);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 25px;
+  padding: 0 28px;
   box-sizing: border-box;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+}
+
+/* ===============================
+   LEFT SECTION
+================================ */
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* MOBILE HAMBURGER */
+.mobile-menu-btn {
+  display: none;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ===============================
+   SEARCH BAR
+================================ */
+.topbar-search {
+  display: flex;
+  align-items: center;
+  background: #131820;
+  border-radius: 12px;
+  padding: 10px 14px;
+  width: 420px;
+}
+
+.topbar-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  width: 100%;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.search-icon {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ===============================
+   RIGHT SECTION
+================================ */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* TIME & DATE */
+.topbar-time {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+  color: #e5e7eb;
+  line-height: 1.2;
+}
+
+.topbar-time .time {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.topbar-time .date {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ===============================
+   NOTIFICATION
+================================ */
+.notification {
+  position: relative;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.notification .badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 999px;
+}
+
+/* ===============================
+   USER PROFILE
+================================ */
+.user-wrapper {
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.user-icon {
+  font-size: 22px;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.user-role {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.rotate {
+  transform: rotate(180deg);
+}
+
+/* ===============================
+   DROPDOWNS
+================================ */
+.user-dropdown,
+.login-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  background: #111827;
+  border-radius: 10px;
+  min-width: 180px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 2000;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #1f2933;
+}
+
+/* ===============================
+   LOGIN SWITCH
+================================ */
+.login-switch {
+  position: relative;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+/* TABLET */
+@media (max-width: 992px) {
+  .topbar-search {
+    width: 260px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .topbar-search {
+    display: none;
+  }
+
+  .user-text {
+    display: none;
+  }
+}
+/* ===============================
+   MOBILE FIX (IMPORTANT)
+================================ */
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0 16px;
+    height: auto;
+    min-height: 70px;
+  }
+
+  .topbar-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  /* Keep hamburger aligned */
+  .mobile-menu-btn {
+    display: block;
+    font-size: 22px;
+  }
+
+  /* Fix time alignment */
+  .topbar-time {
+    text-align: right;
+    max-width: 140px;
+  }
+
+  .topbar-time .time {
+    font-size: 13px;
+  }
+
+  .topbar-time .date {
+    font-size: 10px;
+  }
+
+  /* Hide text-heavy parts */
+  .user-text {
+    display: none;
+  }
+
+  /* Prevent icon overlap */
+  .notification {
+    margin-left: 6px;
+  }
+}
+.login-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.login-text {
+  font-size: 13px;
+}
+
+
+/* ===============================
+   TABLET (iPad) TOPBAR FIX
+================================ */
+@media (max-width: 1024px) and (min-width: 769px) {
+  /* Reduce search bar width */
+  .topbar-search {
+    width: 260px;
+    padding: 8px 12px;
+  }
+
+  /* Hide notification icon */
+  .notification {
+    display: none;
+  }
+
+  /* Slightly tighten spacing on right */
+  .topbar-right {
+    gap: 14px;
+  }
+
+  /* Adjust time text size slightly */
+  .topbar-time .time {
+    font-size: 13px;
+  }
+
+  .topbar-time .date {
+    font-size: 10px;
+  }
+}
+/* ===============================
+   SEARCH SUGGESTION DROPDOWN
+================================ */
+
+.topbar-search {
+  position: relative; /* REQUIRED for dropdown positioning */
+}
+
+/* Dropdown container */
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  background: #0f172a;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  overflow: hidden;
+  border: 1px solid #1f2937;
+}
+
+/* Each suggestion item */
+.search-item {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+/* Hover effect */
+.search-item:hover {
+  background: #fbbf24;
+  color: #000;
 }

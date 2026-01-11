@@ -81,8 +81,8 @@
 .table-head,
 .table-row {
   display: grid;
-  grid-template-columns: 1.4fr 2fr 1fr 1fr 1fr 1fr 0.5fr;
-  align-items: center;
+  grid-template-columns: 1.4fr 1.6fr 1fr 1fr 1fr 0.9fr 0.5fr !important;
+  place-items: normal;
   padding: 12px 10px;
 }
 
@@ -147,4 +147,212 @@
 .action-icon {
   cursor: pointer;
   color: #9ca3af;
+}
+/*----------------------------------------------------------------------*/
+
+
+/* ===============================
+   ACTION DROPDOWN
+================================ */
+.action-wrapper {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.action-icon {
+  cursor: pointer;
+  font-size: 18px;
+  color: #9ca3af;
+}
+
+.action-icon:hover {
+  color: #ffdf0e;
+}
+
+.action-dropdown {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: #0f172a;
+  border-radius: 14px;
+  padding: 8px;
+  min-width: 170px;
+  z-index: 1000;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #e5e7eb;
+}
+
+.action-item:hover {
+  background: rgba(245, 160, 4, 0.574);
+}
+
+.action-item.delete {
+  color: #ef4444;
+}
+
+.action-item.delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+/* TABLET */
+@media (max-width: 1000px) {
+  .search-box {
+    width: 220px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .members-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .members-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .members-table {
+    overflow-x: auto;
+  }
+
+  .table-head,
+  .table-row {
+    min-width: 820px;
+  }
+}
+/* Push actions slightly inward */
+.table-head span:last-child,
+.table-row > div:last-child {
+  padding-right: 14px;
+}
+.action-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: flex-end; /* align to right */
+  padding-right: 6px;        /* small inner gap */
+}
+.table-head,
+.table-row {
+  grid-template-columns: 
+    1.4fr 1.6fr 1fr 1fr 1fr 0.9fr 0.7fr;
+}
+.table-row > :last-child {
+    
+    left: -20px;
+}
+.table-row:last-child .action-dropdown {
+  top: auto;
+  bottom: -36px;
+}
+/* DROPDOWN WRAPPER */
+.filter-dropdown {
+  position: relative;
+  width: 160px;
+  font-size: 14px;
+}
+
+/* SELECTED VALUE */
+.filter-selected {
+  font-size: 20px;
+  background: #0f131a;
+  color: #ffffff;
+  padding: 10px 14px;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* OPTIONS CONTAINER */
+.filter-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #000000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  z-index: 20;
+}
+
+/* OPTION ITEM */
+.filter-option {
+  padding: 10px 14px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* HOVER + ACTIVE (ORANGE LIKE GENDER) */
+.filter-option:hover,
+.filter-option.active {
+  background: #f59e0b;
+  color: #000000;
+}
+/* SELECTED VALUE (flex for icon) */
+.filter-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  padding: 10px 14px;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* DROPDOWN ICON */
+.dropdown-icon {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+  color: #9ca3af;
+}
+
+/* ROTATE WHEN OPEN */
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+
+.avatar {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50%;
+  background: #1e293b;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  overflow: hidden;
+  font-size: 20px !important;
+}
+
+
+.avatar img {
+  width: 100px !important;
+  height: 100px !important;
+  object-fit: contain;       
+  border-radius: 50%;
+  display: block;
 }

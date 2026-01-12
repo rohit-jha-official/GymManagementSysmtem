@@ -2,7 +2,7 @@ import Member from "../models/member.js";
 import Plan from "../models/plan.js";
 import PlanOverride from "../models/planOverride.js";
 import Activity from "../models/activity.js";
-import MembershipPlan from "../models/membershipPlan.js";
+
 
 
 /* ======================================
@@ -177,9 +177,9 @@ export const getExpiringSoon = async (req, res) => {
 ====================================== */
 export const renewMember = async (req, res) => {
   try {
-    const { planId: membershipPlanId, paidAmount } = req.body;
+    const { planId, paidAmount } = req.body;
 
-    // 🔹 Find member
+    /* 🔹 Find member */
     const member = await Member.findOne({
       _id: req.params.id,
       branchId: req.user.branchId,
@@ -189,41 +189,51 @@ export const renewMember = async (req, res) => {
       return res.status(404).json({ message: "Member not found" });
     }
 
-    // 🔹 Validate MembershipPlan (THIS IS THE PLAN)
-    const membershipPlan = await MembershipPlan.findById(membershipPlanId);
-
-    if (!membershipPlan) {
-      return res
-        .status(400)
-        .json({ message: "Invalid plan" });
+    /* 🔹 Validate global plan (SAME AS ADD MEMBER) */
+    const plan = await Plan.findById(planId);
+    if (!plan) {
+      return res.status(400).json({ message: "Invalid plan selected" });
     }
 
-    // 🔹 Price & duration from membershipPlan
-    const planPrice = membershipPlan.price;
-    const durationDays = membershipPlan.durationDays;
+    /* 🔹 Validate branch override */
+    const override = await PlanOverride.findOne({
+      planId: plan._id,
+      branchId: req.user.branchId,
+    });
 
-    // 🔹 Calculate expiry
+    if (!override) {
+      return res
+        .status(400)
+        .json({ message: "Plan not available in this branch" });
+    }
+
+    /* 🔹 Calculate expiry */
     const baseDate =
-      member.expiryDate > new Date()
+      member.expiryDate && member.expiryDate > new Date()
         ? member.expiryDate
         : new Date();
 
     const newExpiry = new Date(baseDate);
-    newExpiry.setDate(newExpiry.getDate() + durationDays);
+    newExpiry.setDate(
+      newExpiry.getDate() + plan.durationDays
+    );
 
-    const paid = Number(paidAmount) || planPrice;
+    const paid = Number(paidAmount) || override.price;
 
-    // 🔹 Update member
-    member.planId = membershipPlan._id; // store membershipPlan id
+    /* 🔹 Update member */
+    member.planId = plan._id;        // SAME FIELD AS ADD MEMBER
     member.expiryDate = newExpiry;
     member.isRenewed = true;
     member.paidAmount = paid;
-    member.dueAmount = Math.max(planPrice - paid, 0);
+    member.dueAmount = Math.max(
+      override.price - paid,
+      0
+    );
     member.lastPaymentDate = new Date();
 
     await member.save();
 
-    res.json({
+    res.status(200).json({
       message: "Membership renewed successfully",
       member,
     });

@@ -91,7 +91,7 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
           <div className="logo-text">
             <h3>
               THE WELLNESS{" "}
-              <img src={logo} alt="Gym" className="logo-image" /> CLUB
+              <img src={logo} alt="Gym" className="logo-image" />CLUB GYM
             </h3>
             <span className="tag-color-2 tag-xx">XPRESS</span>
             <p className="logo-tagline">
@@ -136,7 +136,7 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
             <NavLink to="/members/expiring" onClick={handleNavClick}
               className={({ isActive }) => `submenu-item ${isActive ? "active" : ""}`}>
               <FaClock /> Expiring Soon
-              {expiringCount > 0 && <span className="count">{expiringCount}</span>}
+              {/* {expiringCount > 0 && <span className="count">{expiringCount}</span>} */}
             </NavLink>
           </div>
         )}
@@ -172,9 +172,9 @@ const SideNavBar = ({ sidebarOpen, setSidebarOpen }) => {
             className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
             <FaBell />
             <span>Notifications</span>
-            {notificationCount > 0 && (
+            {/* {notificationCount > 0 && (
               <span className="count">{notificationCount}</span>
-            )}
+            )} */}
           </NavLink>
 
           <NavLink to="/settings" onClick={handleNavClick}

@@ -8,7 +8,6 @@ import {
 import axiosInstance from "../../utils/axiosInstance";
 
 const Notifications = () => {
-  const [activeTab] = useState("expiry"); // fixed to expiry
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -20,7 +19,7 @@ const Notifications = () => {
   /* 🔹 FETCH EXPIRY NOTIFICATIONS */
   const fetchNotifications = async () => {
     try {
-      const res = await axiosInstance.get("/notifications/expiry");
+      const res = await axiosInstance.get("/notifications"); // ✅ FIXED
       setNotifications(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error(
@@ -48,7 +47,7 @@ const Notifications = () => {
   /* 🔹 MARK ALL AS READ */
   const markAllAsRead = async () => {
     try {
-      await axiosInstance.patch("/notifications/mark-read");
+      await axiosInstance.put("/notifications/read-all"); // ✅ FIXED
       setUnreadCount(0);
       fetchNotifications();
     } catch (error) {
@@ -63,60 +62,49 @@ const Notifications = () => {
     <div className="notifications-page">
       {/* HEADER */}
       <div className="notifications-header">
-        <div>
-          <h1>Notifications</h1>
-        </div>
+        <h1>Notifications</h1>
 
-        <button
-          className="mark-read-btn"
-          onClick={markAllAsRead}
-        >
-          <FaBell /> Mark All as Read
-        </button>
+        {unreadCount > 0 && (
+          <button className="mark-read-btn" onClick={markAllAsRead}>
+            <FaBell /> Mark All as Read
+          </button>
+        )}
       </div>
 
       {/* CONTENT */}
       <div className="notif-content">
-        {activeTab === "expiry" && (
-          <>
-            <h2>Membership Expiry Alerts</h2>
-            <h3>
-              Notifications about expiring and expired memberships
-            </h3>
+        <h2>Membership Expiry Alerts</h2>
+        <h3>Notifications about expiring and expired memberships</h3>
 
-            {notifications.length === 0 && (
-              <p style={{ color: "#aaa", marginTop: "12px" }}>
-                No new notifications 
-              </p>
+        {notifications.length === 0 && (
+          <p style={{ color: "#aaa", marginTop: "12px" }}>
+            No new notifications
+          </p>
+        )}
+
+        {notifications.map((n) => (
+          <div
+            key={n._id}
+            className={`notif-item ${
+              n.subtype === "expired" ? "danger" : "warning"
+            }`}
+          >
+            {n.subtype === "expired" ? (
+              <FaTimesCircle />
+            ) : (
+              <FaExclamationTriangle />
             )}
 
-            {notifications.map((n) => (
-              <div
-                key={n._id}
-                className={`notif-item ${
-                  n.subtype === "expired"
-                    ? "danger"
-                    : "warning"
-                }`}
-              >
-                {n.subtype === "expired" ? (
-                  <FaTimesCircle />
-                ) : (
-                  <FaExclamationTriangle />
-                )}
-
-                <div>
-                  <strong>
-                    {n.subtype === "expired"
-                      ? "Membership Expired"
-                      : "Membership Expiring"}
-                  </strong>
-                  <p>{n.message}</p>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
+            <div>
+              <strong>
+                {n.subtype === "expired"
+                  ? "Membership Expired"
+                  : "Membership Expiring"}
+              </strong>
+              <p>{n.message}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

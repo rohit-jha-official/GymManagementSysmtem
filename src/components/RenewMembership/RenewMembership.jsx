@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaSyncAlt, FaCheck } from "react-icons/fa";
-import axiosInstance from "../../utils/axiosInstance"; // 🔥 JWT client
+import axiosInstance from "../../utils/axiosInstance";
 import "./RenewMembership.css";
 
 const RenewMembership = ({ member, onClose }) => {
@@ -11,7 +11,7 @@ const RenewMembership = ({ member, onClose }) => {
   const [loadingPlans, setLoadingPlans] = useState(true);
 
   /* ===============================
-     FETCH PLANS (JWT + BRANCH SAFE)
+     FETCH PLANS (PlanOverride)
      =============================== */
   useEffect(() => {
     const fetchPlans = async () => {
@@ -30,7 +30,7 @@ const RenewMembership = ({ member, onClose }) => {
   }, []);
 
   /* ===============================
-     SELECTED PLAN OBJECT
+     SELECTED PLAN (PlanOverride)
      =============================== */
   const selectedPlan = plans.find(
     (p) => p._id === selectedPlanId
@@ -39,10 +39,7 @@ const RenewMembership = ({ member, onClose }) => {
   /* ===============================
      CALCULATIONS
      =============================== */
-  const totalAmount = selectedPlan
-    ? Number(selectedPlan.price)
-    : 0;
-
+  const totalAmount = selectedPlan ? Number(selectedPlan.price) : 0;
   const paid = Number(paidAmount) || 0;
   const dueAmount = Math.max(totalAmount - paid, 0);
 
@@ -50,7 +47,7 @@ const RenewMembership = ({ member, onClose }) => {
      VALIDATION
      =============================== */
   const isFormValid =
-    selectedPlanId !== "" &&
+    selectedPlanId &&
     paidAmount !== "" &&
     paid >= 0;
 
@@ -66,7 +63,7 @@ const RenewMembership = ({ member, onClose }) => {
       await axiosInstance.put(
         `/members/renew/${member._id}`,
         {
-          planId: selectedPlanId, // ✅ backend expected
+          planId: selectedPlanId, // ✅ PlanOverride._id (SAME AS ADD MEMBER)
           paidAmount: paid,
         }
       );
@@ -76,7 +73,7 @@ const RenewMembership = ({ member, onClose }) => {
     } catch (error) {
       alert(
         error.response?.data?.message ||
-          "Renewal failed"
+        "Renewal failed"
       );
     } finally {
       setLoading(false);
@@ -86,6 +83,7 @@ const RenewMembership = ({ member, onClose }) => {
   return (
     <div className="renew-overlay">
       <div className="renew-modal">
+
         {/* HEADER */}
         <div className="renew-header">
           <div className="renew-title">
@@ -133,9 +131,7 @@ const RenewMembership = ({ member, onClose }) => {
                 <div>
                   <h4>{plan.name}</h4>
                   <span>
-                    {plan.durationDays ||
-                      plan.durationMonths}{" "}
-                    Days
+                    {plan.durationDays} Days
                   </span>
                 </div>
                 <strong>₹ {plan.price}</strong>

@@ -88,14 +88,18 @@ const Topbar = ({ toggleSidebar, sidebarOpen }) => {
     year: "numeric",
   });
 
-  /* 🚪 LOGOUT (FIXED) */
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("admin");
+ /* 🚪 LOGOUT (FIXED) */
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("admin");
+  localStorage.removeItem("branchId");
 
-    navigate("/login", { replace: true });
-  };
+  // reset axios auth
+  delete axiosInstance.defaults.headers.common["Authorization"];
 
+  // full reset (important)
+  window.location.href = "/login";
+};
   /* 🔍 LIVE SEARCH */
   const handleSearchChange = (e) => {
     const value = e.target.value;

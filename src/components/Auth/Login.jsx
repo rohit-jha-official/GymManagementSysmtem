@@ -19,10 +19,10 @@ const Login = () => {
   const [error, setError] = useState("");
 
   /* 🔁 AUTO REDIRECT IF LOGGED IN */
-  useEffect(() => {
+  /*useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/dashboard");
-  }, [navigate]);
+  }, [navigate]);*/
 
   /* 🔄 INPUT HANDLER */
   const handleChange = (e) => {

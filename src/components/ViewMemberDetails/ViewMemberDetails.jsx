@@ -49,7 +49,11 @@ const ViewMemberDetails = ({ member, onClose }) => {
           `/members/${member._id}`
         );
 
-        setData(res.data);
+        setData({
+  ...res.data,
+  plan: res.data.planId?.name || "-",
+});
+
         setPhone(res.data.phone || "");
         setEmail(res.data.email || "");
         setGender(res.data.gender || "");
@@ -131,11 +135,9 @@ const ViewMemberDetails = ({ member, onClose }) => {
 
               {/* ✅ FIXED PLAN DISPLAY */}
               <span className="plan-pill">
-                {data.plan?.name ||
-                  data.planName ||
-                  data.plan ||
-                  "—"}
-              </span>
+  {data.plan}
+</span>
+
             </div>
           </div>
         </div>

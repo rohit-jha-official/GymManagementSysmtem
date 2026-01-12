@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-
+import Admin from "../models/admin.js";
 export const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
 

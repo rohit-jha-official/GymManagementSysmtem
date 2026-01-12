@@ -3,6 +3,7 @@ import "./AddMember.css";
 import { FaCamera, FaUserPlus, FaIdCard } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import CollectPayment from "../CollectPayment/CollectPayment"; // 🔹 ADD
 
 const AddMember = () => {
   const navigate = useNavigate();
@@ -28,6 +29,11 @@ const AddMember = () => {
   const [membershipPlan, setMembershipPlan] = useState("Select a plan");
   const [selectedPlanId, setSelectedPlanId] = useState("");
 
+  // 🔹 NEW
+  const [selectedPlanPrice, setSelectedPlanPrice] = useState(0);
+  const [admissionCharge, setAdmissionCharge] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+
   /* ================= PHOTO ================= */
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -37,7 +43,10 @@ const AddMember = () => {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cameraOn, setCameraOn] = useState(false);
 
-  /* ================= FETCH PLANS (JWT SAFE) ================= */
+  /* ================= MODAL ================= */
+  const [showCollect, setShowCollect] = useState(false);
+
+  /* ================= FETCH PLANS + ADMISSION ================= */
   useEffect(() => {
     const fetchPlans = async () => {
       try {
@@ -48,7 +57,18 @@ const AddMember = () => {
         setPlans([]);
       }
     };
+
+    const fetchAdmissionCharge = async () => {
+      try {
+        const res = await axiosInstance.get("/admin/admission-charge");
+        setAdmissionCharge(res.data.admissionCharge || 0);
+      } catch (err) {
+        console.error("Failed to fetch admission charge");
+      }
+    };
+
     fetchPlans();
+    fetchAdmissionCharge();
   }, []);
 
   /* ================= CAMERA ================= */
@@ -114,7 +134,7 @@ const AddMember = () => {
     reader.readAsDataURL(file);
   };
 
-  /* ================= DOB (FIXED) ================= */
+  /* ================= DOB ================= */
   const handleDobChange = (e) => {
     const value = e.target.value;
     setDobInput(value);
@@ -136,8 +156,8 @@ const AddMember = () => {
     setDob(`${dd}/${mm}/${yyyy}`);
   };
 
-  /* ================= SUBMIT ================= */
-  const handleSubmit = async () => {
+  /* ================= ADD MEMBER (OPEN MODAL) ================= */
+  const handleSubmit = () => {
     if (!fullName || !phone || !selectedPlanId || gender === "Select gender") {
       alert("Please fill all required fields");
       return;
@@ -148,24 +168,7 @@ const AddMember = () => {
       return;
     }
 
-    try {
-      await axiosInstance.post("/members", {
-        fullName,
-        phone,
-        email,
-        gender,
-        dob,
-        address,
-        planId: selectedPlanId,
-        rfid,
-        photo,
-      });
-
-      alert("Member added successfully ✅");
-      navigate("/members");
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to add member");
-    }
+    setShowCollect(true); // 🔥 OPEN COLLECT PAYMENT MODAL
   };
 
   return (
@@ -266,7 +269,17 @@ const AddMember = () => {
                 <li className="disabled">No plans available</li>
               ) : (
                 plans.map((p) => (
-                  <li key={p._id} onClick={() => { setMembershipPlan(p.name); setSelectedPlanId(p.planId); setPlanOpen(false); }}>
+                  <li
+                    key={p._id}
+                    onClick={() => {
+                      setMembershipPlan(p.name);
+                      setSelectedPlanId(p.planId);
+                      setSelectedPlanPrice(p.price);           // 🔹 ADD
+                      const total = p.price + admissionCharge; // 🔹 ADD
+                      setTotalAmount(total);                   // 🔹 ADD
+                      setPlanOpen(false);
+                    }}
+                  >
                     {p.name} – ₹{p.price}
                   </li>
                 ))
@@ -275,12 +288,52 @@ const AddMember = () => {
           )}
         </div>
 
+        {/* 🔥 AMOUNT BREAKDOWN */}
+        {selectedPlanId && (
+          <div className="amount-box">
+            <div className="row">
+              <span>Plan Price</span>
+              <span>₹{selectedPlanPrice}</span>
+            </div>
+            <div className="row">
+              <span>Admission Charge</span>
+              <span>₹{admissionCharge}</span>
+            </div>
+            <div className="row total">
+              <span>Total Amount</span>
+              <span>₹{totalAmount}</span>
+            </div>
+          </div>
+        )}
+
         <div className="form-actions">
           <button className="btn-primary" onClick={handleSubmit}>
             <FaUserPlus /> Add Member
           </button>
         </div>
       </div>
+
+      {/* ================= COLLECT PAYMENT MODAL ================= */}
+      {showCollect && (
+        <CollectPayment
+          totalAmount={totalAmount}
+          memberData={{
+            fullName,
+            phone,
+            email,
+            gender,
+            dob,
+            address,
+            planId: selectedPlanId,
+            planPrice: selectedPlanPrice,
+            admissionCharge,
+            rfid,
+            photo,
+          }}
+          onClose={() => setShowCollect(false)}
+          onSuccess={() => navigate("/members")}
+        />
+      )}
     </div>
   );
 };

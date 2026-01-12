@@ -21,10 +21,35 @@ const memberSchema = new mongoose.Schema(
       required: true,
     },
 
+    // CURRENT SNAPSHOT (for UI)
     paidAmount: { type: Number, default: 0 },
     dueAmount: { type: Number, default: 0 },
     lastPaymentDate: { type: Date },
     isRenewed: { type: Boolean, default: false },
+
+    // 🔥 FULL PAYMENT HISTORY (for revenue)
+    payments: [
+      {
+        planId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Plan",
+          required: true,
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+        type: {
+          type: String,
+          enum: ["new", "renewal", "due"],
+          required: true,
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
 
     rfid: {
       type: String,
@@ -37,12 +62,12 @@ const memberSchema = new mongoose.Schema(
     expiryDate: { type: Date, required: true },
 
     photo: String,
-  
-  branchId: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "Branch",
-  required: true,
-},
+
+    branchId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Branch",
+      required: true,
+    },
   },
   { timestamps: true }
 );

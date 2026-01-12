@@ -3,8 +3,6 @@ import Plan from "../models/plan.js";
 import PlanOverride from "../models/planOverride.js";
 import Activity from "../models/activity.js";
 
-
-
 /* ======================================
    ➕ ADD NEW MEMBER
 ====================================== */
@@ -26,13 +24,11 @@ export const addMember = async (req, res) => {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
-    /* 🔹 Validate global plan */
     const plan = await Plan.findById(planId);
     if (!plan) {
       return res.status(400).json({ message: "Invalid plan selected" });
     }
 
-    /* 🔹 Validate branch availability */
     const override = await PlanOverride.findOne({
       planId: plan._id,
       branchId: req.user.branchId,
@@ -44,12 +40,16 @@ export const addMember = async (req, res) => {
         .json({ message: "Plan not available in this branch" });
     }
 
-    /* 🔹 Calculate dates */
     const startDate = new Date();
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + plan.durationDays);
+    let cleanRfid;
+if (rfid && rfid.trim() !== "") {
+  cleanRfid = rfid;
+}
+// else leave it undefined (DO NOT set to null)
 
-    /* 🔹 Create member */
+
     const member = await Member.create({
       fullName,
       phone,
@@ -59,17 +59,23 @@ export const addMember = async (req, res) => {
       address,
       planId: plan._id,
       branchId: req.user.branchId,
-      rfid,
+      rfid:cleanRfid,
       photo,
       startDate,
       expiryDate,
       paidAmount: override.price,
       dueAmount: 0,
-      
       isRenewed: false,
+      payments: [
+        {
+          planId: plan._id,
+          amount: override.price,
+          type: "new",
+          date: new Date(),
+        },
+      ],
     });
 
-    /* 🔹 Log activity */
     await Activity.create({
       type: "member",
       message: `New member registered: ${fullName}`,
@@ -79,9 +85,10 @@ export const addMember = async (req, res) => {
     res.status(201).json(member);
   } catch (err) {
     console.error("Add member error:", err);
-    res.status(500).json({ message: "Failed to add member" });
+    res.status(500).json({ message: err.message || "Failed to add member" });
   }
 };
+
 
 /* ======================================
    📋 GET ALL MEMBERS
@@ -90,9 +97,7 @@ export const getAllMembers = async (req, res) => {
   try {
     const today = new Date();
 
-    const members = await Member.find({
-      branchId: req.user.branchId,
-    })
+    const members = await Member.find({ branchId: req.user.branchId })
       .populate("planId")
       .sort({ createdAt: -1 });
 
@@ -169,81 +174,62 @@ export const getExpiringSoon = async (req, res) => {
   }
 };
 
-
-
-
 /* ======================================
-   🔄 RENEW MEMBERSHIP (SCHEMA-CORRECT)
+   🔄 RENEW MEMBERSHIP
 ====================================== */
 export const renewMember = async (req, res) => {
   try {
     const { planId, paidAmount } = req.body;
 
-    /* 🔹 Find member */
     const member = await Member.findOne({
       _id: req.params.id,
       branchId: req.user.branchId,
     });
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
-    if (!member) {
-      return res.status(404).json({ message: "Member not found" });
-    }
-
-    /* 🔹 Validate global plan (SAME AS ADD MEMBER) */
     const plan = await Plan.findById(planId);
-    if (!plan) {
-      return res.status(400).json({ message: "Invalid plan selected" });
-    }
+    if (!plan) return res.status(400).json({ message: "Invalid plan selected" });
 
-    /* 🔹 Validate branch override */
     const override = await PlanOverride.findOne({
       planId: plan._id,
       branchId: req.user.branchId,
     });
-
-    if (!override) {
+    if (!override)
       return res
         .status(400)
         .json({ message: "Plan not available in this branch" });
-    }
 
-    /* 🔹 Calculate expiry */
     const baseDate =
       member.expiryDate && member.expiryDate > new Date()
         ? member.expiryDate
         : new Date();
 
     const newExpiry = new Date(baseDate);
-    newExpiry.setDate(
-      newExpiry.getDate() + plan.durationDays
-    );
+    newExpiry.setDate(newExpiry.getDate() + plan.durationDays);
 
     const paid = Number(paidAmount) || override.price;
 
-    /* 🔹 Update member */
-    member.planId = plan._id;        // SAME FIELD AS ADD MEMBER
+    member.planId = plan._id;
     member.expiryDate = newExpiry;
     member.isRenewed = true;
     member.paidAmount = paid;
-    member.dueAmount = Math.max(
-      override.price - paid,
-      0
-    );
+    member.dueAmount = Math.max(override.price - paid, 0);
     member.lastPaymentDate = new Date();
+
+    member.payments.push({
+      planId: plan._id,
+      amount: paid,
+      type: "renewal",
+    });
 
     await member.save();
 
-    res.status(200).json({
-      message: "Membership renewed successfully",
-      member,
-    });
+    res.json({ message: "Membership renewed successfully", member });
   } catch (err) {
     console.error("Renew error:", err);
     res.status(500).json({ message: "Renewal failed" });
   }
 };
-
-
 
 /* ======================================
    💰 DUE MEMBERS
@@ -280,18 +266,21 @@ export const collectDuePayment = async (req, res) => {
       _id: req.params.id,
       branchId: req.user.branchId,
     });
-
-    if (!member) {
-      return res.status(404).json({ message: "Member not found" });
-    }
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
     const paid = Number(paidAmount);
-    if (!paid || paid <= 0) {
+    if (!paid || paid <= 0)
       return res.status(400).json({ message: "Invalid amount" });
-    }
 
     member.dueAmount = Math.max(member.dueAmount - paid, 0);
     member.lastPaymentDate = new Date();
+
+    member.payments.push({
+      planId: member.planId,
+      amount: paid,
+      type: "due",
+    });
+
     await member.save();
 
     await Activity.create({
@@ -315,10 +304,7 @@ export const deleteMember = async (req, res) => {
       _id: req.params.id,
       branchId: req.user.branchId,
     });
-
-    if (!member) {
-      return res.status(404).json({ message: "Member not found" });
-    }
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
     res.json({ message: "Member deleted" });
   } catch (err) {
@@ -336,9 +322,7 @@ export const getMemberById = async (req, res) => {
       branchId: req.user.branchId,
     }).populate("planId");
 
-    if (!member) {
-      return res.status(404).json({ message: "Member not found" });
-    }
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
     res.json(member);
   } catch (err) {
@@ -359,9 +343,8 @@ export const updateMember = async (req, res) => {
     if (email !== undefined) update.email = email;
     if (gender !== undefined) update.gender = gender;
     if (address !== undefined) update.address = address;
-    if (allowExpiryEdit && expiryDate) {
+    if (allowExpiryEdit && expiryDate)
       update.expiryDate = new Date(expiryDate);
-    }
 
     const member = await Member.findOneAndUpdate(
       { _id: req.params.id, branchId: req.user.branchId },
@@ -369,9 +352,7 @@ export const updateMember = async (req, res) => {
       { new: true }
     );
 
-    if (!member) {
-      return res.status(404).json({ message: "Member not found" });
-    }
+    if (!member) return res.status(404).json({ message: "Member not found" });
 
     res.json(member);
   } catch (err) {

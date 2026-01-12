@@ -1,58 +1,63 @@
 import Member from "../models/member.js";
-
+import mongoose from "mongoose";
 /* ================================
    📊 DASHBOARD STATS (BRANCH-WISE)
 ================================ */
 export const getDashboardStats = async (req, res) => {
   try {
+    const branchId =  new mongoose.Types.ObjectId(req.user.branchId);
+
     const now = new Date();
     const startOfMonth = new Date(
       Date.UTC(now.getFullYear(), now.getMonth(), 1, 0, 0, 0)
     );
 
     /* 👥 TOTAL MEMBERS */
-    const totalMembers = await Member.countDocuments({
-      branchId: req.user.branchId,
-    });
+    const totalMembers = await Member.countDocuments({ branchId });
 
     /* 🆕 NEW REGISTRATIONS (THIS MONTH) */
     const newRegistrations = await Member.countDocuments({
-      branchId: req.user.branchId,
+      branchId,
       createdAt: { $gte: startOfMonth },
     });
 
-    /* 💰 TOTAL REVENUE (THIS MONTH)
-       ✔ New members → createdAt
-       ✔ Renewals → updatedAt + isRenewed
-    */
+    /* 💰 TOTAL REVENUE (NEW + RENEWAL + DUE) */
     const revenueAgg = await Member.aggregate([
+      { $match: { branchId } },
+      { $unwind: "$payments" },
       {
         $match: {
-          branchId: req.user.branchId,
-          $or: [
-            { createdAt: { $gte: startOfMonth } },
-            {
-              isRenewed: true,
-              updatedAt: { $gte: startOfMonth },
-            },
-          ],
+          "payments.date": { $gte: startOfMonth },
         },
       },
       {
         $group: {
           _id: null,
-          total: { $sum: "$paidAmount" },
+          total: { $sum: "$payments.amount" },
         },
       },
     ]);
 
-    const totalRevenue = revenueAgg.length ? revenueAgg[0].total : 0;
+    const totalRevenue = revenueAgg[0]?.total || 0;
 
-    /* 🔁 RENEWAL RATE */
-    const renewedMembers = await Member.countDocuments({
-      branchId: req.user.branchId,
-      isRenewed: true,
-    });
+    /* 🔁 RENEWALS THIS MONTH */
+    const renewalAgg = await Member.aggregate([
+      { $match: { branchId } },
+      { $unwind: "$payments" },
+      {
+        $match: {
+          "payments.type": "renewal",
+          "payments.date": { $gte: startOfMonth },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id", // one per member
+        },
+      },
+    ]);
+
+    const renewedMembers = renewalAgg.length;
 
     const renewalRate =
       totalMembers === 0
@@ -72,16 +77,17 @@ export const getDashboardStats = async (req, res) => {
 };
 
 /* ================================
-   📈 YEARLY MEMBER GROWTH (JAN–DEC)
+   📈 YEARLY MEMBER GROWTH
 ================================ */
 export const getMemberGrowth = async (req, res) => {
   try {
+    const branchId =  new mongoose.Types.ObjectId(req.user.branchId);
     const year = new Date().getFullYear();
 
     const growth = await Member.aggregate([
       {
         $match: {
-          branchId: req.user.branchId,
+          branchId,
           createdAt: {
             $gte: new Date(Date.UTC(year, 0, 1)),
             $lte: new Date(Date.UTC(year, 11, 31, 23, 59, 59)),
@@ -110,10 +116,11 @@ export const getMemberGrowth = async (req, res) => {
 };
 
 /* ================================
-   📆 MONTHLY MEMBER GROWTH (W1–W4)
+   📆 MONTHLY MEMBER GROWTH
 ================================ */
 export const getMonthlyGrowth = async (req, res) => {
   try {
+    const branchId =  new mongoose.Types.ObjectId(req.user.branchId);
     const now = new Date();
 
     const startOfMonth = new Date(
@@ -126,7 +133,7 @@ export const getMonthlyGrowth = async (req, res) => {
     const data = await Member.aggregate([
       {
         $match: {
-          branchId: req.user.branchId,
+          branchId,
           createdAt: { $gte: startOfMonth, $lte: endOfMonth },
         },
       },

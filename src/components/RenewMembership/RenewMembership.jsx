@@ -63,7 +63,7 @@ const RenewMembership = ({ member, onClose }) => {
       await axiosInstance.put(
         `/members/renew/${member._id}`,
         {
-          planId: selectedPlanId, // ✅ PlanOverride._id (SAME AS ADD MEMBER)
+      planId: selectedPlan.planId,// ✅ PlanOverride._id (SAME AS ADD MEMBER)
           paidAmount: paid,
         }
       );

@@ -6,9 +6,7 @@ import "./Settings.css";
 import {
   FaUser,
   FaKey,
-  FaWifi,
-  FaEye,
-  FaEyeSlash,
+  FaWifi
 } from "react-icons/fa";
 import { MdWifiOff } from "react-icons/md";
 
@@ -37,17 +35,24 @@ const Settings = () => {
     newPassword: "",
   });
 
-  /* ================= LOAD ADMIN ================= */
+  /* ================= LOAD ADMIN FROM BACKEND ================= */
   useEffect(() => {
-    const admin = JSON.parse(localStorage.getItem("admin"));
-    if (admin) {
-      setAdminData({
-        name: admin.name || "",
-        email: admin.email || "",
-        phone: admin.phone || "",
-        gymName: admin.gymName || "",
-      });
-    }
+    const fetchAdminProfile = async () => {
+      try {
+        const res = await axiosInstance.get("/admin/profile");
+
+        setAdminData({
+          name: res.data.name || "",
+          email: res.data.email || "",
+          phone: res.data.phone || "",
+          gymName: res.data.gymName || "",
+        });
+      } catch (error) {
+        console.error("Failed to load admin profile", error);
+      }
+    };
+
+    fetchAdminProfile();
   }, []);
 
   /* ================= HANDLE INPUT ================= */
@@ -62,15 +67,19 @@ const Settings = () => {
   /* ================= SAVE PROFILE ================= */
   const handleSaveProfile = async () => {
     try {
-      const res = await axiosInstance.put("/admin/update", adminData);
-      localStorage.setItem("admin", JSON.stringify(res.data.admin));
+      await axiosInstance.put("/admin/update", {
+        name: adminData.name,
+        phone: adminData.phone,
+        gymName: adminData.gymName,
+      });
+
       alert("Profile updated successfully");
     } catch (error) {
       alert(error.response?.data?.message || "Failed to update profile");
     }
   };
 
-  /* ================= CHANGE PASSWORD ================= */
+  /* ================= CHANGE PASSWORD (DO NOT TOUCH) ================= */
   const handleChangePassword = async () => {
     try {
       await axiosInstance.put("/admin/change-password", passwordData);
@@ -102,30 +111,6 @@ const Settings = () => {
         <h1>Settings</h1>
         <p>Manage your account and system settings</p>
       </div>
-
-      {/* TABS */}
-      {/* <div className="settings-tabs">
-        <button
-          className={activeTab === "admin" ? "active" : ""}
-          onClick={() => setActiveTab("admin")}
-        >
-          <FaUser /> Admin Account
-        </button>
-
-        <button
-          className={activeTab === "api" ? "active" : ""}
-          onClick={() => setActiveTab("api")}
-        >
-          <FaKey /> API Keys
-        </button>
-
-        <button
-          className={activeTab === "device" ? "active" : ""}
-          onClick={() => setActiveTab("device")}
-        >
-          <FaWifi /> Devices
-        </button>
-      </div> */}
 
       <div className="settings-card">
         {/* ================= ADMIN ACCOUNT ================= */}
@@ -187,14 +172,6 @@ const Settings = () => {
                 Update Password
               </button>
             </div>
-          </>
-        )}
-
-        {/* ================= API TAB ================= */}
-        {activeTab === "api" && (
-          <>
-            <h2><FaKey /> API Access</h2>
-            <p className="sub-text">API keys will be available here (coming soon)</p>
           </>
         )}
 

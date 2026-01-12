@@ -136,7 +136,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label>Gym Name</label>
+                <label>Branch Name</label>
                 <input name="gymName" value={adminData.gymName} onChange={handleAdminChange} />
               </div>
             </div>

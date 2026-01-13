@@ -18,6 +18,11 @@ export const addMember = async (req, res) => {
       planId,
       rfid,
       photo,
+
+      // 🔹 NEW FROM FRONTEND
+      admissionCharge,
+      paidAmount,
+      dueAmount,
     } = req.body;
 
     if (!fullName || !phone || !planId) {
@@ -43,12 +48,19 @@ export const addMember = async (req, res) => {
     const startDate = new Date();
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + plan.durationDays);
-    let cleanRfid;
-if (rfid && rfid.trim() !== "") {
-  cleanRfid = rfid;
-}
-// else leave it undefined (DO NOT set to null)
 
+    let cleanRfid;
+    if (rfid && rfid.trim() !== "") {
+      cleanRfid = rfid;
+    }
+
+    // 🔹 TOTAL = plan price + admission charge
+    const planPrice = override.price;
+    const admission = Number(admissionCharge) || 0;
+    const totalAmount = planPrice + admission;
+
+    const paid = Number(paidAmount) || 0;
+    const due = totalAmount - paid > 0 ? totalAmount - paid : 0;
 
     const member = await Member.create({
       fullName,
@@ -57,23 +69,33 @@ if (rfid && rfid.trim() !== "") {
       gender,
       dob,
       address,
+
       planId: plan._id,
       branchId: req.user.branchId,
-      rfid:cleanRfid,
+
+      rfid: cleanRfid,
       photo,
+
       startDate,
       expiryDate,
-      paidAmount: override.price,
-      dueAmount: 0,
+
+      // 🔥 UPDATED PAYMENT LOGIC
+      paidAmount: paid,
+      dueAmount: due,
+      lastPaymentDate: paid > 0 ? new Date() : null,
       isRenewed: false,
-      payments: [
-        {
-          planId: plan._id,
-          amount: override.price,
-          type: "new",
-          date: new Date(),
-        },
-      ],
+
+      payments:
+        paid > 0
+          ? [
+              {
+                planId: plan._id,
+                amount: paid,
+                type: "new",
+                date: new Date(),
+              },
+            ]
+          : [],
     });
 
     await Activity.create({
@@ -88,6 +110,7 @@ if (rfid && rfid.trim() !== "") {
     res.status(500).json({ message: err.message || "Failed to add member" });
   }
 };
+
 
 
 /* ======================================

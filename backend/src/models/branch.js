@@ -7,9 +7,12 @@ const branchSchema = new mongoose.Schema(
 
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Admin",   // 🔑 FIXED
+      ref: "Admin",
       required: true
     },
+
+    // 🔹 ADD THIS LINE
+    admissionCharge: { type: Number, default: 0 },
 
     isActive: { type: Boolean, default: true }
   },

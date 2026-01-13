@@ -24,6 +24,10 @@ const MembershipPlans = () => {
   const [editingPlan, setEditingPlan] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // 🔹 ADMISSION CHARGE STATE
+  const [admissionCharge, setAdmissionCharge] = useState(0);
+  const [isEditingAdmission, setIsEditingAdmission] = useState(false);
+
   const navigate = useNavigate();
 
   /* =========================
@@ -57,8 +61,35 @@ const MembershipPlans = () => {
     }
   };
 
+  /* =========================
+     FETCH ADMISSION CHARGE
+     ========================= */
+  const fetchAdmissionCharge = async () => {
+    try {
+      const res = await axiosInstance.get("/admin/admission-charge");
+      setAdmissionCharge(res.data.admissionCharge);
+    } catch (err) {
+      console.error("Failed to load admission charge", err);
+    }
+  };
+
+  /* =========================
+     SAVE ADMISSION CHARGE
+     ========================= */
+  const saveAdmissionCharge = async () => {
+    try {
+      await axiosInstance.put("/admin/admission-charge", {
+        admissionCharge,
+      });
+      setIsEditingAdmission(false);
+    } catch (err) {
+      console.error("Failed to save admission charge", err);
+    }
+  };
+
   useEffect(() => {
     fetchPlans();
+    fetchAdmissionCharge(); // 🔹 LOAD ADMISSION CHARGE
   }, []);
 
   /* =========================
@@ -120,6 +151,39 @@ const MembershipPlans = () => {
       <div className="page-header">
         <h1>Membership Plans</h1>
         <p>Manage gym membership plans and pricing</p>
+      </div>
+
+      {/* =========================
+         ADMISSION CHARGE BOX
+         ========================= */}
+      <div className="admission-charge-box">
+        <div className="admission-left">
+          <h3>Admission Charge</h3>
+
+          {!isEditingAdmission ? (
+            <p>₹{admissionCharge}</p>
+          ) : (
+            <input
+              type="number"
+              value={admissionCharge}
+              onChange={(e) =>
+                setAdmissionCharge(Number(e.target.value))
+              }
+            />
+          )}
+        </div>
+
+        <div className="admission-right">
+          {!isEditingAdmission ? (
+            <button onClick={() => setIsEditingAdmission(true)}>
+              Edit
+            </button>
+          ) : (
+            <button onClick={saveAdmissionCharge}>
+              Save
+            </button>
+          )}
+        </div>
       </div>
 
       {/* PLANS GRID */}
@@ -212,3 +276,4 @@ const MembershipPlans = () => {
 };
 
 export default MembershipPlans;
+ 

@@ -271,6 +271,7 @@ export const getDueMembers = async (req, res) => {
         phone: m.phone,
         plan: m.planId?.name || "-",
         dueAmount: m.dueAmount,
+        expiryDate: m.expiryDate,  
       }))
     );
   } catch (err) {

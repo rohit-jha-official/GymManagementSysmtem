@@ -245,3 +245,77 @@
   border: 1px solid #1f2933 !important;
   color: #828891;
 }
+
+/* ================= AMOUNT BREAKDOWN ================= */
+
+.amount-box {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.amount-box .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 10px 0;
+  font-size: 15px;
+  color: #cbd5f5;
+}
+
+.amount-box .row:not(:last-child) {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.amount-box .row span:last-child {
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+/* 🔥 TOTAL ROW */
+.amount-box .row.total {
+  margin-top: 10px;
+  padding-top: 14px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #22c55e;
+}
+
+.amount-box .row.total span:last-child {
+  font-size: 20px;
+  color: #22c55e;
+}
+
+/* 💰 Optional subtle icon look */
+.amount-box::before {
+  content: "💰";
+  position: absolute;
+  top: -10px;
+  right: 16px;
+
+  background: #020617;
+  padding: 4px 8px;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 600px) {
+  .amount-box {
+    padding: 14px;
+  }
+
+  .amount-box .row {
+    font-size: 14px;
+  }
+
+  .amount-box .row.total {
+    font-size: 16px;
+  }
+}

@@ -90,7 +90,7 @@ export default function ExpiredMembers() {
                 {/* CONTACT */}
                 <div>
                   <div>{m.phone}</div>
-                  <small>{m.email || "-"}</small>
+                 
                 </div>
 
                 {/* PLAN */}

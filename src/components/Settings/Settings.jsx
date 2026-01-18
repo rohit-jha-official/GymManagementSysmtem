@@ -132,7 +132,7 @@ const Settings = () => {
 
               <div>
                 <label>Phone Number</label>
-                <input name="phone" value={adminData.phone} onChange={handleAdminChange} />
+                <input name="phone" value={adminData.phone} maxLength={10} onChange={handleAdminChange} />
               </div>
 
               <div>

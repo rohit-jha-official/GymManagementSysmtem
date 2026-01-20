@@ -5,14 +5,14 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import { generateExpiryNotifications } from "./utils/expiryNotificationJob.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+
 
 // Connect DB
 connectDB();
 
 // ✅ REGISTER ROUTES FIRST
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/admin", adminRoutes);
+
 
 
 // ✅ PORT FIX FOR RENDER

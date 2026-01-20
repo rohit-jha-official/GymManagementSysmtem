@@ -270,7 +270,7 @@
 ======================================== */
 
 /* Large Tablets & Small Desktops */
-@media (max-width: 1024px) {
+@media (max-width: 1251px) {
   .plans-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 18px;

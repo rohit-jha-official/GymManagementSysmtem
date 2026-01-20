@@ -7,6 +7,7 @@ import {
   FaCrown,
   FaGem,
   FaCheck,
+  FaTrophy,
 } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import EditPlanModal from "../EditPlanModal/EditPlanModal";
@@ -16,7 +17,7 @@ const planIcons = {
   "1 Month": <FaBolt />,
   "3 Months": <FaStar />,
   "6 Months": <FaCrown />,
-  "9 Months": <FaGem />,
+  "9 Months": <FaTrophy />,
   "12 Months": <FaGem />,
 };
 

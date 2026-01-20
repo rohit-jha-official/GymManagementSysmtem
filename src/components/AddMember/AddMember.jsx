@@ -49,9 +49,13 @@ const AddMember = () => {
   /* ================= FETCH PLANS + ADMISSION ================= */
   useEffect(() => {
     const fetchPlans = async () => {
-      try {
-        const res = await axiosInstance.get("/membership-plans");
-        setPlans(res.data || []);
+    try {
+     const res = await axiosInstance.get("/membership-plans");
+
+     const sortedPlans = (res.data || []).sort(
+      (a, b) => a.durationDays - b.durationDays
+       );
+      setPlans(sortedPlans);
       } catch (err) {
         console.error("Failed to fetch plans");
         setPlans([]);

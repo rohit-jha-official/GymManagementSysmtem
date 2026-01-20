@@ -13,10 +13,11 @@ import EditPlanModal from "../EditPlanModal/EditPlanModal";
 
 /* ICON MAP */
 const planIcons = {
-  Monthly: <FaBolt />,
-  Quarterly: <FaStar />,
-  "Half Yearly": <FaCrown />,
-  Yearly: <FaGem />,
+  "1 Month": <FaBolt />,
+  "3 Months": <FaStar />,
+  "6 Months": <FaCrown />,
+  "9 Months": <FaGem />,
+  "12 Months": <FaGem />,
 };
 
 const MembershipPlans = () => {
@@ -33,33 +34,39 @@ const MembershipPlans = () => {
   /* =========================
      FETCH PLANS
      ========================= */
-  const fetchPlans = async () => {
-    try {
-      const res = await axiosInstance.get("/membership-plans");
+ const fetchPlans = async () => {
+  try {
+    const res = await axiosInstance.get("/membership-plans");
 
-      const formattedPlans = res.data.map((p) => ({
-        _id: p._id,
-        name: p.name,
-        duration: `${p.durationDays} Days`,
-        price: p.price,
-        icon: planIcons[p.name] || <FaBolt />,
-        features: p.features || [],
-        members: p.activeMembers || 0,
-        totalMembers: p.totalMembers || 0,
-        badge: p.isPremium
-          ? "premium"
-          : p.isPopular
-          ? "popular"
-          : null,
-      }));
+    const formattedPlans = res.data.map((p) => ({
+      _id: p._id,
+      name: p.name,
+      duration: `${p.durationDays} Days`,
+      price: p.price,
+      icon: planIcons[p.name] || <FaBolt />,
+      features: p.features || [],
+      members: p.activeMembers || 0,
+      totalMembers: p.totalMembers || 0,
+      badge: p.isPremium
+        ? "premium"
+        : p.isPopular
+        ? "popular"
+        : null,
+    }));
 
-      setPlans(formattedPlans);
-    } catch (err) {
-      console.error("Failed to load plans", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // ✅ SORT: 1 → 3 → 6 → 9 → 12 months
+    formattedPlans.sort((a, b) => {
+      const daysA = parseInt(a.duration);
+      const daysB = parseInt(b.duration);
+      return daysA - daysB;
+    });
+
+    setPlans(formattedPlans);
+  } catch (err) {
+    console.error("Failed to load plans", err);
+  } 
+};
+
 
   /* =========================
      FETCH ADMISSION CHARGE
@@ -76,64 +83,69 @@ const MembershipPlans = () => {
   /* =========================
      SAVE ADMISSION CHARGE
      ========================= */
-  const saveAdmissionCharge = async () => {
-    try {
-      await axiosInstance.put("/admin/admission-charge", {
-        admissionCharge,
-      });
-      setIsEditingAdmission(false);
-    } catch (err) {
-      console.error("Failed to save admission charge", err);
-    }
-  };
+const saveAdmissionCharge = async () => {
+  try {
+    console.log("Saving:", admissionCharge);
 
-  useEffect(() => {
-    fetchPlans();
-    fetchAdmissionCharge(); // 🔹 LOAD ADMISSION CHARGE
-  }, []);
+    const res = await axiosInstance.put("/admin/admission-charge", {
+      admissionCharge,
+    });
+
+    console.log("Saved Response:", res.data);
+
+    // ✅ Re-fetch updated value from backend
+    await fetchAdmissionCharge();
+
+    setIsEditingAdmission(false);
+
+  } catch (err) {
+    console.error("Failed to save admission charge", err);
+    alert("Failed to save admission charge");
+  }
+};
+
 
   /* =========================
      SAVE EDITED PLAN (INSTANT UI UPDATE)
      ========================= */
   const handleSavePlan = async (updatedPlan) => {
-    try {
-      // 🔹 Backend update
-      await axiosInstance.put(
-        `/membership-plans/${updatedPlan._id}`,
-        {
-          price: updatedPlan.price,
-          features: updatedPlan.features,
-          isPopular: updatedPlan.isPopular,
-          isPremium: updatedPlan.isPremium,
-        }
-      );
+  try {
+    await axiosInstance.put(
+      `/membership-plans/${updatedPlan._id}`,
+      {
+        price: updatedPlan.price,
+        features: updatedPlan.features,
+        isPopular: updatedPlan.isPopular,
+        isPremium: updatedPlan.isPremium,
+      }
+    );
 
-      // 🔹 Update UI instantly
-      setPlans((prevPlans) =>
-        prevPlans.map((p) =>
-          p._id === updatedPlan._id
-            ? {
-                ...p,
-                price: updatedPlan.price,
-                features: updatedPlan.features,
-                badge: updatedPlan.isPremium
-                  ? "premium"
-                  : updatedPlan.isPopular
-                  ? "popular"
-                  : null,
-              }
-            : p
-        )
-      );
+    // ✅ REFRESH FROM BACKEND (important)
+    await fetchPlans();
 
-      setEditingPlan(null);
-    } catch (error) {
-      alert(
-        error?.response?.data?.message ||
-          "Failed to update plan"
-      );
-    }
+    setEditingPlan(null);
+
+  } catch (error) {
+    console.error("Update failed:", error);
+
+    alert(
+      error?.response?.data?.message ||
+      "Failed to update plan"
+    );
+  }
+};
+useEffect(() => {
+  const loadData = async () => {
+    await Promise.all([
+      fetchPlans(),
+      fetchAdmissionCharge()
+    ]);
+    setLoading(false);
   };
+
+  loadData();
+}, []);
+
 
   if (loading) {
     return (
@@ -166,9 +178,13 @@ const MembershipPlans = () => {
             <input
               type="number"
               value={admissionCharge}
-              onChange={(e) =>
-                setAdmissionCharge(Number(e.target.value))
-              }
+              onChange={(e) => {
+             const val = e.target.value;
+            if (val !== "") {
+             setAdmissionCharge(Number(val));
+            }
+              }}
+
             />
           )}
         </div>

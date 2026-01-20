@@ -16,4 +16,10 @@ const planOverrideSchema = new mongoose.Schema({
   isPremium: { type: Boolean, default: false }
 });
 
+// ✅ PREVENT DUPLICATE PLAN FOR SAME BRANCH
+planOverrideSchema.index(
+  { planId: 1, branchId: 1 },
+  { unique: true }
+);
+
 export default mongoose.model("PlanOverride", planOverrideSchema);

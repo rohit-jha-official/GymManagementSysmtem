@@ -12,6 +12,8 @@ connectDB();
 
 // ✅ REGISTER ROUTES FIRST
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/admin", adminRoutes);
+
 
 // ✅ PORT FIX FOR RENDER
 const PORT = process.env.PORT || 5001;

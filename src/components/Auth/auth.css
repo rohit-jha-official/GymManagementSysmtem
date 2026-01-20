@@ -324,7 +324,9 @@
   .auth-form {
     padding: 24px 20px;
   }
-
+.auth-card {
+  width: 350px;
+}
   .auth-page h2 {
     font-size: 22px;
   }

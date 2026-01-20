@@ -88,7 +88,7 @@ const saveAdmissionCharge = async () => {
   try {
     console.log("Saving:", admissionCharge);
 
-    const res = await axiosInstance.put("/admission-charge", {
+    const res = await axiosInstance.post("/admission-charge", {
       admissionCharge,
     });
 

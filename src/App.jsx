@@ -40,7 +40,14 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* 🔁 DEFAULT → ADMIN LOGIN */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+  path="/"
+  element={
+    localStorage.getItem("token")
+      ? <Navigate to="/dashboard" replace />
+      : <Navigate to="/login" replace />
+  }
+/>
 
         {/* 🔐 ADMIN PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>

@@ -10,7 +10,6 @@ import activityRoutes from "./routes/activityRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import admissionChargeRoutes from "./routes/admissionChargeRoutes.js";
 
 import membershipPlanRoutes from "./routes/membershipPlanRoutes.js";
 const app = express();
@@ -26,7 +25,7 @@ app.use(cors({
   credentials: true
 }));
 app.use("/api/admin", adminRoutes);
-app.use("/api", admissionChargeRoutes);
+
 
 app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ extended: true, limit: "15mb" }));

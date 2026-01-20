@@ -5,6 +5,7 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import { generateExpiryNotifications } from "./utils/expiryNotificationJob.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import admissionChargeRoutes from "./routes/admissionChargeRoutes.js";
 
 
 // Connect DB
@@ -13,6 +14,7 @@ connectDB();
 // ✅ REGISTER ROUTES FIRST
 app.use("/api/notifications", notificationRoutes);
 
+app.use("/api", admissionChargeRoutes);
 
 
 // ✅ PORT FIX FOR RENDER

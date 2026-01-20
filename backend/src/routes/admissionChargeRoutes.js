@@ -1,12 +1,16 @@
 import express from "express";
 import {
   getAdmissionCharge,
-  saveAdmissionCharge,
+  saveAdmissionCharge
 } from "../controllers/admissionChargeController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/admission-charge", getAdmissionCharge);
-router.post("/admission-charge", saveAdmissionCharge);
+// GET admission charge
+router.get("/admission-charge", protect, getAdmissionCharge);
+
+// SAVE admission charge
+router.post("/admission-charge", protect, saveAdmissionCharge);
 
 export default router;

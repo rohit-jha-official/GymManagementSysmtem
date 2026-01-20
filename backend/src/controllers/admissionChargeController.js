@@ -1,38 +1,41 @@
 import AdmissionCharge from "../models/admissionCharge.js";
 
-// GET Admission Charge
+// GET
 export const getAdmissionCharge = async (req, res) => {
   try {
-    const charge = await AdmissionCharge.findOne();
+    const data = await AdmissionCharge.findOne();
 
-    if (!charge) {
-      return res.json({ amount: 0 });
-    }
+    res.json({
+      admissionCharge: data ? data.amount : 0,
+    });
 
-    res.json(charge);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to fetch admission charge" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-// SAVE / UPDATE Admission Charge
+// SAVE
 export const saveAdmissionCharge = async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { admissionCharge } = req.body;
 
-    let charge = await AdmissionCharge.findOne();
+    let record = await AdmissionCharge.findOne();
 
-    if (charge) {
-      charge.amount = amount;
-      await charge.save();
+    if (record) {
+      record.amount = admissionCharge;
+      await record.save();
     } else {
-      charge = await AdmissionCharge.create({ amount });
+      record = await AdmissionCharge.create({
+        amount: admissionCharge,
+      });
     }
 
-    res.json({ message: "Admission charge saved successfully" });
+    res.json({
+      message: "Admission charge saved",
+      admissionCharge: record.amount,
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to save admission charge" });
+    res.status(500).json({ message: "Failed to save" });
   }
 };

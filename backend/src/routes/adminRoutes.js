@@ -3,8 +3,7 @@ import {
   getAdminProfile,
   updateAdminProfile,
   changeAdminPassword,
-  getAdmissionCharge,
-  updateAdmissionCharge,
+
 } from "../controllers/adminController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -19,8 +18,7 @@ router.put("/update", protect, updateAdminProfile);
 
 /* Change password – DO NOT TOUCH (already working) */
 router.put("/change-password", protect, changeAdminPassword);
-router.get("/admission-charge", protect, getAdmissionCharge);
-router.put("/admission-charge", protect, updateAdmissionCharge);
+
 
 
 

@@ -74,7 +74,7 @@ const MembershipPlans = () => {
      ========================= */
   const fetchAdmissionCharge = async () => {
     try {
-      const res = await axiosInstance.get("/admin/admission-charge");
+      const res = await axiosInstance.get("/admission-charge");
       setAdmissionCharge(res.data.admissionCharge);
     } catch (err) {
       console.error("Failed to load admission charge", err);
@@ -88,7 +88,7 @@ const saveAdmissionCharge = async () => {
   try {
     console.log("Saving:", admissionCharge);
 
-    const res = await axiosInstance.put("/admin/admission-charge", {
+    const res = await axiosInstance.put("/admission-charge", {
       admissionCharge,
     });
 

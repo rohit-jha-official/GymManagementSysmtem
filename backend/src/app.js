@@ -56,6 +56,11 @@ app.get("/", (req, res) => {
   res.send("API is running 🚀");
 });
 
+// ✅ API health endpoint (useful to confirm Render is running THIS Express app)
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, service: "gym-backend", ts: Date.now() });
+});
+
 /* ================================
    404 HANDLER (for unmatched routes)
    ================================ */

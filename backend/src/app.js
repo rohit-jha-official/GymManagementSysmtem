@@ -27,6 +27,14 @@ app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 
 /* ================================
+   HEALTH CHECK (RENDER WAKE)
+   ================================ */
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
+
+/* ================================
    STATIC FILES
    ================================ */
 app.use("/uploads", express.static("uploads"));

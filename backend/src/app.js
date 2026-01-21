@@ -10,7 +10,6 @@ import activityRoutes from "./routes/activityRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import admissionChargeRoutes from "./routes/admissionChargeRoutes.js";
 
 import membershipPlanRoutes from "./routes/membershipPlanRoutes.js";
 const app = express();
@@ -45,7 +44,7 @@ app.use("/api/membership-plans", membershipPlanRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api", admissionChargeRoutes);
+
 
 
 

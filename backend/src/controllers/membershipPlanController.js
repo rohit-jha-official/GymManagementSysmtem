@@ -10,13 +10,31 @@ import AdmissionCharge from "../models/admission-charge.js";
 export const getPlans = async (req, res) => {
   try {
     const branchId = req.user?.branchId;
+    const globalPlans = await Plan.find({});
+
     if (!branchId) {
       return res.status(401).json({ message: "Branch not found in token" });
     }
 
-    const overrides = await PlanOverride.find({ branchId })
-      .populate("planId")
-      .lean();
+    let overrides = await PlanOverride.find({ branchId })
+        .populate("planId")
+        .lean();
+      if (overrides.length === 0 && globalPlans.length > 0) {
+  const bulkOverrides = globalPlans.map((plan) => ({
+    planId: plan._id,
+    branchId,
+    price: plan.price ?? 0,
+    isPopular: false,
+    isPremium: false,
+  }));
+
+  await PlanOverride.insertMany(bulkOverrides);
+
+  // 🔄 re-fetch overrides
+  overrides = await PlanOverride.find({ branchId })
+    .populate("planId")
+    .lean();
+}
 
     const today = new Date();
 

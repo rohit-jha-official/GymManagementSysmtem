@@ -6,7 +6,8 @@ const EditPlanModal = ({ plan,
   setAdmissionCharge = () => {}, 
   onClose, onSave }) => {
   /* ================= STATE ================= */
-  const [price, setPrice] = useState(Number(plan?.price) || 0);
+const [price, setPrice] = useState(plan?.price ?? "");
+
 
   const [features, setFeatures] = useState(
     Array.isArray(plan?.features) ? [...plan.features] : []

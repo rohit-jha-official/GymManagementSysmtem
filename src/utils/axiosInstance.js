@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-   baseURL: "https://gym-backend-render-okpo.onrender.com/api"
+   baseURL: "http://localhost:5001/api",
 });
 
 /* 🔐 AUTO ATTACH JWT TOKEN (SAFE) */

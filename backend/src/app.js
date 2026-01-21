@@ -25,9 +25,8 @@ app.use(cors({
   ],
   credentials: true
 }));
-app.use("/api/admin", adminRoutes);
-app.use("/api", admissionChargeRoutes);
 
+// ✅ CRITICAL: Body parsers MUST come BEFORE routes
 app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 
@@ -40,11 +39,13 @@ app.use("/uploads", express.static("uploads"));
    API ROUTES
    ================================ */
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/members", memberRoutes);
 app.use("/api/membership-plans", membershipPlanRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api", admissionChargeRoutes);
 
 
 
@@ -53,6 +54,15 @@ app.use("/api/dashboard", dashboardRoutes);
    ================================ */
 app.get("/", (req, res) => {
   res.send("API is running 🚀");
+});
+
+/* ================================
+   404 HANDLER (for unmatched routes)
+   ================================ */
+app.use((req, res) => {
+  res.status(404).json({
+    message: `Route not found: ${req.method} ${req.originalUrl}`,
+  });
 });
 
 /* ================================

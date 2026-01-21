@@ -9,24 +9,13 @@ import memberRoutes from "./routes/memberRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
-
 import membershipPlanRoutes from "./routes/membershipPlanRoutes.js";
 const app = express();
 
 /* ================================
    MIDDLEWARE
    ================================ */
-
-app.use(cors({
-  origin: [
-    "https://wellnessgymexpressbelur.netlify.app"
-  ],
-  credentials: true
-}));
-app.use("/api/admin", adminRoutes);
-
-
+app.use(cors());
 app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 
@@ -34,7 +23,6 @@ app.use(express.urlencoded({ extended: true, limit: "15mb" }));
    STATIC FILES
    ================================ */
 app.use("/uploads", express.static("uploads"));
-
 /* ================================
    API ROUTES
    ================================ */

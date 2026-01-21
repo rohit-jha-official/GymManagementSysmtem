@@ -42,7 +42,9 @@ const MembershipPlans = () => {
   try {
     const res = await axiosInstance.get("/membership-plans");
 
-    const formattedPlans = res.data.plans.map((p) => ({
+    const rawPlans = res.data?.plans || [];
+
+    const formattedPlans = rawPlans.map((p) => ({
       _id: p._id,
       name: p.name,
       duration: `${p.durationDays} Days`,
@@ -58,7 +60,6 @@ const MembershipPlans = () => {
         : null,
     }));
 
-    // ✅ SORT: 1 → 3 → 6 → 9 → 12 months
     formattedPlans.sort((a, b) => {
       const daysA = parseInt(a.duration);
       const daysB = parseInt(b.duration);
@@ -66,13 +67,14 @@ const MembershipPlans = () => {
     });
 
     setPlans(formattedPlans);
-    setAdmissionCharge(res.data.admissionCharge ?? 0);
-
+    setAdmissionCharge(res.data?.admissionCharge ?? 0);
 
   } catch (err) {
     console.error("Failed to load plans", err);
-  } 
+    setPlans([]); // 🔥 crash prevent
+  }
 };
+
 
 
   /* =========================
@@ -224,7 +226,8 @@ useEffect(() => {
               <div className="price">₹{plan.price}</div>
               <span className="admission-note"><FaInfoCircle />Admission Charge ₹{admissionCharge}</span>
               <ul className="features">
-                {plan.features.map((f, i) => (
+              {(plan.features || []).map((f, i) => (
+
                   <li key={i}>
                     <FaCheck /> {f}
                   </li>

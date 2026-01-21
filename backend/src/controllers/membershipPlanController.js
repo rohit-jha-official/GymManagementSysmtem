@@ -10,9 +10,13 @@ import AdmissionCharge from "../models/admission-charge.js";
 export const getPlans = async (req, res) => {
   try {
     const branchId = req.user?.branchId;
-    if (!branchId) {
-      return res.status(401).json({ message: "Branch not found in token" });
-    }
+   if (!branchId) {
+  return res.json({
+    plans: [],
+    admissionCharge: 0
+  });
+}
+
 
     const overrides = await PlanOverride.find({ branchId })
       .populate("planId")

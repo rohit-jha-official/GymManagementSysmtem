@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import Admin from "../models/admin.js";
+
 export const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -10,14 +11,14 @@ export const protect = (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-req.user = {
-  id: decoded.Id,
-  branchId: decoded.branchId, // 🔥 ADD THIS
-};
+    req.user = {
+      id: decoded.adminId,      // ✅ FIXED
+      branchId: decoded.branchId,
+    };
 
-next();
+    next();
 
   } catch (error) {
     res.status(401).json({ message: "Not authorized, token failed" });

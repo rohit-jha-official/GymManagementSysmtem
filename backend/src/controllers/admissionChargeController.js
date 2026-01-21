@@ -1,5 +1,4 @@
 import AdmissionCharge from "../models/admissionCharge.js";
-console.log("✅ AdmissionCharge Controller Loaded");
 
 // GET
 export const getAdmissionCharge = async (req, res) => {

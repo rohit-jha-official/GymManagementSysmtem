@@ -281,6 +281,29 @@
     gap: 16px;
   }
 }
+.admission-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  margin: 10px 0 6px;
+  padding: 6px 10px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  color: #d1d5db;              /* soft text */
+  background: rgba(255, 138, 0, 0.08); /* subtle orange tint */
+
+  border-radius: 999px;       /* pill shape */
+  width: fit-content;
+}
+
+.admission-note svg {
+  color: #f48a00;             /* icon color */
+  font-size: 13px;
+  flex-shrink: 0;
+}
 
 /* Tablets */
 @media (max-width: 768px) {

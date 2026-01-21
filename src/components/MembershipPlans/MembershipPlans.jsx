@@ -8,6 +8,7 @@ import {
   FaGem,
   FaCheck,
   FaTrophy,
+  FaInfoCircle,
 } from "react-icons/fa";
 import axiosInstance from "../../utils/axiosInstance";
 import EditPlanModal from "../EditPlanModal/EditPlanModal";
@@ -28,6 +29,8 @@ const MembershipPlans = () => {
 
   // 🔹 ADMISSION CHARGE STATE
   const [admissionCharge, setAdmissionCharge] = useState(0);
+ 
+
   const [isEditingAdmission, setIsEditingAdmission] = useState(false);
 
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ const MembershipPlans = () => {
   try {
     const res = await axiosInstance.get("/membership-plans");
 
-    const formattedPlans = res.data.map((p) => ({
+    const formattedPlans = res.data.plans.map((p) => ({
       _id: p._id,
       name: p.name,
       duration: `${p.durationDays} Days`,
@@ -63,6 +66,9 @@ const MembershipPlans = () => {
     });
 
     setPlans(formattedPlans);
+    setAdmissionCharge(res.data.admissionCharge ?? 0);
+
+
   } catch (err) {
     console.error("Failed to load plans", err);
   } 
@@ -72,38 +78,38 @@ const MembershipPlans = () => {
   /* =========================
      FETCH ADMISSION CHARGE
      ========================= */
-  const fetchAdmissionCharge = async () => {
-    try {
-      const res = await axiosInstance.get("/admission-charge");
-      setAdmissionCharge(res.data.admissionCharge);
-    } catch (err) {
-      console.error("Failed to load admission charge", err);
-    }
-  };
+  // const fetchAdmissionCharge = async () => {
+  //   try {
+  //     const res = await axiosInstance.get("/admission-charge");
+  //     setAdmissionCharge(res.data.admissionCharge);
+  //   } catch (err) {
+  //     console.error("Failed to load admission charge", err);
+  //   }
+  // };
 
   /* =========================
      SAVE ADMISSION CHARGE
      ========================= */
-const saveAdmissionCharge = async () => {
-  try {
-    console.log("Saving:", admissionCharge);
+// const saveAdmissionCharge = async () => {
+//   try {
+//     console.log("Saving:", admissionCharge);
 
-    const res = await axiosInstance.post("/admission-charge", {
-      admissionCharge,
-    });
+//     const res = await axiosInstance.post("/admission-charge", {
+//       admissionCharge,
+//     });
 
-    console.log("Saved Response:", res.data);
+//     console.log("Saved Response:", res.data);
 
-    // ✅ Re-fetch updated value from backend
-    await fetchAdmissionCharge();
+//     // ✅ Re-fetch updated value from backend
+//     await fetchAdmissionCharge();
 
-    setIsEditingAdmission(false);
+//     setIsEditingAdmission(false);
 
-  } catch (err) {
-    console.error("Failed to save admission charge", err);
-    alert("Failed to save admission charge");
-  }
-};
+//   } catch (err) {
+//     console.error("Failed to save admission charge", err);
+//     alert("Failed to save admission charge");
+//   }
+// };
 
 
   /* =========================
@@ -118,6 +124,7 @@ const saveAdmissionCharge = async () => {
         features: updatedPlan.features,
         isPopular: updatedPlan.isPopular,
         isPremium: updatedPlan.isPremium,
+        admissionCharge,
       }
     );
 
@@ -137,10 +144,7 @@ const saveAdmissionCharge = async () => {
 };
 useEffect(() => {
   const loadData = async () => {
-    await Promise.all([
-      fetchPlans(),
-      fetchAdmissionCharge()
-    ]);
+    await fetchPlans();
     setLoading(false);
   };
 
@@ -169,11 +173,11 @@ useEffect(() => {
       {/* =========================
          ADMISSION CHARGE BOX
          ========================= */}
-      <div className="admission-charge-box">
+     {/* /* <div className="admission-charge-box">
         <div className="admission-left">
-          <h3>Admission Charge</h3>
+          <h3>Admission Charge</h3> */}
 
-          {!isEditingAdmission ? (
+          {/* {!isEditingAdmission ? (
             <p>₹{admissionCharge}</p>
           ) : (
             <input
@@ -188,9 +192,9 @@ useEffect(() => {
 
             />
           )}
-        </div>
+        </div> */}
 
-        <div className="admission-right">
+        {/* <div className="admission-right">
           {!isEditingAdmission ? (
             <button onClick={() => setIsEditingAdmission(true)}>
               Edit
@@ -201,7 +205,7 @@ useEffect(() => {
             </button>
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* PLANS GRID */}
       <div className="plans-grid">
@@ -218,7 +222,7 @@ useEffect(() => {
               <p className="duration">{plan.duration}</p>
 
               <div className="price">₹{plan.price}</div>
-
+              <span className="admission-note"><FaInfoCircle />Admission Charge ₹{admissionCharge}</span>
               <ul className="features">
                 {plan.features.map((f, i) => (
                   <li key={i}>
@@ -226,6 +230,7 @@ useEffect(() => {
                   </li>
                 ))}
               </ul>
+              
 
               {/* ACTIVE MEMBERS */}
               <div
@@ -284,10 +289,13 @@ useEffect(() => {
       {editingPlan && (
         <EditPlanModal
           plan={editingPlan}
+          admissionCharge={admissionCharge}
+          setAdmissionCharge={setAdmissionCharge}
           onClose={() => setEditingPlan(null)}
           onSave={handleSavePlan}
         />
       )}
+
     </div>
   );
 };

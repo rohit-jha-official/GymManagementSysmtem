@@ -34,7 +34,6 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 
-
 /* ================================
    HEALTH CHECK
    ================================ */

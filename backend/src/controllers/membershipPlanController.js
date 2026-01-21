@@ -1,6 +1,8 @@
 import Plan from "../models/plan.js";
 import PlanOverride from "../models/planOverride.js";
 import Member from "../models/member.js";
+import AdmissionCharge from "../models/admission-charge.js";
+
 
 /* =====================================
    📋 GET ALL PLANS (BRANCH-WISE)
@@ -46,7 +48,20 @@ export const getPlans = async (req, res) => {
       })
     );
 
-    res.json(plansWithStats);
+    let charge = await AdmissionCharge.findOne({ branchId });
+
+if (!charge) {
+  charge = await AdmissionCharge.create({
+    branchId,
+    amount: 0,
+  });
+}
+
+res.json({
+  plans: plansWithStats,
+  admissionCharge: charge.amount,
+});
+
   } catch (err) {
     console.error("Get plans error:", err);
     res.status(500).json({ message: "Failed to fetch plans" });
@@ -60,7 +75,8 @@ export const updatePlan = async (req, res) => {
   try {
     const branchId = req.user.branchId;
     const { id } = req.params; // override id
-    const { price, isPopular, isPremium } = req.body;
+    const { price, isPopular, isPremium, admissionCharge } = req.body;
+
 
     const override = await PlanOverride.findOne({
       _id: id,
@@ -76,6 +92,20 @@ export const updatePlan = async (req, res) => {
     if (isPremium !== undefined) override.isPremium = isPremium;
 
     await override.save();
+    if (admissionCharge !== undefined) {
+        let charge = await AdmissionCharge.findOne({ branchId });
+
+        if (!charge) {
+          charge = new AdmissionCharge({
+            branchId,
+            amount: admissionCharge,
+          });
+        } else {
+          charge.amount = admissionCharge;
+        }
+
+        await charge.save();
+      }
 
     res.json({ message: "Plan updated" });
   } catch (err) {

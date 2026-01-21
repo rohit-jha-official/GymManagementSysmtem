@@ -1,7 +1,10 @@
 import { useState } from "react";
 import "./EditPlanModal.css";
 
-const EditPlanModal = ({ plan, onClose, onSave }) => {
+const EditPlanModal = ({ plan, 
+  admissionCharge,        
+  setAdmissionCharge = () => {}, 
+  onClose, onSave }) => {
   /* ================= STATE ================= */
   const [price, setPrice] = useState(Number(plan?.price) || 0);
 
@@ -40,6 +43,7 @@ const EditPlanModal = ({ plan, onClose, onSave }) => {
       features: features.filter(Boolean), // remove empty strings
       isPopular: badge === "popular",
       isPremium: badge === "premium",
+      admissionCharge,
     });
   };
 
@@ -62,6 +66,17 @@ const EditPlanModal = ({ plan, onClose, onSave }) => {
             onChange={(e) => setPrice(e.target.value)}
             placeholder="Enter price"
           />
+          {/* ADMISSION CHARGE (STATIC) */}
+            <label>Admission Charge</label>
+            <input
+              type="number"
+              value={admissionCharge}
+              onChange={(e) =>
+                setAdmissionCharge(Number(e.target.value))
+              }
+              placeholder="Enter admission charge"
+            />
+
 
           {/* BADGE (FROM CODE-1) */}
           {/* <label>Badge</label>

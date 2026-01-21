@@ -51,28 +51,30 @@ const AddMember = () => {
     const fetchPlans = async () => {
     try {
      const res = await axiosInstance.get("/membership-plans");
+     const { plans, admissionCharge } = res.data;
 
-     const sortedPlans = (res.data || []).sort(
+     const sortedPlans = (plans || []).sort(
       (a, b) => a.durationDays - b.durationDays
-       );
+    );
       setPlans(sortedPlans);
+      setAdmissionCharge(admissionCharge || 0);
       } catch (err) {
         console.error("Failed to fetch plans");
         setPlans([]);
       }
     };
 
-    const fetchAdmissionCharge = async () => {
-      try {
-        const res = await axiosInstance.get("/admin/admission-charge");
-        setAdmissionCharge(res.data.admissionCharge || 0);
-      } catch (err) {
-        console.error("Failed to fetch admission charge");
-      }
-    };
+    // const fetchAdmissionCharge = async () => {
+    //   try {
+    //     const res = await axiosInstance.get("/admin/admission-charge");
+    //     setAdmissionCharge(res.data.admissionCharge || 0);
+    //   } catch (err) {
+    //     console.error("Failed to fetch admission charge");
+    //   }
+    // };
 
     fetchPlans();
-    fetchAdmissionCharge();
+    // fetchAdmissionCharge();
   }, []);
 
   /* ================= CAMERA ================= */

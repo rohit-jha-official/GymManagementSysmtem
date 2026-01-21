@@ -51,17 +51,23 @@ const AddMember = () => {
     const fetchPlans = async () => {
     try {
      const res = await axiosInstance.get("/membership-plans");
-     const { plans, admissionCharge } = res.data;
+    const plansArray = Array.isArray(res.data?.plans)
+  ? res.data.plans
+  : [];
 
-     const sortedPlans = (plans || []).sort(
-      (a, b) => a.durationDays - b.durationDays
-    );
-      setPlans(sortedPlans);
-      setAdmissionCharge(admissionCharge || 0);
+const sortedPlans = plansArray.sort(
+  (a, b) => a.durationDays - b.durationDays
+);
+
+setPlans(sortedPlans);
+setAdmissionCharge(res.data?.admissionCharge ?? 0);
+
       } catch (err) {
-        console.error("Failed to fetch plans");
+        console.error("Failed to fetch plans", err);
         setPlans([]);
+        setAdmissionCharge(0);
       }
+
     };
 
     // const fetchAdmissionCharge = async () => {

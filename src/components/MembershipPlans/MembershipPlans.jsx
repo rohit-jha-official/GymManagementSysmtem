@@ -42,7 +42,12 @@ const MembershipPlans = () => {
   try {
     const res = await axiosInstance.get("/membership-plans");
 
-    const formattedPlans = res.data.plans.map((p) => ({
+    const plansArray = Array.isArray(res.data?.plans)
+  ? res.data.plans
+  : [];
+
+const formattedPlans = plansArray.map((p) => ({
+
       _id: p._id,
       name: p.name,
       duration: `${p.durationDays} Days`,
@@ -66,7 +71,8 @@ const MembershipPlans = () => {
     });
 
     setPlans(formattedPlans);
-    setAdmissionCharge(res.data.admissionCharge ?? 0);
+    setAdmissionCharge(res.data?.admissionCharge ?? 0);
+
 
 
   } catch (err) {

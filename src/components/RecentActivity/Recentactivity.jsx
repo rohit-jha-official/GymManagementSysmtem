@@ -1,4 +1,4 @@
-import "./RecentActivity.css";
+import "./Recentactivity.css";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
 import {
@@ -42,7 +42,7 @@ const getTypeClass = (type) => {
   }
 };
 
-const RecentActivity = () => {
+const Recentactivity = () => {
   const [activities, setActivities] = useState([]);
 
   /* 🔹 LOAD ACTIVITIES (JWT SAFE) */
@@ -110,4 +110,4 @@ const RecentActivity = () => {
   );
 };
 
-export default RecentActivity;
+export default Recentactivity;

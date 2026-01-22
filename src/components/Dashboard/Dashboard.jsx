@@ -2,8 +2,7 @@ import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axiosInstance";
-
-import RecentActivity from "../RecentActivity/Recentactivity";
+import Recent from "../Recent/Recent";
 import MemberGrowth from "../MemberGrowth/MemberGrowth";
 import ExpiringSoon from "../Expiring Soon/ExpiringSoon";
 // import TodaysAttendance from "../Todays Attendance/TodaysAttendance";
@@ -178,7 +177,7 @@ const Dashboard = () => {
       {/* GROWTH + RECENT ACTIVITY */}
       <div className="dashboard-row">
         <MemberGrowth />
-        <RecentActivity />
+        <Recent />
       </div>
 
       {/* EXPIRING + ATTENDANCE */}

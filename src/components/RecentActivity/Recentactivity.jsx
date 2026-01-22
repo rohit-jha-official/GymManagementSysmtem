@@ -9,6 +9,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
+
 /* 🔹 ICON MAPPER */
 const getIcon = (type) => {
   switch (type) {
@@ -20,6 +21,7 @@ const getIcon = (type) => {
       return <FaMoneyBill />;
     case "expiry":
       return <FaExclamationTriangle />;
+      
     default:
       return <FaUserCheck />;
   }

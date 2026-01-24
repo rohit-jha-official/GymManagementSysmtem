@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-   baseURL: "VALUE : https://backendgymbelur-production.up.railway.app/api",
+   baseURL: "VALUE : https://backendgymbelur-production.up.railway.app/api/auth/login",
 });
 
 /* 🔐 AUTO ATTACH JWT TOKEN (SAFE) */

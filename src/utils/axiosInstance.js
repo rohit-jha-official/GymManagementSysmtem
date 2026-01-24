@@ -1,13 +1,12 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-   baseURL: "https://gym-backend-render-okpo.onrender.com",
+  baseURL: "https://backendgymbelur-production.up.railway.app/api",
 });
 
-/* 🔐 AUTO ATTACH JWT TOKEN (SAFE) */
+/* 🔐 AUTO ATTACH JWT TOKEN */
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Try all common token keys (prevents silent bugs)
     const token =
       localStorage.getItem("token") ||
       localStorage.getItem("authToken") ||
